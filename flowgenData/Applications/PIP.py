@@ -33,32 +33,32 @@ InpMemB.addFlow(AppComposer.Flow(TargetThread = JUG2, Bandwidth = 64))      # In
 JUG2.addFlow(AppComposer.Flow(TargetThread = MEM, Bandwidth = 64))          # JUG2 -- 64 -> MEM
 MEM.addFlow(AppComposer.Flow(TargetThread = OpDisp, Bandwidth = 64))        # MEM -- 64 -> OpDisp
 
-print(str(PIP))
+# print(str(PIP))
 
 # Save App to JSON
 PIP.toJSON(SaveToFile = True, FileName = "PIP")
 
-# Opens file and build App from JSON
-JSONFile = open("PIP.json", "r")
+# # Opens file and build App from JSON
+# JSONFile = open("PIP.json", "r")
 
-PIPFromJSON = AppComposer.Application(AppName = "PIPFromJSON")
-PIPFromJSON.fromJSON(JSONFile.read())
+# PIPFromJSON = AppComposer.Application(AppName = "PIPFromJSON")
+# PIPFromJSON.fromJSON(JSONFile.read())
 
-print(str(PIPFromJSON))
+# print(str(PIPFromJSON))
 
-PIPFromJSON.toJSON(SaveToFile = True, FileName = "PIPFromJSON")
+# PIPFromJSON.toJSON(SaveToFile = True, FileName = "PIPFromJSON")
 
 # Saves Workload
-PIP_WL = AppComposer.Workload(WorkloadName = "PIP_WL")
-PIP_WL.addApplication(PIP)
+# PIP_WL = AppComposer.Workload(WorkloadName = "PIP_WL")
+# PIP_WL.addApplication(PIP)
 
-print(str(PIP_WL))
+# print(str(PIP_WL))
 
-PIP_WL.toJSON(SaveToFile = True, FileName = "PIP_WL")
+# PIP_WL.toJSON(SaveToFile = True, FileName = "PIP_WL")
 
-WL_JSONFile = open("PIP_WL.json", "r")
-PIP_WL_FromJSON = AppComposer.Workload(WorkloadName = "PIP_WL_FromJSON")
-PIP_WL_FromJSON.fromJSON(WL_JSONFile.read())
+# WL_JSONFile = open("PIP_WL.json", "r")
+# PIP_WL_FromJSON = AppComposer.Workload(WorkloadName = "PIP_WL_FromJSON")
+# PIP_WL_FromJSON.fromJSON(WL_JSONFile.read())
 
-print(str(PIP_WL_FromJSON))
+# print(str(PIP_WL_FromJSON))
 

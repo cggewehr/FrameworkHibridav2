@@ -619,18 +619,43 @@ class Platform:
                     return None
 
 
+    # Adds an application (containing various Thread objects) to platform
+    def setWorkload(self, Workload):
+
+        Workload.ParentPlatform = self
+        self.Workload = Workload
+
+
     # Sets allocation map (Maps AppID and ThreadID to an unique PE)
     def setAllocationMap(self, AllocationMap):
     
-        # AllocMap[PEPos] = Thread object
+        # AllocMap[PEPos] = Thread object or string
         
-        # Sets PEPos values for Threads in AllocationMap
+        # Sets PEPos values for Threads in Workload
         for PEPos, ThreadInAllocMap in enumerate(AllocationMap):
             
             if isinstance(ThreadInAllocMap, Thread):
-                ThreadInAllocMap.PEPos = PEPos
+
+                # TODO: Find thread in workload wich is identical to thread in AllocMap dict and set its PEPos value
+                #ThreadInAllocMap.PEPos = PEPos
+                NotImplementedError
+
+            elif isinstance(ThreadInAllocMap, str):
+
+                if self.Workload is None:
+                    print("Error: Thread lookup by ThreadName is impossible if Workload hasnt been set before calling setAllocationMap()")
+                    exit(1)
+
+                ThreadInWorkload = self.Workload.getThread(ThreadName = ThreadInAllocMap)
+
+                # DEBUG
+                print(ThreadInWorkload)
+
+                ThreadInWorkload.PEPos = PEPos
+
             else:
-                print("Error: <ThreadInAllocMap> is not a Thread object")
+
+                print("Error: <ThreadInAllocMap> is not a Thread object or string")
                 exit(1)
         
         self.AllocationMap = AllocationMap
@@ -643,21 +668,25 @@ class Platform:
         
         if isinstance(ClusterClocks, dict) and "ClusterClockPeriods" in ClusterClocks.keys():
             self.ClusterClocks = ClusterClocks["ClusterClockPeriods"]
+
         elif isinstance(ClusterClocks, dict) and "ClusterClockFrequencies" in ClusterClocks.keys():
             self.ClusterClocks = [float(1000/ClusterClocks["ClusterClockPeriods"][Cluster]) for Cluster in ClusterClocks["ClusterClockPeriods"]]  # MHz -> ns
+
         else:
+
+            # Assumes values are periods (in nanoseconds)
             self.ClusterClocks = ClusterClocks
         
-        
-    # Adds an application (containing various Thread objects) to platform
-    def setWorkload(self, Workload):
-
-        Workload.ParentPlatform = self
-        self.Workload = Workload
-
 
     # Generate JSON config files for PEs, Injectors and Platform
-    def generateJSON(self, Path):
+    def generateJSON(self, ProjectPath):
+
+        import os
+
+        # Checks if ProjectPath exists
+        if not os.path.exists(ProjectPath):
+            print("Error: Given <ProjectPath: " + str(ProjectPath) + "> doesnt exist. Did you run \"projgen\"?")
+            exit(1)
         
         if self.Workload is None:
             print("Error: No Workload has been set, aborting generateJSON()")
@@ -666,33 +695,36 @@ class Platform:
         if self.AllocationMap is None:
             print("Error: No AllocationMap has been set, aborting generateJSON()")
             exit(1)
-            
+
+        # TODO: Check if all Threads in Workload have benn allocated (Thread.PEPos is not None)
+
         if self.ClusterClocks is None:
             print("Error: No ClusterClocks has been set, aborting generateJSON()")
             exit(1)
-            
-        import os
-        
-        # Creates directory if it doesn't exist
-        if not os.path.exists(Path):
-            os.makedirs(Path)
+
+        if len(self.ClusterClocks) < self.BaseNoCDimensions[0] * self.BaseNoCDimensions[1]:
+            print("Error: Platform ClusterClocks has different len <" + str(len(self.ClusterClocks)) + "> than expected <" + str(self.BaseNoCDimensions[0] * self.BaseNoCDimensions[1]) + ">")
+            exit(1)
+
+        if len(self.ClusterClocks) != self.BaseNoCDimensions[0] * self.BaseNoCDimensions[1]:
+            print("Warning: Platform ClusterClocks has different len <" + str(len(self.ClusterClocks)) + "> than expected <" + str(self.BaseNoCDimensions[0] * self.BaseNoCDimensions[1]) + ">") 
             
         # Writes PE config files
         for PEinPlatform in self.PEs:
-            with open(Path + "PE" + str(PEinPlatform.PEPos) + ".json", 'w') as PEFile:
+            with open(Path + "/PE" + str(PEinPlatform.PEPos) + ".json", 'w') as PEFile:
                 PEFile.write(PEinPlatform.toJSON())
                 
         # Writes Injector config files
         for InjectorInPlatform in self.Injectors:
-            with open(Path + "INJ" + str(InjectorInPlatform.PEPos) + ".json", 'w') as INJFile:
+            with open(Path + "/INJ" + str(InjectorInPlatform.PEPos) + ".json", 'w') as INJFile:
                 INJFile.write(InjectorInPlatform.toJSON())
                 
         # Writes Platform config file
-        with open(Path + "PlatformConfig.json", 'w') as PlatformFile:
+        with open(Path + "/PlatformConfig.json", 'w') as PlatformFile:
             PlatformFile.write(self.toJSON())
         
         # Writes ClusterClocks config file
-        with open(Path + "ClusterClocks.json", 'w') as ClusterClocksFile:
+        with open(Path + "/ClusterClocks.json", 'w') as ClusterClocksFile:
             ClusterClocksFile.write(json.dumps(self.ClusterClocks))
 
 

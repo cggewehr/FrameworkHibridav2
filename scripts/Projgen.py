@@ -2,7 +2,6 @@
 def projgen(args):
     
     import os
-    import sys
     
     # Check if given project path exists. If not, mkdir
     if os.path.isdir(args.ProjectDirectory + "/" + args.ProjectName):
@@ -10,7 +9,7 @@ def projgen(args):
         while True:
         
             print("Warning: Project path <" + args.ProjectDirectory + "/" + args.ProjectName + "> already exists. Do you wish to proceed (Y/N)?")
-            ipt = input()
+            ipt = raw_input()
             
             if ipt == "Y" or ipt == "y":
                 break
@@ -22,7 +21,19 @@ def projgen(args):
         os.makedirs(args.ProjectDirectory + "/" + args.ProjectName)
         
     # Makes log and flow dirs
-    os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/flow")
-    os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/log")
+    try:
+        os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/flow")
+    except OSError:
+        pass
+
+    try:
+        os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/log")
+    except OSError:
+        pass
+
+    # TODO: Copy testbench HDL to project directory, in order to have project directory as reference directory in simulation tool
     
+    # os.environ["MOST_RECENT_HIBRIDA_PROJECT"] = args.ProjectDirectory + "/" + args.ProjectName
+
+    print("Created \"" + args.ProjectName + "\" at \"" + args.ProjectDirectory + "\"")
     

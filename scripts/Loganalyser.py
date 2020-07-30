@@ -20,7 +20,7 @@ class Message:
             #self.isInputEntry = False
             pass
 
-    # Overloads operator " = " (Compares 2 messages, used for comparing an input entry to an output entry)
+    # Overloads operator " = " (Compares 2 Message objects, used for comparing an input entry to an output entry)
     def __eq__(self, comp):
         if (self.TargetID == comp.TargetID and self.SourceID == comp.SourceID
                 and self.MessageSize == comp.MessageSize and self.OutputTimestamp == comp.OutputTimestamp):

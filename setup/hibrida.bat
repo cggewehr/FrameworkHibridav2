@@ -1,0 +1,16 @@
+set HIBRIDA_NAME=hibrida
+set HIBRIDA_PATH=/home/carlos/Desktop/GitKraken/FrameworkHibridav2
+set PATH=%PATH%;%HIBRIDA_PATH%/scripts
+doskey hibrida=.//home/carlos/Desktop/GitKraken/FrameworkHibridav2/scripts/mainScript
+set HIBRIDA_DEFAULT_DIRECTORY=/home/carlos/Desktop/HibridaProjects
+set HIBRIDA_HARDWARE_PATH=%HIBRIDA_PATH%/hardware
+set HIBRIDA_SOFTWARE_PATH=%HIBRIDA_PATH%/software
+set HIBRIDA_APPCOMPOSER_PATH=%HIBRIDA_SOFTWARE_PATH%/AppComposer
+set HIBRIDA_PLATFORMCOMPOSER_PATH=%HIBRIDA_SOFTWARE_PATH%/PlatformComposer
+set PATH=%PATH%;%HIBRIDA_APPCOMPOSER_PATH%
+set PATH=%PATH%;%HIBRIDA_PLATFORMCOMPOSER_PATH%
+set FLOWGEN_TOPOLOGIES_PATH=$HIBRIDA_PATH/flowgenData/Topologies
+set FLOWGEN_APPLICATIONS_PATH=$HIBRIDA_PATH/flowgenData/Applications
+set FLOWGEN_WORKLOADS_PATH=$HIBRIDA_PATH/flowgenData/Workloads
+set FLOWGEN_ALLOCATIONMAPS_PATH=$HIBRIDA_PATH/flowgenData/AllocationMaps
+set FLOWGEN_CLUSTERCLOCKS_PATH=$HIBRIDA_PATH/flowgenData/ClusterClocks

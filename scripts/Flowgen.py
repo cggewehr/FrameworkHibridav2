@@ -23,52 +23,52 @@ def flowgen(args):
     try:
         TopologyFileName = str(args.TopologyFile)
     except KeyError or IndexError:
-        print("Flowgen argument <TopologyFile> not given")
+        print("Error: Flowgen argument <TopologyFile> not given")
         exit(1)
     
     # $1 = Name of application JSON file
     try:
-        AppFileName = str(args.WorkloadFile)
+        WorkloadFileName = str(args.WorkloadFile)
     except KeyError or IndexError:
-        print("Flowgen argument <WorkloadFile> not given")
+        print("Error: Flowgen argument <WorkloadFile> not given")
         exit(1)
         
     # $2 = Name of allocation map JSON file
     try:
         AllocMapFileName = str(args.AllocMapFile)
     except KeyError or IndexError:
-        print("Flowgen argument <AllocMapFile> not given")
+        print("Error: Flowgen argument <AllocMapFile> not given")
         exit(1)
         
     # $3 = Name of cluster clock JSON file
     try:
         ClusterClocksFileName = str(args.ClusterClocksFile)
     except KeyError or IndexError:
-        print("Flowgen argument <ClusterClocksFile> not given")
+        print("Error: Flowgen argument <ClusterClocksFile> not given")
         exit(1)
         
 
     # Adds Topologies info path
     try:
-        TopologyPath = str(os.getenv("FLOWGEN_TOPOLOGIES"))
+        TopologyPath = str(os.getenv("FLOWGEN_TOPOLOGIES_PATH"))
     except KeyError:
         print("Warning: Environment variable \"FLOWGEN_TOPOLOGIES\" not found. \"FLOWGEN_SOURCES\" must be the directory which contains network topology information in JSON format")
 
     # Adds Applications info path
     try:
-        WorkloadPath = str(os.getenv("FLOWGEN_WORKLOADS"))
+        WorkloadPath = str(os.getenv("FLOWGEN_WORKLOADS_PATH"))
     except KeyError:
         print("Warning: Environment variable \"FLOWGEN_WORKLOADS\" not found. \"FLOWGEN_WORKLOADS\" must be the directory which contains application descriptions in JSON format")
 
     # Adds Allocation Maps info path
     try:
-        AllocMapPath = str(os.getenv("FLOWGEN_ALLOCATIONMAPS"))
+        AllocMapPath = str(os.getenv("FLOWGEN_ALLOCATIONMAPS_PATH"))
     except KeyError:
         print("Warning: Environment variable \"FLOWGEN_ALLOCATIONMAPS\" not found. \"FLOWGEN_ALLOCATIONMAPS\" must be the directory which contains application mapping information in JSON format")
         
     # Adds Clocks info path
     try:
-        ClusterClocksPath = str(os.getenv("FLOWGEN_CLUSTERCLOCKS"))
+        ClusterClocksPath = str(os.getenv("FLOWGEN_CLUSTERCLOCKS_PATH"))
     except KeyError:
         print("Warning: Environment variable \"FLOWGEN_CLUSTERCLOCKS\" not found. \"FLOWGEN_CLUSTERCLOCKS\" must be the directory which contains cluster clock frequency information in JSON format")
 
@@ -77,28 +77,28 @@ def flowgen(args):
     try:
         TopologyFile = open(TopologyPath + "/" + TopologyFileName + ".json")
     except FileNotFoundError:
-        print("Error: Given Setup script \"" + str(SetupScript) + "\" not found at " + TopologyPath)
+        print("Error: Given Topology file \"" + str(TopologyFileName) + "\" not found at \"" + TopologyPath + "\". (.json extension is automatically added to given file name)")
         exit(1)
     
     # Opens Workload JSON file
     try:
         WorkloadFile = open(WorkloadPath + "/" + WorkloadFileName + ".json")
     except FileNotFoundError:
-        print("Error: Given Application script \"" + str(AppScript) + "\" not found at " + WorkloadPath)
+        print("Error: Given Workload file \"" + str(WorkloadFileName) + "\" not found at \"" + WorkloadPath + "\". (.json extension is automatically added to given file name)")
         exit(1)
 
     # Opens AllocMap JSON file
     try:
         AllocMapFile = open(AllocMapPath + "/" + AllocMapFileName + ".json")
     except FileNotFoundError:
-        print("Error: Given Allocation Map script \"" + str(AllocMapScript) + "\" not found at " + AllocMapPath)
+        print("Error: Given Allocation Map file \"" + str(AllocMapFileName) + "\" not found at \"" + AllocMapPath + "\". (.json extension is automatically added to given file name)")
         exit(1)
         
     # Opens Topology JSON file
     try:
         ClusterClocksFile = open(ClusterClocksPath + "/" + ClusterClocksFileName + ".json")
     except FileNotFoundError:
-        print("Error: Given Allocation Map script \"" + str(AllocMapScript) + "\" not found at " + ClusterClocksPath)
+        print("Error: Given Allocation Map file \"" + str(ClusterClocksFileName) + "\" not found at \"" + ClusterClocksPath + "\". (.json extension is automatically added to given file name)")
         exit(1)
 
     # Reconstructs objects from given JSON files
@@ -108,9 +108,9 @@ def flowgen(args):
     Workload = AppComposer.Workload()
     Workload.fromJSON(WorkloadFile.read())
     
-    AllocMap = JSON.reads(AllocMapFile.read())
+    AllocMap = JSON.loads(AllocMapFile.read())
     
-    ClusterClocks = JSON.reads(ClusterClocksFile.read())
+    ClusterClocks = JSON.loads(ClusterClocksFile.read())
     
     #
     Platform.setWorkload(Workload)
@@ -126,6 +126,13 @@ def flowgen(args):
         logFile.close()
         logFile = open(ProjectDir + "/log/OutLog" + str(i) + ".txt", "w")
         logFile.close()
+
+    # Copies .json files to project dir
+    from shutil import copy
+    copy(args.TopologyFile, args.ProjectDir + "/Topology.json")
+    copy(args.WorkloadFile, args.ProjectDir + "/Workload.json")
+    copy(args.AllocMapFile, args.ProjectDir + "/AllocMap.json")
+    copy(args.ClusterClocksFile, args.ProjectDir + "/AllocMap.json")
         
     # Generate log containing project information
     ProjectInfo = open(ProjectDir + "/" + "ProjectInfo.txt", 'w')

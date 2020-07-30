@@ -434,7 +434,7 @@ class Application:
         self.AppName = JSONDict["AppName"]
         
         self.Threads = []
-        self.ThreadsByName = dict()
+        #self.ThreadsByName = dict()
         
         # To be set when Workload.addApplication(self) is called
         self.AppID = None
@@ -474,7 +474,7 @@ class Application:
         
 class Workload:
 
-    def __init__(self, WorkloadName = "DefaultWorkloadName"):
+    def __init__(self, WorkloadName = "HibridaWorkload"):
     
         self.WorkloadName = str(WorkloadName)
         
@@ -608,6 +608,53 @@ class Workload:
             return AppByName
             
         
+    # TODO: Test for more arg combinations and display warning if they dont make sense (e.g AppName and AppID and )
+    def getThread(self, AppName = None, ThreadName = None, AppID = None, ThreadID = None):
+
+        # No args given
+        if AppName is None and ThreadName is None and AppID is None and ThreadID is None:
+            print("Warning: Neither <AppName>, <ThreadName>, <AppID> and <ThreadID> were not given. getThread() does nothing")
+            return None
+
+        # Looks by App and Thread name
+        elif AppName is not None and ThreadName is not None and AppID is None and ThreadID is None:
+
+            App = self.getApplication(AppName = AppName)
+
+            if App is None:
+                return None
+
+            return App.getThread(ThreadName = ThreadName)
+
+        # Looks only by given ThreadName with AppName and ThreadName separated by "."
+        elif AppName is None and ThreadName is not None and AppID is None and ThreadID is None:
+
+            App, Thrd = ThreadName.split(".", 1)
+
+            return self.getThread(AppName = App, ThreadName = Thrd)
+
+        # Looks by App and Thread IDs
+        elif AppName is None and ThreadName is None and AppID is not None and ThreadID is not None:
+
+            App = self.getApplication(AppID = AppID)
+
+            if App is None:
+                return None
+
+            return App.getThread(ThreadID = ThreadID)
+
+        # Looks only by given ThreadID with AppID and ThreadID separated by "."
+        elif AppName is None and ThreadName is None and AppID is None and ThreadID is not None:
+
+            App, Thrd = str(ThreadID).split(".", 1)
+
+            return self.getThread(AppID = App, ThreadID = Thrd)
+
+        else:
+
+            NotImplementedError 
+
+
     def toJSON(self, SaveToFile = False, FileName = None):
     
         workloadDict = dict()
@@ -618,7 +665,7 @@ class Workload:
             workloadDict[App.AppName] = JSON.loads(App.toJSON())
             
         # Converts workloadDict to a JSON-formatted string (sort_keys must be False so AppIDs are the same in original and reconstructed-from-JSON objects)
-        JSONString = JSON.dumps(workloadDict, sort_keys=False, indent=4)
+        JSONString = JSON.dumps(workloadDict, sort_keys = False, indent = 4)
         
         if bool(SaveToFile):
         
@@ -640,7 +687,7 @@ class Workload:
         self.WorkloadName = JSONDict["WorkloadName"]
         
         self.Applications = []
-        self.ApplicationsByName = dict()
+        #self.ApplicationsByName = dict()
         
         # To be set when Platform.setWorkload(self) is called
         self.ParentPlatform = None
