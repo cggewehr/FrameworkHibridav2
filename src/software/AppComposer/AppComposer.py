@@ -454,7 +454,7 @@ class Application:
             for FlowInThread in JSONDict[ThreadInApp.ThreadName]["Flows"]:
             
                 ThreadInApp.addFlow(Flow(Bandwidth = FlowInThread["Bandwidth"], SourceThread = FlowInThread["SourceThread"], TargetThread = FlowInThread["TargetThread"]))
-
+                # TODO: call getThread(Threadname = FlowInThread["SourceThread"]) and getThread(Threadname = FlowInThread["TargetThread"]) and pass Thread object to Flow constructor 
 
     def __str__(self):
     
