@@ -201,8 +201,8 @@ class Thread:
         for IncomingFlow in self.IncomingFlows:
             returnString += (str(IncomingFlow) + "\n")
             
-        returnString += ("\n" + self.ThreadName + "Total Outgoing Bandwidth: " + str(self.OutgoingBandwidth))
-        returnString += ("\n" + self.ThreadName + "Total Incoming Bandwidth: " + str(self.IncomingBandwidth))
+        returnString += ("\n" + self.ThreadName + " Total Outgoing Bandwidth: " + str(self.OutgoingBandwidth))
+        returnString += ("\n" + self.ThreadName + " Total Incoming Bandwidth: " + str(self.IncomingBandwidth))
         
         return returnString
         
@@ -405,6 +405,7 @@ class Application:
                 flowDict["Bandwidth"] = OutgoingFlow.Bandwidth
                 
                 OutgoingFlows.append(flowDict)
+
             threadDict["Flows"] = OutgoingFlows
             
             appDict[Thread.ThreadName] = threadDict
@@ -453,13 +454,19 @@ class Application:
             # Creates Flow with SourceThread and TargetThread as strings
             for FlowInThread in JSONDict[ThreadInApp.ThreadName]["Flows"]:
             
-                ThreadInApp.addFlow(Flow(Bandwidth = FlowInThread["Bandwidth"], SourceThread = FlowInThread["SourceThread"], TargetThread = FlowInThread["TargetThread"]))
+                #ThreadInApp.addFlow(Flow(Bandwidth = FlowInThread["Bandwidth"], SourceThread = FlowInThread["SourceThread"], TargetThread = FlowInThread["TargetThread"]))
+
+                SourceThread = self.getThread(ThreadName = FlowInThread["SourceThread"])
+                TargetThread = self.getThread(ThreadName = FlowInThread["TargetThread"])
+                ThreadInApp.addFlow(Flow(Bandwidth = FlowInThread["Bandwidth"], SourceThread = SourceThread, TargetThread = TargetThread))
+
                 # TODO: call getThread(Threadname = FlowInThread["SourceThread"]) and getThread(Threadname = FlowInThread["TargetThread"]) and pass Thread object to Flow constructor 
 
     def __str__(self):
     
         returnString = ""
         
+        returnString == ("Parent Workload: " + str(self.ParentWorkload.WorkloadName) + "\n")
         returnString += ("Amount of Threads: " + str(len(self.Threads)) + "\n")
         returnString += ("Total Bandwidth: " + str(self.TotalBandwidth) + "\n")
         
@@ -470,6 +477,11 @@ class Application:
             pass
         
         return returnString
+
+
+    def __eq__(self, other):
+
+        return NotImplemented
         
         
 class Workload:
@@ -551,7 +563,8 @@ class Workload:
                     Application.renameApplication(newName)
                 
                     Application.AppID = len(self.Applications)
-                    Application.ParentApplication = self
+                    #Application.ParentApplication = self
+                    Application.ParentWorkload = self
                     self.Applications.append(Application)
                     
                     break
@@ -559,7 +572,8 @@ class Workload:
         else:
         
             Application.AppID = len(self.Applications)
-            Application.ParentApplication = self
+            #Application.ParentApplication = self
+            Application.ParentWorkload = self
             self.Applications.append(Application)
             
     

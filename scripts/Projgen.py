@@ -20,7 +20,7 @@ def projgen(args):
         
         os.makedirs(args.ProjectDirectory + "/" + args.ProjectName)
         
-    # Makes log and flow dirs
+    # Makes "log", "flow" and "platform" dirs
     try:
         os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/flow")
     except OSError:
@@ -28,6 +28,16 @@ def projgen(args):
 
     try:
         os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/log")
+    except OSError:
+        pass
+
+    try:
+        os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/platform")
+    except OSError:
+        pass
+
+    try:
+        os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/src_json")
     except OSError:
         pass
 

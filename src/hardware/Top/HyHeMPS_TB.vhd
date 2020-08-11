@@ -31,10 +31,10 @@ end entity HyHeMPS_TB;
 
 architecture RTL of HyHeMPS_TB is
 
-    constant PlatformConfigFile: string := "flow/PlatformConfig.json";
+    constant PlatformConfigFile: string := "platform/PlatformConfig.json";
     constant PlatCFG: T_JSON := jsonLoad(PlatformConfigFile);
 
-    constant ClusterClocksConfigFile: string := "flow/ClusterClocks.json";
+    constant ClusterClocksConfigFile: string := "platform/ClusterClocks.json";
     constant ClusterClocksCFG: T_JSON := jsonLoad(ClusterClocksConfigFile);
 
     constant AmountOfPEs: integer := jsonGetInteger(PlatCFG, "AmountOfPEs");
@@ -70,7 +70,7 @@ begin
     ClockGen: for i in 0 to AmountOfNoCNodes - 1 generate
         signal ClockPeriods: real_vector;
     begin
-        ClockPeriods(i) <= jsonGetReal(ClusterClocksCFG, "RouterClockPeriods/" & integer'image(i));
+        ClockPeriods(i) <= jsonGetReal(ClusterClocksCFG, "ClusterClockPeriods/" & integer'image(i));
         GenerateClock(ClockPeriods(i) * 1 ns, Clocks(i));
 
     end generate ClockGen;

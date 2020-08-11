@@ -17,8 +17,8 @@ class PE:
             self.InjectorClockPeriod = float(1000/InjectorClockFrequency)        
         
         # Workload attributes from given Thread object
-        self.AppID = AppID.ParentApplication.AppID if Thread is not None else -1
-        self.AppName = AppID.ParentApplication.AppName if Thread is not None else "IDLE"
+        self.AppID = Thread.ParentApplication.AppID if Thread is not None else -1
+        self.AppName = Thread.ParentApplication.AppName if Thread is not None else "IDLE"
         self.ThreadID = Thread.ThreadID if Thread is not None else -1
         self.ThreadName = Thread.ThreadName if Thread is not None else "IDLE"
         self.WorkloadName = Thread.ParentApplication.ParentWorkload.WorkloadName if Thread is not None else "IDLE"
@@ -30,15 +30,21 @@ class PE:
     
     def updateWorkloadInfo(self, Thread):
         
+        # DEBUG
+        print(str(Thread))
+        #print(str(Thread.ParentApplication)) if Thread is not None
+
         # Workload attributes from given Thread object
-        self.AppID = AppID.ParentApplication.AppID if Thread is not None else -1
-        self.AppName = AppID.ParentApplication.AppName if Thread is not None else "IDLE"
+        self.AppID = Thread.ParentApplication.AppID if Thread is not None else -1
+        self.AppName = Thread.ParentApplication.AppName if Thread is not None else "IDLE"
         self.ThreadID = Thread.ThreadID if Thread is not None else -1
         self.ThreadName = Thread.ThreadName if Thread is not None else "IDLE"
         self.WorkloadName = Thread.ParentApplication.ParentWorkload.WorkloadName if Thread is not None else "IDLE"
         
     
     def toJSON(self):
+
+        import json
 
         return json.dumps(self.__dict__, sort_keys = True, indent = 4)
 

@@ -2,7 +2,7 @@
 import json
 import sys
 
-import AppComposer
+from AppComposer import *
 from Structures import *
 from PE import PE
 from Injector import Injector
@@ -629,7 +629,7 @@ class Platform:
     # Sets allocation map (Maps AppID and ThreadID to an unique PE)
     def setAllocationMap(self, AllocationMap):
     
-        # AllocMap[PEPos] = Thread object or string
+        # AllocationMap[PEPos] = Thread object
         
         # Sets PEPos values for Threads in Workload
         for PEPos, ThreadInAllocMap in enumerate(AllocationMap):
@@ -643,7 +643,7 @@ class Platform:
             elif isinstance(ThreadInAllocMap, str):
 
                 if self.Workload is None:
-                    print("Error: Thread lookup by ThreadName is impossible if Workload hasnt been set before calling setAllocationMap()")
+                    print("Error: Thread lookup by ThreadName parameter is impossible if Workload hasnt been set before calling setAllocationMap()")
                     exit(1)
 
                 ThreadInWorkload = self.Workload.getThread(ThreadName = ThreadInAllocMap)
@@ -652,13 +652,19 @@ class Platform:
                 print(ThreadInWorkload)
 
                 ThreadInWorkload.PEPos = PEPos
+                self.AllocationMap[PEPos] = ThreadInWorkload
+
+            elif ThreadInAllocMap is None:
+
+                print("Warning: PEPos <" + str(PEPos) + "> has no Thread allocated")
+                self.AllocationMap[PEPos] = None
 
             else:
 
-                print("Error: <ThreadInAllocMap> is not a Thread object or string")
+                print("Error: <ThreadInAllocMap> is not a Thread object or string or None")
                 exit(1)
         
-        self.AllocationMap = AllocationMap
+        #self.AllocationMap = AllocationMap
 
     
     # Sets Cluster Clock info, given either by periods or frequencies
@@ -711,26 +717,31 @@ class Platform:
             
         # Writes PE config files
         for PEinPlatform in self.PEs:
-            with open(Path + "/PE" + str(PEinPlatform.PEPos) + ".json", 'w') as PEFile:
+            with open(ProjectPath + "/flow/PE" + str(PEinPlatform.PEPos) + ".json", 'w') as PEFile:
                 PEFile.write(PEinPlatform.toJSON())
                 
         # Writes Injector config files
         for InjectorInPlatform in self.Injectors:
-            with open(Path + "/INJ" + str(InjectorInPlatform.PEPos) + ".json", 'w') as INJFile:
+            with open(ProjectPath + "/flow/INJ" + str(InjectorInPlatform.PEPos) + ".json", 'w') as INJFile:
                 INJFile.write(InjectorInPlatform.toJSON())
                 
         # Writes Platform config file
-        with open(Path + "/PlatformConfig.json", 'w') as PlatformFile:
+        with open(ProjectPath + "/platform/PlatformConfig.json", 'w') as PlatformFile:
             PlatformFile.write(self.toJSON())
         
         # Writes ClusterClocks config file
-        with open(Path + "/ClusterClocks.json", 'w') as ClusterClocksFile:
-            ClusterClocksFile.write(json.dumps(self.ClusterClocks))
+        with open(ProjectPath + "/platform/ClusterClocks.json", 'w') as ClusterClocksFile:
+
+            CCdict = dict()
+            CCdict["ClusterClockPeriods"] = self.ClusterClocks
+
+            #ClusterClocksFile.write(json.dumps(self.ClusterClocks))
+            ClusterClocksFile.write(json.dumps(CCdict, sort_keys = False, indent = 4))
 
 
     def toJSON(self, SaveToFile = False, FileName = None):
 
-        # A "hand-built" dict is required because self.__dict__ doesnt have @property decorators entries (self.AmountOfPEs, etc)
+        # A "hand-built" dict is required because self.__dict__ doesnt have @property decorators keys (self.AmountOfPEs, etc)
         JSONDict = dict()
         
         # General Info

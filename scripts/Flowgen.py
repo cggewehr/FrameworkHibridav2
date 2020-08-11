@@ -118,60 +118,60 @@ def flowgen(args):
     Platform.setClusterClocks(ClusterClocks)
     
     # Generates PE and Injector JSON config files at given project dir
-    Platform.generateJSON(args.ProjectDir + "/flow/")
+    Platform.generateJSON(args.ProjectDir)
 
     # Generate blank log text files for every PE
-    for i in range(Setup.AmountOfPEs):
-        logFile = open(ProjectDir + "/log/InLog" + str(i) + ".txt", "w")
+    for i in range(Platform.AmountOfPEs):
+        logFile = open(args.ProjectDir + "/log/InLog" + str(i) + ".txt", "w")
         logFile.close()
-        logFile = open(ProjectDir + "/log/OutLog" + str(i) + ".txt", "w")
+        logFile = open(args.ProjectDir + "/log/OutLog" + str(i) + ".txt", "w")
         logFile.close()
 
     # Copies .json files to project dir
     from shutil import copy
-    copy(args.TopologyFile, args.ProjectDir + "/Topology.json")
-    copy(args.WorkloadFile, args.ProjectDir + "/Workload.json")
-    copy(args.AllocMapFile, args.ProjectDir + "/AllocMap.json")
-    copy(args.ClusterClocksFile, args.ProjectDir + "/AllocMap.json")
+    copy(TopologyPath + "/" + TopologyFileName + ".json", args.ProjectDir + "/src_json/Topology.json")
+    copy(WorkloadPath + "/" + WorkloadFileName + ".json", args.ProjectDir + "/src_json/Workload.json")
+    copy(AllocMapPath + "/" + AllocMapFileName + ".json", args.ProjectDir + "/src_json/AllocationMap.json")
+    copy(ClusterClocksPath + "/" + ClusterClocksFileName + ".json", args.ProjectDir + "/src_json/ClusterClocks.json")
         
     # Generate log containing project information
-    ProjectInfo = open(ProjectDir + "/" + "ProjectInfo.txt", 'w')
-    ProjectInfo.write("Setup: " + SetupScript + "\n")
-    ProjectInfo.write("\tAmount of PEs: " + str(Setup.AmountOfPEs) + "\n")
-    ProjectInfo.write("\tAmount of PEs in base NoC: " + str((Setup.BaseNoCDimensions[0] * Setup.BaseNoCDimensions[1]) - Setup.AmountOfWrappers) + "\n")
-    ProjectInfo.write("\tAmount of Wrappers: " + str(Setup.AmountOfWrappers) + "\n")
+    # ProjectInfo = open(args.ProjectDir + "/" + "ProjectInfo.txt", 'w')
+    # ProjectInfo.write("Topology: " + TopologyFileName + "\n")
+    # ProjectInfo.write("\tAmount of PEs: " + str(Setup.AmountOfPEs) + "\n")
+    # ProjectInfo.write("\tAmount of PEs in base NoC: " + str((Setup.BaseNoCDimensions[0] * Setup.BaseNoCDimensions[1]) - Setup.AmountOfWrappers) + "\n")
+    # ProjectInfo.write("\tAmount of Wrappers: " + str(Setup.AmountOfWrappers) + "\n")
 
-    ProjectInfo.write("\tAmount of Buses: " + str(Setup.AmountOfBuses) + "\n")
-    AmountOfPEsInBuses = 0
-    for Bus in Setup.Buses:
-        AmountOfPEsInBuses += len(Bus.PEs)
-    ProjectInfo.write("\tAmount of PEs in each Bus: " + str(Setup.AmountOfPEsInBuses) + "\n")
+    # ProjectInfo.write("\tAmount of Buses: " + str(Setup.AmountOfBuses) + "\n")
+    # AmountOfPEsInBuses = 0
+    # for Bus in Setup.Buses:
+    #     AmountOfPEsInBuses += len(Bus.PEs)
+    # ProjectInfo.write("\tAmount of PEs in each Bus: " + str(Setup.AmountOfPEsInBuses) + "\n")
 
-    ProjectInfo.write("\tAmount of Crossbars: " + str(Setup.AmountOfCrossbars) + "\n")
-    AmountOfPEsInCrossbars = 0
-    for Crossbar in Setup.Crossbars:
-        AmountOfPEsInCrossbars += len(Crossbar.PEs)
-    ProjectInfo.write("\tAmount of PEs in each Crossbar: " + str(Setup.AmountOfPEsInCrossbars) + "\n")
+    # ProjectInfo.write("\tAmount of Crossbars: " + str(Setup.AmountOfCrossbars) + "\n")
+    # AmountOfPEsInCrossbars = 0
+    # for Crossbar in Setup.Crossbars:
+    #     AmountOfPEsInCrossbars += len(Crossbar.PEs)
+    # ProjectInfo.write("\tAmount of PEs in each Crossbar: " + str(Setup.AmountOfPEsInCrossbars) + "\n")
 
-    ProjectInfo.write("Application: " + "\n")
-    ProjectInfo.write("\tNumber of Applications: " + str(len(Applications)) + "\n")
+    # ProjectInfo.write("Application: " + "\n")
+    # ProjectInfo.write("\tNumber of Applications: " + str(len(Applications)) + "\n")
 
-    Threads = []
-    for App in Applications:
-        for Thread in App.Threads:
-            Threads.append(Thread)
-    ProjectInfo.write("\tNumber of Threads: " + str(len(Threads)) + "\n")
+    # Threads = []
+    # for App in Applications:
+    #     for Thread in App.Threads:
+    #         Threads.append(Thread)
+    # ProjectInfo.write("\tNumber of Threads: " + str(len(Threads)) + "\n")
 
-    Targets = []
-    for Thread in Threads:
-        for Target in Thread.Targets:
-            Targets.append(Target)
-    ProjectInfo.write("\tAmount of Targets: " + str(len(Targets)) + "\n")
+    # Targets = []
+    # for Thread in Threads:
+    #     for Target in Thread.Targets:
+    #         Targets.append(Target)
+    # ProjectInfo.write("\tAmount of Targets: " + str(len(Targets)) + "\n")
 
-    Bandwidth = []
-    for Thread in Threads:
-        Bandwidth.append(Thread.TotalBandwidth)
-    ProjectInfo.write("\tTotal required bandwidth: " + str(sum(Bandwidth)) + "\n")
+    # Bandwidth = []
+    # for Thread in Threads:
+    #     Bandwidth.append(Thread.TotalBandwidth)
+    # ProjectInfo.write("\tTotal required bandwidth: " + str(sum(Bandwidth)) + "\n")
 
     #ProjectInfo.write("\tAverage required bandwidth (per thread): " + str(statistics.mean(Bandwidth)) + "\n")
     #ProjectInfo.write("\tStd deviation of required bandwidth (per thread): " + str(statistics.pstdev(Bandwidth)) + "\n")
@@ -196,12 +196,11 @@ def flowgen(args):
     TopologyFile.close()
     WorkloadFile.close()
     AllocMapFile.close()
-    ClusterClocks.close()
+    ClusterClocksFile.close()
     
-    ProjectInfo.close()
+    #ProjectInfo.close()
 
     # Print final messages and exit successfully
-    print("JSON config files created at " + ProjectDir + "/flow/")
-    print("Project info file created at " + ProjectDir)
-    print("Exiting successfully\n")
-    exit(0)
+    print("JSON config files created at " + args.ProjectDir + "/flow/")
+    #print("Project info file created at " + ProjectDir)
+    print("Flow created successfully!\n")

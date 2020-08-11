@@ -12,27 +12,29 @@ class Injector:
         self.InjectorClockFrequency = InjectorClockFrequency
         
         # Workload Info
-        self.AppID = AppID.ParentApplication.AppID if Thread is not None else -1
-        self.AppName = AppID.ParentApplication.AppName if Thread is not None else "IDLE"
+        self.AppID = Thread.ParentApplication.AppID if Thread is not None else -1
+        self.AppName = Thread.ParentApplication.AppName if Thread is not None else "IDLE"
         self.ThreadID = Thread.ThreadID if Thread is not None else -1
         self.ThreadName = Thread.ThreadName if Thread is not None else "IDLE"
         self.WorkloadName = Thread.ParentApplication.ParentWorkload.WorkloadName if Thread is not None else "IDLE"
 
         # Checks for a dummy injector (PE is idle or doesnt send messages)
-        if Thread.OutgoingBandwidth is not None:
+        #if Thread.OutgoingBandwidth is not None:
+        if Thread is not None:
 
             # LinkBandwidth = DataWidth (in bits) / 8 * ClockFrequency (of out buffer write port) (in bytes/second)
             # Consumed Bandwidth = LinkBandwidth * InjectionRate
             # InjectionRate = ConsumedBandwidth/(DataWidth * ClockFrequency)
             #self.InjectionRate = int((Thread.TotalBandwidth * 100) / (32 * InjectorClockFrequency))
 
+            #print("ThreadInInj:" + str(Thread))
             print("PE: " + str(self.PEPos))
             print("Out buffer clock frequency: " + str(InjectorClockFrequency))
             LinkBandwidth = 4 * InjectorClockFrequency
             print("Link bandwidth: " + str(LinkBandwidth))
-            self.InjectionRate = int((Thread.TotalBandwidth * 100) / ((32 / 8) * InjectorClockFrequency))
+            self.InjectionRate = int((Thread.OutgoingBandwidth * 100) / ((32 / 8) * InjectorClockFrequency))
             print("Injection Rate: " + str(self.InjectionRate))
-            print("Consumed bandwidth: " + str(LinkBandwidth * self.InjectionRate / 100) + "\n")
+            print("Consumed bandwidth (outgoing): " + str(LinkBandwidth * self.InjectionRate / 100) + "\n")
 
             if self.InjectionRate == 0 and Thread.OutgoingBandwidth != 0:
 
@@ -51,7 +53,7 @@ class Injector:
         self.TargetPEs = []
         self.AmountOfMessagesInBurst = []
 
-        if Thread.OutgoingBandwidth != 0:
+        if Thread is not None and Thread.OutgoingBandwidth != 0:
 
             # Determines TargetPEs and AmountOfMessagesInBurst arrays based on required bandwidth
             #for i in range(len(Thread.Targets)):
