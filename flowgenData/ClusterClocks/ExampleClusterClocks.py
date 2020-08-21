@@ -1,6 +1,6 @@
-
 import json
 
+# ClusterClocks[BaseNoCPos] = Clock Period (in ns)
 ClusterClocks = [None] * 9
 
 ClusterClocks[0] = 10
@@ -15,5 +15,5 @@ ClusterClocks[8] = 10
 
 ClocksJSONString = json.dumps(ClusterClocks, sort_keys = False, indent = 4)
 
-with open("H16_25_DFT.json", "w") as JSONFile:
+with open("ExampleClusterClocks.json", "w") as JSONFile:
     JSONFile.write(ClocksJSONString)

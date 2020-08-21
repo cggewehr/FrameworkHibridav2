@@ -18,6 +18,8 @@ Setup.addStructure(NewStructure=BusB, WrapperLocationInBaseNoC=(2, 2))
 
 Setup.updatePEAddresses()
 
+Setup.toJSON(SaveToFile = True, FileName = "TopologiaExemplo")
+
 print(str(BusA))
 print(str(BusB))
 print(str(CrossbarA))

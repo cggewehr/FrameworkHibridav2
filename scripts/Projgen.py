@@ -12,12 +12,14 @@ def projgen(args):
             ipt = raw_input()
             
             if ipt == "Y" or ipt == "y":
+                # TODO: Prompt if projgen should wipe ProjectDirectory/ProjectName clean, so that only dirs created by projgen should exist within it
                 break
             elif ipt == "N" or ipt == "n":
                 exit(0)
                 
     else:
         
+        # TODO: Check if ProjectDirectory exists, and if not so, ask the user if it should be created
         os.makedirs(args.ProjectDirectory + "/" + args.ProjectName)
         
     # Makes "log", "flow" and "platform" dirs

@@ -1,22 +1,24 @@
+import os
 import AppComposer
 
+# Makes Workload object
 PIP_WL = AppComposer.Workload(WorkloadName = "PIP_WL")
 
-import os
-
+# Opens PIP App json file
 with open(os.getenv("FLOWGEN_APPLICATIONS_PATH") + "/PIP.json") as PIP_JSON:
+    
+    # Builds 3 PIP Apps from json and adds them to PIP_WL Workload
+    for i in range(3):
+        
+        PIP = AppComposer.Application()
+        PIP.fromJSON(PIP_JSON.read())
+        PIP_WL.addApplication(PIP)
+        PIP_JSON.seek(0)
 
-    PIP = AppComposer.Application(AppName = "PIP")
-    print("Making App")
-    #print(PIP_JSON.read())
-    PIP.fromJSON(PIP_JSON.read())
-    print("App made")
-
-    PIP_WL.addApplication(PIP)
+# Exports Workload to json format
+PIP_WL.toJSON(SaveToFile = True, FileName = "PIP_WL")
 
 print(str(PIP_WL))
-
-PIP_WL.toJSON(SaveToFile = True, FileName = "PIP_WL")
 
 # WL_JSONFile = open("PIP_WL.json", "r")
 # PIP_WL_FromJSON = AppComposer.Workload(WorkloadName = "PIP_WL_FromJSON")

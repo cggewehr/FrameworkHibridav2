@@ -285,7 +285,8 @@ class Application:
                 if newName in self.ThreadsByName.keys():
                     
                     # Increments last char on "newName" and tries to add Thread to App again
-                    newName = newName[:-1] + chr(int(newName[-1:]) + 1)
+                    #newName = newName[:-1] + chr(int(newName[-1:]) + 1)
+                    newName = newName[:-1] + chr(ord(newName[-1:]) + 1)
                 
                 # Renames thread and adds it to App
                 else:
@@ -555,7 +556,8 @@ class Workload:
                 if newName in self.ApplicationsByName.keys():
                     
                     # Increments last char on "newName" and tries to add Thread to App again
-                    newName = newName[:-1] + chr(int(newName[-1:]) + 1)
+                    #newName = newName[:-1] + chr(int(newName[-1:]) + 1)
+                    newName = newName[:-1] + chr(ord(newName[-1:]) + 1)
                 
                 # Renames thread and adds it to App
                 else:

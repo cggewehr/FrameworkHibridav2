@@ -40,6 +40,8 @@ parser_flowgen.add_argument("--WorkloadFile", type = str, required = True, help 
 parser_flowgen.add_argument("--AllocMapFile", type = str, required = True, help = ".json file containing Thread to PE mapping information")
 parser_flowgen.add_argument("--ClusterClocksFile", type = str, required = True, help = ".json file containing cluster clock frequency information")
 
+# TODO: Add arg so that paths to Topologies, Workloads, AllocMaps and ClusterClocks are infered from a single given diretory, such as <GivenDir>/Topologies, <GivenDir>/Workloads, ...
+
 if os.getenv("FLOWGEN_TOPOLOGIES_PATH") is not None:
     parser_flowgen.add_argument("--TopologiesPath", type = str, default = os.getenv("FLOWGEN_TOPOLOGIES_PATH"))
 else:
@@ -83,29 +85,3 @@ else:
 # Parse args and execute given command
 args = parser.parse_args()
 args.func(args)
-
-# print(args)
-
-# Sets dictionary containing function pointers to available commands
-# scripts = dict()
-# scripts["projgen"] = Projgen.projgen
-# scripts["flowgen"] = Flowgen.flowgen
-# #scripts["compile"] = Comp.comp
-# #scripts["elab"] = Elab.elab
-# #scripts["sim"] = Sim.sim
-# #scripts["loganalyser"] = Loganalyser.loganalyser
-# #scripts["help"] = Hlp.hlp
-
-# # Executes given command
-# if args.Command in scripts.keys():
-
-#     try:
-#         scripts[args.Command](args)
-
-#     except KeyError:
-#         NotImplementedError
-
-# else:
-#     #scripts["help"]
-#     print("Error: Command <" + args.Command + "> not recognized")
-#     exit(1)
