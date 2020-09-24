@@ -57,10 +57,6 @@ architecture RTL of HyBus is
 	signal controlRx: std_logic_vector(0 to AmountOfPEs - 1);
 	signal controlCredit: std_logic_vector(0 to AmountOfPEs - 1);
 	signal controlChangeFlit: std_logic;
-	
-	-- Inverts ADDR flit of every new message going through the wrapper if bus is integrated in HyHeMPS
-	signal busDataInv: DataWidth_t;
-	signal dataToWrapper: DataWidth_t;
 
 begin
 

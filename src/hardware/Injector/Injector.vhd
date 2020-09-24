@@ -25,6 +25,7 @@ library std;
 
 library work;
     use work.HyHeMPS_PKG.all;
+    use work.Injector_PKG.all;
     use work.JSON.all;
 
 entity Injector is

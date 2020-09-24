@@ -96,7 +96,7 @@ begin
 
 
     -- Update Data Count based on writePointer and readPointer values
-    UpdateDataCount : process(Reset, writePointer, readPointer) 
+    UpdateDataCount: process(Reset, writePointer, readPointer) 
         
         variable lastEventWasWrite : std_logic;
 
@@ -143,7 +143,7 @@ begin
 	--   Handles write requests (Used protocol is ready-then-valid, meaning the
     -- producer entity must handle flow control through the available status flags
     -- and the WriteACK signal)
-	WriteProcess : process(ClockIn, Reset) begin
+	WriteProcess: process(ClockIn, Reset) begin
 
 		if Reset = '1' then
 
@@ -177,7 +177,7 @@ begin
 
 
 	-- Handles read events
-	ReadProcess : process(ClockOut, Reset) begin
+	ReadProcess: process(ClockOut, Reset) begin
 
 		if Reset = '1' then
 
