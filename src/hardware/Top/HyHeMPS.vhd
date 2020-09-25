@@ -161,7 +161,7 @@ begin
                 variable CrossbarPEAddresses: CrossbarPEAddresses_vector;
             begin
             
-                for i in 0 to AmountOfBuses - 1 loop
+                for i in 0 to AmountOfCrossbars - 1 loop
                     CrossbarPEAddresses(i) := GetPEAddresses(PlatCFG, PEInfo, "XBR", i);
                 end loop;
                 
