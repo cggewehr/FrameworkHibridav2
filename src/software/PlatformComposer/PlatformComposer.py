@@ -760,11 +760,25 @@ class Platform:
         JSONDict["AmountOfPEsInBuses"] = self.AmountOfPEsInBuses if self.AmountOfBuses > 0 else [-1]
         JSONDict["BusWrapperAddresses"] = self.BusWrapperAddresses if self.AmountOfBuses > 0 else [-1]
         
+        BusPEIDs = dict()
+        
+        for i, BusInPlat in enumerate(self.Buses):
+            BusPEIDs["Bus" + str(i)] = [PEinBus.PEPos for PEinBus in BusInPlat.PEs]
+            
+        JSONDict["BusPEIDs"] = BusPEIDs
+        
         # Crossbar info
         JSONDict["IsStandaloneCrossbar"] = self.IsStandaloneCrossbar
         JSONDict["AmountOfCrossbars"] = self.AmountOfCrossbars
         JSONDict["AmountOfPEsInCrossbars"] = self.AmountOfPEsInCrossbars if self.AmountOfCrossbars > 0 else [-1]
         JSONDict["CrossbarWrapperAddresses"] = self.CrossbarWrapperAddresses if self.AmountOfCrossbars > 0 else [-1]
+        
+        CrossbarPEIDs = dict()
+        
+        for i, CrossbarInPlat in enumerate(self.Crossbars):
+            CrossbarPEIDs["Crossbar" + str(i)] = [PEinCrossbar.PEPos for PEinCrossbar in CrossbarInPlat.PEs]
+            
+        JSONDict["CrossbarPEIDs"] = CrossbarPEIDs
         
         # sort_keys must be set as False so Buses and Crossbars are inserted in the same order in reconstructed Platform object
         JSONString = json.dumps(JSONDict, sort_keys = False, indent = 4)

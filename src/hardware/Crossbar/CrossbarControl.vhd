@@ -40,12 +40,15 @@ entity CrossbarControl is
 		DataInMux: in DataWidth_vector;
 		RXMux: in std_logic_vector(PEAddresses'range);
 		CreditO: out std_logic_vector(PEAddresses'range);
-		NewGrant: in std_logic;
 
 		-- PE Interface
 		PEDataIn: out DataWidth_t;
 		PERx: out std_logic;
-		PECreditO: in std_logic 
+		PECreditO: in std_logic;
+
+		-- Arbiter Interface
+		NewGrant: in std_logic;
+		Grant: in std_logic_vector(PEAddresses'range)
 
 	);
 	
@@ -109,9 +112,6 @@ architecture RTL of CrossbarControl is
 
 	constant selfIndex: integer := GetIndexOfAddr(PEAddresses, SelfAddress, 0);
 	signal sourceIndex: integer;
-	
-	-- Inverts ADDR flit of every new message going through the wrapper if crossbar is integrated in HyHeMPS
-	signal crossbarDataInv: DataWidth_t;
 
 begin
 
@@ -123,7 +123,13 @@ begin
 				sourceIndex <= 0;
 
 			else
-				sourceIndex <= GetIndexOfActiveTx(RXMux);
+				--sourceIndex <= GetIndexOfActiveTx(RXMux);
+
+				-- Checks if arbiter has given out a new grant, signaling a new message is to be received. If so, determine
+				if NewGrant = '1' then
+					sourceIndex <= GetIndexOfActiveTx(Grant);
+
+				end if;
 
 			end if;
 
@@ -138,6 +144,12 @@ begin
 	PERx <= OrReduce(RXMux);
 	
 	-- Mutiplexes CreditI based on "sourceIndex"
-	CreditO <= (selfIndex => PECreditO, others => '0');
+	--CreditO <= (sourceIndex => PECreditO, others => '0');
+	process(sourceIndex, PECreditO) begin  -- (Describes same behaviour, but compatible with Cadence tools)
+
+		CreditO <= (others => '0');
+		CreditO(sourceIndex) <= PECreditO;
+
+	end process;
 	
 end architecture RTL;

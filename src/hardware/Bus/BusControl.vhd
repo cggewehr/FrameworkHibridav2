@@ -84,13 +84,6 @@ architecture RTL of BusControl is
 
 begin
 
-
-	-- Active only after 1st flit of current messages (containing ADDR of target) is known
-	PERx <= (targetIndex => BusTx, others => '0') when busBeingUsed = '1' else (others => '0');
-
-	-- BusCredit gets Credit_o of msg target PE
-	BusCredit <= PECredit(targetIndex) when busBeingUsed = '1' else '0';
-
 	-- Moore FSM, controls input interface of target PE as longs as the current message is being transmitted
 	process(Clock)  -- Synchronous reset
 
@@ -175,5 +168,30 @@ begin
 		end if;
 
 	end process;
+
+	-- Active only after 1st flit of current messages (containing ADDR of target) is known
+	--PERx <= (targetIndex => BusTx, others => '0') when busBeingUsed = '1' else (others => '0');
+
+	-- BusCredit gets Credit_o of msg target PE
+	--BusCredit <= PECredit(targetIndex) when busBeingUsed = '1' else '0';
+
+	process(busBeingUsed, targetIndex, PECredit) begin  -- (Describes same behaviour, but compatible with Cadence tools)
+
+		PERx <= (others => '0');
+
+		if busBeingUsed = '1' then
+			PERx(targetIndex) <= BusTx;
+
+		end if;
+
+		if busBeingUsed = '1' then
+			BusCredit <= PECredit(targetIndex);
+		else
+			BusCredit <= '0';
+		end if;
+
+
+	end process;
+
 
 end architecture RTL;

@@ -140,7 +140,8 @@ begin
 				PECreditO => PEInterfaces(i).CreditO,
 				
 				-- Arbiter interface
-				NewGrant  => arbiterNewGrant(i)
+				NewGrant  => arbiterNewGrant(i),
+				Grant => arbiterGrant(i)
 
 			);
 

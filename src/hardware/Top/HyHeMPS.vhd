@@ -81,7 +81,7 @@ architecture RTL of HyHeMPS is
     constant BridgeBufferSize: integer := jsonGetInteger(PlatCFG, "BridgeBufferSize");
     
     -- Reads PE topology information
-    constant PEInfo: PEInfo_vector := GetPEInfo(PlatCFG);
+    constant PEInfo: PEInfo_vector(0 to AmountOfPEs - 1) := GetPEInfo(PlatCFG);
 
 begin
 

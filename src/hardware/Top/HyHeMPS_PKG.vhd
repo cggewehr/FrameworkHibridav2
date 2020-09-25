@@ -143,7 +143,7 @@ package body HyHeMPS_PKG is
         constant SquareNoCBound: integer := jsonGetInteger(PlatCFG, "SquareNoCBound");
         constant WrapperAddresses: integer_vector(0 to AmountOfPEs - 1) := jsonGetIntegerArray(PlatCFG, "WrapperAddresses");
         
-        variable PEInfoArray: PEInfo_vector := (others => (
+        variable PEInfoArray: PEInfo_vector(0 to AmountOfPEs - 1) := (others => (
             InterfacingStructure => "NUL",
             StructID => -1,
             PosInStruct => -1,
