@@ -92,7 +92,7 @@ begin
 				Reset => Reset,
 
 				-- PE interface (Bridge input)
-				ClockRx => PEInterfaces(i).ClockRx,
+				ClockRx => PEInterfaces(i).ClockTx,
 				Rx      => PEInterfaces(i).Tx,
 				DataIn  => PEInterfaces(i).DataOut,
 				CreditO => PEInterfaces(i).CreditI,

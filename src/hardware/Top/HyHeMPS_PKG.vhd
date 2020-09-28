@@ -211,10 +211,11 @@ package body HyHeMPS_PKG is
     end function GetPEInfo;
     
     
+    -- Returns PE Addresses in XY form for a given Bus/Crossbar
     function GetPEAddresses(PlatCFG: T_JSON; PEInfo: PEInfo_vector; InterfacingStructure: string(1 to 3); StructID: integer) return HalfDataWidth_vector is
         variable NoCSquareBound: integer := jsonGetInteger(PlatCFG, "NoCSquareBound");
-        variable PEAddresses: HalfDataWidth_vector;
         variable AmountOfPEsInStruct: integer;  -- Amount of PEs in given struct
+        variable PEAddresses: HalfDataWidth_vector(0 to AmountOfPEsInStruct);
         variable WrapperID: integer;            -- ADDR of wrapper of this struct in base NoC
     begin
     

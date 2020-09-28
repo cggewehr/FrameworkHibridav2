@@ -112,7 +112,7 @@ begin
             type BusPEAddresses_vector is array(natural range <>) of BusPEAddresses_t;
             
             function GetBusPEAddresses(PEInfo: PEInfo_vector) return BusPEAddresses_vector is
-                variable BusPEAddresses: BusPEAddresses_vector;
+                variable BusPEAddresses: BusPEAddresses_vector(0 to AmountOfBuses - 1);
             begin
             
                 for i in 0 to AmountOfBuses - 1 loop
@@ -133,7 +133,7 @@ begin
 
                 generic map(
                     Arbiter          => "RR",
-                    AmountOfPEs      => AmountOfPEsInBuses(i) + 1,
+                    AmountOfPEs      => AmountOfPEsInBuses(i) + 1,  -- TODO: Not add +1 if standalone
                     PEAddresses      => BusPEAddresses(i),
                     BridgeBufferSize => BridgeBufferSize,
                     IsStandalone     => IsStandaloneBus
@@ -143,6 +143,23 @@ begin
                     Reset        => Reset,  -- Global reset, from entity interface
                     PEInterfaces => BusInterfaces(i)
                 );
+
+            -- Connect Bus to base NoC. (Wrapper is at the highest index, obtained by AmountOfPEsInBuses(i))
+            ConnectBusToBaseNoC: if not IsStandaloneBus generate
+
+                -- Input interface of wrapper
+                LocalPortInterfaces(BusWrapperIDs(i)).ClockRx <= BusInterfaces(i)(AmountOfPEsInBuses(i)).ClockTx; 
+                LocalPortInterfaces(BusWrapperIDs(i)).Rx <= BusInterfaces(i)(AmountOfPEsInBuses(i)).Tx; 
+                LocalPortInterfaces(BusWrapperIDs(i)).DataIn <= BusInterfaces(i)(AmountOfPEsInBuses(i)).DataOut; 
+                BusInterfaces(i)(AmountOfPEsInBuses(i)).CreditI <= LocalPortInterfaces(BusWrapperIDs(i)).CreditO; 
+
+                -- Output interface of wrapper
+                BusInterfaces(i)(AmountOfPEsInBuses(i)).ClockRx <= LocalPortInterfaces(BusWrapperIDs(i)).ClockTx;
+                BusInterfaces(i)(AmountOfPEsInBuses(i)).Rx <= LocalPortInterfaces(BusWrapperIDs(i)).Tx;
+                BusInterfaces(i)(AmountOfPEsInBuses(i)).DataIn <= LocalPortInterfaces(BusWrapperIDs(i)).DataOut;
+                LocalPortInterfaces(BusWrapperIDs(i)).CreditI <= BusInterfaces(i)(AmountOfPEsInBuses(i)).CreditO;
+
+            end generate ConnectBusToBaseNoC;
 
         end generate BusesGen;
 
@@ -158,7 +175,7 @@ begin
             type CrossbarPEAddresses_vector is array(natural range <>) of CrossbarPEAddresses_t;
             
             function GetCrossbarPEAddresses(PEInfo: PEInfo_vector) return CrossbarPEAddresses_vector is
-                variable CrossbarPEAddresses: CrossbarPEAddresses_vector;
+                variable CrossbarPEAddresses: CrossbarPEAddresses_vector(0 to AmountOfCrossbars - 1);
             begin
             
                 for i in 0 to AmountOfCrossbars - 1 loop
@@ -173,11 +190,12 @@ begin
         
         begin
 
+            -- Instantiate Crossbar
             CrossbarInstance: entity work.Crossbar
 
                 generic map(
                     ArbiterType      => "RR",
-                    AmountOfPEs      => AmountOfPEsInCrossbars(i) + 1,
+                    AmountOfPEs      => AmountOfPEsInCrossbars(i) + 1,  -- TODO: Not add +1 if standalone
                     PEAddresses      => CrossbarPEAddresses(i),
                     BridgeBufferSize => BridgeBufferSize,
                     IsStandalone     => IsStandaloneCrossbar
@@ -185,8 +203,25 @@ begin
                 port map(
                     Clock        => Clocks(CrossbarWrapperIDs(i)),  -- Clock of its wrapper
                     Reset        => Reset,  -- Global reset, from entity interface
-                    PEInterfaces => CrossbarInterfaces(i)  -- TODO: Map to crossbar interface
+                    PEInterfaces => CrossbarInterfaces(i)
                 );
+
+            -- Connects Crossbar to base NoC. (Wrapper is at the highest index, obtained by AmountOfPEsInCrossbars(i))
+            ConnectCrossbarToBaseNoC: if not IsStandaloneCrossbar generate
+
+                -- Input interface of wrapper
+                LocalPortInterfaces(CrossbarWrapperIDs(i)).ClockRx <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).ClockTx; 
+                LocalPortInterfaces(CrossbarWrapperIDs(i)).Rx <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).Tx; 
+                LocalPortInterfaces(CrossbarWrapperIDs(i)).DataIn <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).DataOut; 
+                CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).CreditI <= LocalPortInterfaces(CrossbarWrapperIDs(i)).CreditO; 
+
+                -- Output interface of wrapper
+                CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).ClockRx <= LocalPortInterfaces(CrossbarWrapperIDs(i)).ClockTx;
+                CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).Rx <= LocalPortInterfaces(CrossbarWrapperIDs(i)).Tx;
+                CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).DataIn <= LocalPortInterfaces(CrossbarWrapperIDs(i)).DataOut;
+                LocalPortInterfaces(CrossbarWrapperIDs(i)).CreditI <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).CreditO;
+
+            end generate ConnectCrossbarToBaseNoC;
 
             assert false report "Instantiated crossbar " & integer'image(i) & " with " & integer'image(AmountOfPEsInCrossbars(i) + 1) & " elements" severity note;
 
@@ -230,7 +265,7 @@ begin
             PEInterfaces(i).DataIn <= BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).DataIn;
             BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).CreditO <= PEInterfaces(i).CreditO;
             
-            assert false report "PE ID " & integer'image(i) & " connected to bus " & integer'image(busID(i)) & " at bus position " & integer'image(busPosition(i)) severity note;
+            --assert false report "PE ID " & integer'image(i) & " connected to bus " & integer'image(busID(i)) & " at bus position " & integer'image(busPosition(i)) severity note;
         
         end generate ConnectToBus;
         
@@ -246,7 +281,7 @@ begin
             PEInterfaces(i).DataIn <= CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).DataIn;
             CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).CreditO <= PEInterfaces(i).CreditO;
             
-            assert false report "PE ID " & integer'image(i) & " connected to local port of router " & integer'image(WrapperAddresses(i)) severity note;
+            --assert false report "PE ID " & integer'image(i) & " connected to crossbar " & integer'image(crossbarID(i)) & " at crossbar position " & integer'image(crossbarPosition(i)) severity note;
         
         end generate ConnectToCrossbar;
 

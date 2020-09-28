@@ -37,10 +37,9 @@ entity BusControl is
 		Reset      : in std_logic;
 
 		-- Bus interface
-		BusTx      : in std_logic;
-		BusData    : in DataWidth_t;
-		BusCredit  : out std_logic;
-		ChangeFlit : out std_logic;
+		BusTx      : inout std_logic;
+		BusData    : inout DataWidth_t;
+		BusCredit  : inout std_logic;
 
 		-- PE interface
 		PERx       : out std_logic_vector(0 to AmountOfPEs - 1);
@@ -100,7 +99,6 @@ begin
 			if Reset = '1' then
 
 				busBeingUsed <= '0';
-				ChangeFlit <= '0';
 
 				currentState <= Sreset;
 
@@ -123,10 +121,6 @@ begin
 					targetAddr := BusData(DataWidth - 1 downto HalfDataWidth);
 					targetIndex <= GetIndexOfAddr(PEAddresses, targetAddr);
 					busBeingUsed <= '1';
-					
-					if targetIndex = 0 then
-					   ChangeFlit <= '1';
-					end if;
 
 					currentState <= Ssize;
 				
@@ -139,7 +133,6 @@ begin
 			elsif currentState = Ssize then
 
 				flitCounter <= to_integer(unsigned(BusData));
-				ChangeFlit <= '0';
 
 				currentState <= Spayload;
 
@@ -147,13 +140,15 @@ begin
 			elsif currentState = Spayload then
 
 				-- Checks if a flit was transmitted
-				if PECredit(targetIndex) = '1' and BusTx = '1' then
+				--if PECredit(targetIndex) = '1' and BusTx = '1' then
+				if BusCredit = '1' and BusTx = '1' then
 					flitCounter <= flitCounter - 1;
 
 				end if;
 
 				-- Determines if this is the last flit of msg
-				if flitCounter = 1 and PECredit(targetIndex) = '1' and BusTx = '1' then
+				--if flitCounter = 1 and PECredit(targetIndex) = '1' and BusTx = '1' then
+				if flitCounter = 1 and BusCredit = '1' and BusTx = '1' then
 
 					busBeingUsed <= '0';
 					currentState <= Sstandby;
@@ -189,7 +184,6 @@ begin
 		else
 			BusCredit <= '0';
 		end if;
-
 
 	end process;
 

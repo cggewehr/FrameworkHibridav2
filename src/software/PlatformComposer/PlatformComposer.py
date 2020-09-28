@@ -761,11 +761,19 @@ class Platform:
         JSONDict["BusWrapperAddresses"] = self.BusWrapperAddresses if self.AmountOfBuses > 0 else [-1]
         
         BusPEIDs = dict()
+        LargestBus = 0
         
         for i, BusInPlat in enumerate(self.Buses):
+        
             BusPEIDs["Bus" + str(i)] = [PEinBus.PEPos for PEinBus in BusInPlat.PEs]
             
+            if len(BusInPlat.PEs) > LargestBus:
+                LargestBus = len(BusInPlat.PEs)
+            
         JSONDict["BusPEIDs"] = BusPEIDs
+        JSONDict["LargestBus"] = LargestBus
+        
+        JSONDict["BusWrapperIDs"] = [int(BusInPlat.AddressInBaseNoC) for BusInPlat in self.Buses]
         
         # Crossbar info
         JSONDict["IsStandaloneCrossbar"] = self.IsStandaloneCrossbar
@@ -774,11 +782,19 @@ class Platform:
         JSONDict["CrossbarWrapperAddresses"] = self.CrossbarWrapperAddresses if self.AmountOfCrossbars > 0 else [-1]
         
         CrossbarPEIDs = dict()
+        LargestCrossbar = 0
         
         for i, CrossbarInPlat in enumerate(self.Crossbars):
+        
             CrossbarPEIDs["Crossbar" + str(i)] = [PEinCrossbar.PEPos for PEinCrossbar in CrossbarInPlat.PEs]
             
+            if len(CrossbarInPlat.PEs) > LargestCrossbar:
+                LargestCrossbar = len(CrossbarInPlat.PEs)
+            
         JSONDict["CrossbarPEIDs"] = CrossbarPEIDs
+        JSONDict["LargestCrossbar"] = LargestCrossbar
+        
+        JSONDict["CrossbarWrapperIDs"] = [int(CrossbarInPlat.AddressInBaseNoC) for CrossbarInPlat in self.Crossbars]
         
         # sort_keys must be set as False so Buses and Crossbars are inserted in the same order in reconstructed Platform object
         JSONString = json.dumps(JSONDict, sort_keys = False, indent = 4)

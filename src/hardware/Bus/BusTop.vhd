@@ -56,7 +56,6 @@ architecture RTL of HyBus is
 	-- Bus control signals
 	signal controlRx: std_logic_vector(0 to AmountOfPEs - 1);
 	signal controlCredit: std_logic_vector(0 to AmountOfPEs - 1);
-	signal controlChangeFlit: std_logic;
 
 begin
 
@@ -113,7 +112,6 @@ begin
 			BusData => busData,
 			BusTx => busTx,
 			BusCredit => busCredit,
-			ChangeFlit => controlChangeFlit,
 
 			-- PE interface
 			PERx => controlRx,
@@ -170,8 +168,8 @@ begin
 		controlCredit(i) <= PEInterfaces(i).CreditO;
 
 		-- PE output interface
-		busData <= PEInterfaces(i).DataOut;
-		busTx <= PEInterfaces(i).Tx;
+		busData <= PEInterfaces(i).DataOut;  -- Tristated @ bridge
+		busTx <= PEInterfaces(i).Tx;  -- Tristated @ bridge
 		PEInterfaces(i).CreditI <= busCredit;
 		
 	end generate PEConnectGen;
