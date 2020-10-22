@@ -6,18 +6,21 @@
 -- Company     : UFSM, GMICRO
 -- Standard    : VHDL-1993
 --------------------------------------------------------------------------------
--- Description : Instantiates a Hermes NoC with mesh topology, replacing Routers
---		         with Wrappers as necessary
+-- Description : Instantiates a Hermes NoC with mesh topology
 --------------------------------------------------------------------------------
 -- Changelog   : v0.01 - Initial implementation
 --------------------------------------------------------------------------------
--- TODO        : 
+-- TODO        : Implement other topologies, such as torus, butterfly, etc...
+--               Implement sparse topologies (instead of grounding ports not
+--               not connected to other routers, make them available as additional
+--               ports in entity interface)
 --------------------------------------------------------------------------------
 
 
 library ieee;
 	use ieee.std_logic_1164.all;
 	use ieee.numeric_std.all;
+
 library work;
     use work.HyHeMPS_PKG.all;
     use work.JSON.all;
@@ -29,6 +32,7 @@ entity Hermes is
 		NoCXSize: integer;
 		NoCYSize: integer
 	);
+    
 	port(
 		Clocks: std_logic_vector;
 		Reset: std_logic;
@@ -41,19 +45,19 @@ end entity Hermes;
 
 architecture Mesh of Hermes is
 
-    constant AmountOfNoCNodes: integer := NoCXSize * NoCYSize;
+    constant AmountOfRouters: integer := NoCXSize * NoCYSize;
 
-    signal RouterInterfaces: RouterInterface_vector(0 to AmountOfNoCNodes - 1);
+    signal RouterInterfaces: RouterInterface_vector(0 to AmountOfRouters - 1);
 
 begin
 	
     -- Instantiates and connects NoC routers and wrappers, if any
-    NoCGen: for i in 0 to AmountOfNoCNodes - 1 generate
+    NoCGen: for i in 0 to AmountOfRouters - 1 generate
 
         Router: entity work.RouterCC
 
             generic map(
-                Address => RouterAddress(i, NoCXSize)  -- From HyHeMPS_PKG
+                Address => RouterAddress(i, NoCXSize)  -- From HyHeMPS_PKG (router address as XY coordinates)
             )
             port map(
 
@@ -75,7 +79,7 @@ begin
 
             );
 
-        assert false report "Instantiated a router/wrapper at base NoC position " & integer'image(i) &
+        assert false report "Instantiated a router at base NoC position " & integer'image(i) &
         " = (" & integer'image(i / NoCXSize) & "," & integer'image(i mod NoCXSize) & ")" severity note;
 
         -- Maps this router's south port to the north port of the router below it 
@@ -86,7 +90,7 @@ begin
             RouterInterfaces(i).DataIn(South) <= RouterInterfaces(i - NoCXSize).DataOut(North);
             RouterInterfaces(i).CreditI(South) <= RouterInterfaces(i - NoCXSize).CreditO(North);
 
-            assert false report "Mapped south port of router/wrapper " & integer'image(i) & " to north port of router/wrapper " & integer'image(i - NoCXSize) severity note;
+            assert false report "Mapped south port of router " & integer'image(i) & " to north port of router " & integer'image(i - NoCXSize) severity note;
 
         end generate SouthMap;
 
@@ -99,7 +103,7 @@ begin
             RouterInterfaces(i).DataIn(South) <= (others=>'0');
             RouterInterfaces(i).CreditI(South) <= '0';
 
-            assert false report "Grounded south port of router/wrapper " & integer'image(i) severity note;
+            assert false report "Grounded south port of router " & integer'image(i) severity note;
 
         end generate SouthGround;
 
@@ -112,7 +116,7 @@ begin
             RouterInterfaces(i).DataIn(North) <= RouterInterfaces(i + NoCXSize).DataOut(South);
             RouterInterfaces(i).CreditI(North) <= RouterInterfaces(i + NoCXSize).CreditO(South);
 
-            assert false report "Mapped north port of router/wrapper " & integer'image(i) & " to south port of router/wrapper " & integer'image(i + NoCXSize) severity note;
+            assert false report "Mapped north port of router " & integer'image(i) & " to south port of router " & integer'image(i + NoCXSize) severity note;
 
         end generate NorthMap;
 
@@ -125,25 +129,25 @@ begin
             RouterInterfaces(i).DataIn(North) <= (others=>'0');
             RouterInterfaces(i).CreditI(North) <= '0';
 
-            assert false report "Grounded north port of router/wrapper " & integer'image(i) severity note;
+            assert false report "Grounded north port of router " & integer'image(i) severity note;
 
         end generate NorthGround;
 
 
-        -- Maps this router's west port to the east port of the router to its right
+        -- Maps this router's west port to the east port of the router to its left
         WestMap: if i mod NoCXSize /= 0 generate
 
-            RouterInterfaces(i).ClockRx(West) <= RouterInterfaces(i + 1).ClockTx(East);
-            RouterInterfaces(i).Rx(West) <= RouterInterfaces(i + 1).Tx(East);
-            RouterInterfaces(i).DataIn(West) <= RouterInterfaces(i + 1).DataOut(East);
-            RouterInterfaces(i).CreditI(West) <= RouterInterfaces(i + 1).CreditO(East);
+            RouterInterfaces(i).ClockRx(West) <= RouterInterfaces(i - 1).ClockTx(East);
+            RouterInterfaces(i).Rx(West) <= RouterInterfaces(i - 1).Tx(East);
+            RouterInterfaces(i).DataIn(West) <= RouterInterfaces(i - 1).DataOut(East);
+            RouterInterfaces(i).CreditI(West) <= RouterInterfaces(i - 1).CreditO(East);
 
-            assert false report "Mapped west port of router/wrapper " & integer'image(i) & " to east port of router/wrapper " & integer'image(i + 1) severity note;
+            assert false report "Mapped west port of router " & integer'image(i) & " to east port of router " & integer'image(i + 1) severity note;
 
         end generate WestMap;
 
 
-        -- Grounds this router's west port, since this router has no router to its right
+        -- Grounds this router's west port, since this router has no router to its left
         WestGround: if i mod NoCXSize = 0 generate
 
             RouterInterfaces(i).ClockRx(West) <= '0';
@@ -151,25 +155,25 @@ begin
             RouterInterfaces(i).DataIn(West) <= (others=>'0');
             RouterInterfaces(i).CreditI(West) <= '0';
 
-            assert false report "Grounded west port of router/wrapper " & integer'image(i) severity note;
+            assert false report "Grounded west port of router " & integer'image(i) severity note;
 
         end generate WestGround;
 
 
-        -- Maps this router's east port to the east port of the router to its left
+        -- Maps this router's east port to the west port of the router to its right
         EastMap: if i mod NoCXSize /= NoCXSize - 1 generate
 
-            RouterInterfaces(i).ClockRx(East) <= RouterInterfaces(i - 1).ClockTx(West);
-            RouterInterfaces(i).Rx(East) <= RouterInterfaces(i - 1).Tx(West);
-            RouterInterfaces(i).DataIn(East) <= RouterInterfaces(i - 1).DataOut(West);
-            RouterInterfaces(i).CreditI(East) <= RouterInterfaces(i - 1).CreditO(West);
+            RouterInterfaces(i).ClockRx(East) <= RouterInterfaces(i + 1).ClockTx(West);
+            RouterInterfaces(i).Rx(East) <= RouterInterfaces(i + 1).Tx(West);
+            RouterInterfaces(i).DataIn(East) <= RouterInterfaces(i + 1).DataOut(West);
+            RouterInterfaces(i).CreditI(East) <= RouterInterfaces(i + 1).CreditO(West);
 
-            assert false report "Mapped east port of router/wrapper " & integer'image(i) & " to west port of router/wrapper " & integer'image(i - 1) severity note;
+            assert false report "Mapped east port of router " & integer'image(i) & " to west port of router " & integer'image(i - 1) severity note;
 
         end generate EastMap;
 
 
-        -- Grounds this router's east port, since this router has no router to its left
+        -- Grounds this router's east port, since this router has no router to its right
         EastGround: if i mod NoCXSize = NoCXSize - 1 generate
 
             RouterInterfaces(i).ClockRx(East) <= '0';
@@ -177,7 +181,7 @@ begin
             RouterInterfaces(i).DataIn(East) <= (others=>'0');
             RouterInterfaces(i).CreditI(East) <= '0';
 
-            assert false report "Grounded east port of router/wrapper " & integer'image(i) severity note;
+            assert false report "Grounded east port of router " & integer'image(i) severity note;
 
         end generate EastGround;
 
@@ -185,7 +189,7 @@ begin
 
 
     -- Generates entity interface (Local port of every router
-    InterfaceGen: for i in 0 to AmountOfNoCNodes - 1 generate
+    InterfaceGen: for i in 0 to AmountOfRouters - 1 generate
 
         -- Input interface
         RouterInterfaces(i).ClockRx(Local) <= LocalPortInterfaces(i).ClockRx;
