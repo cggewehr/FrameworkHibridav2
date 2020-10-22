@@ -200,10 +200,10 @@ begin
 	end process ControlFSM;
 
 	-- Debug assertions
-	assert (to_integer(unsigned(Grant)) > 0 and (currentState = SwaitForGrant or currentState = Stransmit)) 
+	assert not (to_integer(unsigned(Grant)) > 0 and (currentState = SwaitForGrant or currentState = Stransmit)) 
 		report "Unexpected grant at bridge " & integer'image(selfIndex) severity ERROR;
 
-	assert (currentState = Sstandby and bufferAVFlag = '0')
+	assert not (currentState = Sstandby and bufferAVFlag = '0')
 		report "Buffer not empty at standby state in bridge " & integer'image(selfIndex) severity ERROR;
 	
 end architecture RTL;
