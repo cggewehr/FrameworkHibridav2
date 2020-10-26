@@ -11,7 +11,7 @@ class PE:
         self.InjectorType = InjectorType
 
         if InjectorClockFrequency is None:
-            self.InjectorClockPeriod = None
+            self.InjectorClockPeriod = 0.0
         else:
             # Period in ns, Freq in MHz
             self.InjectorClockPeriod = float(1000/InjectorClockFrequency)        

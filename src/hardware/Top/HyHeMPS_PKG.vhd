@@ -209,27 +209,46 @@ package body HyHeMPS_PKG is
         return PEInfoArray;
     
     end function GetPEInfo;
-    
+
+	-- Returns Amount Of PEs In Struct
+    function GetAmountOfPEsInStruct(PlatCFG: T_JSON; InterfacingStructure: string(1 to 3); StructID: integer) return integer is
+        variable AmountOfPEsInStruct: integer;  -- Amount of PEs in given struct
+    begin
+       -- Determine Amount of PEs in given struct
+        if InterfacingStructure = "BUS" then
+            AmountOfPEsInStruct := jsonGetInteger(PlatCFG, "AmountOfPEsInBuses/" & integer'image(StructID));
+
+        elsif InterfacingStructure = "XBR" then
+            AmountOfPEsInStruct := jsonGetInteger(PlatCFG, "AmountOfPEsInCrossbars/" & integer'image(StructID));
+        else
+            report "Unexpected InterfacingStructure value (GetAmountOfPEsInStruct):" & InterfacingStructure severity failure;
+        end if;
+        return AmountOfPEsInStruct;
+    end function GetAmountOfPEsInStruct;
+
+    -- Returns ID of Wrapper
+    function GetWrapperID(PlatCFG: T_JSON; InterfacingStructure: string(1 to 3); StructID: integer) return integer is
+        variable WrapperID: integer;  -- Amount of PEs in given struct
+    begin
+        -- Determine Amount of PEs in given struct
+        if InterfacingStructure = "BUS" then
+            WrapperID := jsonGetInteger(PlatCFG, "BusWrapperIDs/" & integer'image(StructID));
+        elsif InterfacingStructure = "XBR" then
+            WrapperID := jsonGetInteger(PlatCFG, "CrossbarWrapperIDs/" & integer'image(StructID));
+        else
+            report "Unexpected InterfacingStructure value (GetWrapperID):" & InterfacingStructure severity failure;
+        end if;
+        return WrapperID;
+    end function GetWrapperID;
     
     -- Returns PE Addresses in XY form for a given Bus/Crossbar
     function GetPEAddresses(PlatCFG: T_JSON; PEInfo: PEInfo_vector; InterfacingStructure: string(1 to 3); StructID: integer) return HalfDataWidth_vector is
-        variable NoCSquareBound: integer := jsonGetInteger(PlatCFG, "NoCSquareBound");
-        variable AmountOfPEsInStruct: integer;  -- Amount of PEs in given struct
+        variable NoCSquareBound: integer := jsonGetInteger(PlatCFG, "SquareNoCBound");
+        variable AmountOfPEsInStruct: integer := GetAmountOfPEsInStruct(PlatCFG, InterfacingStructure, StructID);
         variable PEAddresses: HalfDataWidth_vector(0 to AmountOfPEsInStruct);
-        variable WrapperID: integer;            -- ADDR of wrapper of this struct in base NoC
+        variable WrapperID: integer := GetWrapperID(PlatCFG, InterfacingStructure, StructID);
     begin
-    
-        -- Determine Amount of PEs in given struct
-        if InterfacingStructure = "BUS" then
-            AmountOfPEsInStruct := jsonGetInteger(PlatCFG, "AmountOfPEsInBuses/" & integer'image(StructID));
-            WrapperID := jsonGetInteger(PlatCFG, "BusWrapperIDs/" & integer'image(StructID));
-        elsif InterfacingStructure = "XBR" then
-            AmountOfPEsInStruct := jsonGetInteger(PlatCFG, "AmountOfPEsInCrossbars/" & integer'image(StructID));
-            WrapperID := jsonGetInteger(PlatCFG, "CrossbarWrapperIDs/" & integer'image(StructID));
-        else
-            report "Unexpected InterfacingStructure value:" & InterfacingStructure severity failure;
-        end if;
-            
+        
         -- Set PE addresses
         for i in PEInfo'range loop
         

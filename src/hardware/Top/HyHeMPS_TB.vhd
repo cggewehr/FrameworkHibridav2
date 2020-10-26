@@ -21,7 +21,6 @@ library ieee;
 library work;
     use work.HyHeMPS_PKG.all;
     use work.JSON.all;
-    --use work.HeMPS_defaults.all;
 
 
 entity HyHeMPS_TB is
@@ -30,8 +29,7 @@ end entity HyHeMPS_TB;
 
 
 architecture RTL of HyHeMPS_TB is
-
-    constant PlatformConfigFile: string := "platform/PlatformConfig.json";
+    constant PlatformConfigFile: string :=  "platform/PlatformConfig.json";
     constant PlatCFG: T_JSON := jsonLoad(PlatformConfigFile);
 
     constant ClusterClocksConfigFile: string := "platform/ClusterClocks.json";
@@ -65,10 +63,9 @@ begin
     -- Holds reset for 100 ns
     Reset <= '1', '0' after 100 ns;
 
-
     -- Generates clocks for every router/wrapper
     ClockGen: for i in 0 to AmountOfNoCNodes - 1 generate
-        signal ClockPeriods: real_vector;
+        signal ClockPeriods: real_vector(0 to AmountOfNoCNodes - 1);
     begin
         ClockPeriods(i) <= jsonGetReal(ClusterClocksCFG, "ClusterClockPeriods/" & integer'image(i));
         GenerateClock(ClockPeriods(i) * 1 ns, Clocks(i));

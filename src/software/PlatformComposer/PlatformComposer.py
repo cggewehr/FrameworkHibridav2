@@ -12,7 +12,7 @@ from Injector import Injector
 class Platform:
 
     # Constructor
-    def __init__(self, BaseNoCDimensions, ReferenceClock, StandaloneStruct = False):
+    def __init__(self, BaseNoCDimensions, ReferenceClock, StandaloneStruct = False, BridgeBufferSize = 512):
 
         #self.BaseNoC = [[None for x in range(BaseNoCDimensions[0])] for y in range(BaseNoCDimensions[1])]
 
@@ -24,7 +24,9 @@ class Platform:
         self.BaseNoC = [[None for y in range(BaseNoCDimensions[1])] for x in range(BaseNoCDimensions[0])]
         self.ReferenceClock = ReferenceClock  # In MHz
         self.StandaloneFlag = bool(StandaloneStruct)
-        
+
+        self.BridgeBufferSize = BridgeBufferSize
+
         self.Buses = []
         self.Crossbars = []
         
@@ -753,7 +755,8 @@ class Platform:
         #JSONDict["StandaloneFlag"] = self.StandaloneFlag
         #JSONDict["WrapperAddresses"] = [self.WrapperAddresses[PEPos] for PEPos in self.WrapperAddresses.keys()]  #  Dict -> List
         JSONDict["WrapperAddresses"] = self.WrapperAddresses
-        
+        JSONDict["BridgeBufferSize"] = self.BridgeBufferSize
+
         # Bus info
         JSONDict["IsStandaloneBus"] = self.IsStandaloneBus
         JSONDict["AmountOfBuses"] = self.AmountOfBuses 
@@ -824,6 +827,7 @@ class Platform:
         self.BaseNoC = [[None for y in range(self.BaseNoCDimensions[1])] for x in range(self.BaseNoCDimensions[0])]
         self.ReferenceClock = JSONDict["ReferenceClock"]  # In MHz
         self.StandaloneFlag = True if JSONDict["IsStandaloneBus"] or JSONDict["IsStandaloneCrossbar"] else False
+        #self.BridgeBufferSize = JSONDict["BridgeBufferSize"]        
         
         self.Buses = []
         self.Crossbars = []

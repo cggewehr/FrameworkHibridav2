@@ -20,21 +20,21 @@ Setup.updatePEAddresses()
 
 Setup.toJSON(SaveToFile = True, FileName = "TopologiaExemplo")
 
-print(str(BusA))
-print(str(BusB))
-print(str(CrossbarA))
+#print(str(BusA))
+#print(str(BusB))
+#print(str(CrossbarA))
 
-print(str(Setup))
+#print(str(Setup))
 
-print("Reconstructing from JSON\n")
+#print("Reconstructing from JSON\n")
 
-Setup.toJSON(SaveToFile = True, FileName = "H16_25")
+#Setup.toJSON(SaveToFile = True, FileName = "H16_25")
 
-JSONFile = open("H16_25.json")
+#JSONFile = open("H16_25.json")
 
-SetupFromJSON = PlatformComposer.Platform(BaseNoCDimensions=(3, 3), ReferenceClock=100)
-SetupFromJSON.fromJSON(JSONFile.read())
+#SetupFromJSON = PlatformComposer.Platform(BaseNoCDimensions=(3, 3), ReferenceClock=100)
+#SetupFromJSON.fromJSON(JSONFile.read())
 
-print(str(SetupFromJSON))
+#print(str(SetupFromJSON))
 
-SetupFromJSON.toJSON(SaveToFile = True, FileName = "H16_25_fromJSON")
+#SetupFromJSON.toJSON(SaveToFile = True, FileName = "H16_25_fromJSON")

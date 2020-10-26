@@ -27,6 +27,8 @@ parser_projgen = subparsers.add_parser("projgen", help = "Creates a new project 
 parser_projgen.set_defaults(func=Projgen.projgen)
 parser_projgen.add_argument("--ProjectDirectory", type = str, default = os.getenv("HIBRIDA_DEFAULT_DIRECTORY"))
 parser_projgen.add_argument("--ProjectName", type = str, default = "HibridaProject")
+parser_projgen.add_argument("--HardwareDirs", help = "Create directories and subdirectories for custom hardware", action="store_true")
+parser_projgen.add_argument("--Makefile", type = str, default = "cadence", help = "Create makefile for compile, elab and simulate project")
 
 # TODO: Create project from topology .json file
 #parser_projgen.add_argument("-f", "-F", "--TopologyFile", type = str, default = None)

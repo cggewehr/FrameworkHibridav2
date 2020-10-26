@@ -18,7 +18,7 @@ with open(os.getenv("FLOWGEN_APPLICATIONS_PATH") + "/PIP.json") as PIP_JSON:
 # Exports Workload to json format
 PIP_WL.toJSON(SaveToFile = True, FileName = "PIP_WL")
 
-print(str(PIP_WL))
+#print(str(PIP_WL))
 
 # WL_JSONFile = open("PIP_WL.json", "r")
 # PIP_WL_FromJSON = AppComposer.Workload(WorkloadName = "PIP_WL_FromJSON")

@@ -111,13 +111,16 @@ architecture RTL of CrossbarControl is
 	end function GetIndexOfAddr;
 
 	constant selfIndex: integer := GetIndexOfAddr(PEAddresses, SelfAddress, 0);
-	signal sourceIndex: integer;
+	signal sourceIndex: integer := 0;
 
 begin
 
-	process(Clock) begin
+	process(Clock, Reset) begin
 
-		if rising_edge(Clock) then
+                if Reset = '1' then
+                        sourceIndex <= 0;
+
+		elsif rising_edge(Clock) then
 
 			if Reset = '1' then
 				sourceIndex <= 0;
