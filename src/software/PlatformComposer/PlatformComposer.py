@@ -40,13 +40,13 @@ class Platform:
         self.ClusterClocks = dict()
         self.Workload = None
         
-        # Generate initial PE objects at every NoC address (to be replaced by a wrapper when a structure is added)
+        # Generate initial PE objects at every NoC address (to be replaced by a Bus/Crossbar when addStructure() is called)
         i = 0
         for y in range(BaseNoCDimensions[1]):
 
             for x in range(BaseNoCDimensions[0]):
 
-                self.BaseNoC[x][y] = PE(PEPos = i, AddressInBaseNoC = i, CommStructure = "NoC", InjectorClockFrequency=self.ReferenceClock)
+                self.BaseNoC[x][y] = PE(PEPos = i, BaseNoCPos = i)
                 #self.PEs[i] = self.BaseNoC[x][y]
 
                 i += 1
@@ -150,8 +150,8 @@ class Platform:
                     amountOfPEsInCrossbars.append(int(self.BaseNoC[x][y].AmountOfPEs))
                     
         return amountOfPEsInCrossbars
-            
-
+        
+        
     @property
     def CrossbarWrapperAddresses(self):
     
@@ -163,7 +163,7 @@ class Platform:
                     crossbarWrapperAddresses.append((y * self.BaseNoCDimensions[0]) + x)
 
         return crossbarWrapperAddresses
-               
+        
         
     @property
     def IsStandaloneCrossbar(self):
@@ -191,8 +191,9 @@ class Platform:
             
            
     @property
-    def PEs(self):
+    def PEs(self):  # Updates PE objects with workload info (PE objects are created only at Platform.__init__(), Structure.__init__() and Platform.resizeBaseNoC())
     
+        # DEBUG
         print("Setting PEs")
     
         # PEs[PEPos] = (PE Object)
@@ -226,7 +227,7 @@ class Platform:
                         #PEPos = self.BaseNoC[x][y].PEPos
                         #PEThread = self.AllocationMap[PEPos]  # TODO: Build such that AllocMap[PEPos] = (Thread object)
                         #self.BaseNoC[x][y] = PE(PEPos = PEPos, CommStructure = "NoC", Thread = PEThread, InjectorClockFrequency = self.ReferenceClock)
-                        PEinNoC.updateWorkloadInfo(Thread = self.AllocationMap[PEinNoC.PEPos])
+                        PEinNoC.updateWorkloadInfo(ThreadSet = self.AllocationMap[PEinNoC.PEPos])
                     
                 elif isinstance(self.BaseNoC[x][y], Structure):
                 
@@ -246,7 +247,7 @@ class Platform:
                     
                     # Updates PE object with Workload info
                     if self.Workload is not None and self.AllocationMap is not None:
-                        PEinStruct.updateWorkloadInfo(Thread = self.AllocationMap[PEinStruct.PEPos])
+                        PEinStruct.updateWorkloadInfo(ThreadSet = self.AllocationMap[PEinStruct.PEPos])
         
         
         # xSquare and ySquare represent current position in square NoC, ranging from 0 to SquareNoCBound - 1.
@@ -318,6 +319,7 @@ class Platform:
                         xSquareLimit += 1
                         ySquareLimit += 1
             
+            # DEBUG 
             # print("After update: ")
             # print("xSquare: " + str(xSquare))
             # print("ySquare: " + str(ySquare))
@@ -342,7 +344,7 @@ class Platform:
                 # Updates PE object with Workload info
                 if self.Workload is not None and self.AllocationMap is not None:
                     
-                    PEinBus.updateWorkloadInfo(Thread = self.AllocationMap[PEinBus.PEPos])
+                    PEinBus.updateWorkloadInfo(ThreadSet = self.AllocationMap[PEinBus.PEPos])
 
                 # Update square NoC X & Y indexes
                 updateSquareXY()
@@ -365,30 +367,52 @@ class Platform:
                 # Updates PE object with Workload info
                 if self.Workload is not None and self.AllocationMap is not None:
                     
-                    PEinCrossbar.updateWorkloadInfo(Thread = self.AllocationMap[PEinCrossbar.PEPos])
+                    PEinCrossbar.updateWorkloadInfo(ThreadSet = self.AllocationMap[PEinCrossbar.PEPos])
 
                 # Update square NoC X & Y indexes
                 updateSquareXY()
         
+        # DEBUG
         print("PEs set")
         
         return PEs
     
     
     @property
+    # Injectors[PEPos][Thread] = [Injector object, Injector object, ...]
     def Injectors(self):
-    
-        # Injectors[PEPos] = (Injector Object)
-        injectors = [None] * self.AmountOfPEs
         
         if self.AllocationMap is None:
-            return injectors
-        
-        for PEinPlatform in self.PEs:
-            injectors[PEinPlatform.PEPos] = Injector(PEPos = PEinPlatform.PEPos, Thread = self.AllocationMap[PEinPlatform.PEPos], InjectorClockFrequency = self.ReferenceClock)
-        
-        return injectors
-    
+            print("Warning: No allocation map has been set, so no Injectors can be instantiated.")
+            return [None] * self.AmountOfPEs
+            
+        else:
+            # AllocationMap[PEPos] = [Thread object, Thread object, ...]
+            #return [[[Injector(Flow = OutgoingFlow) for OutgoingFlow in Thread.OutgoingFlows] for Thread in ThreadSet] for ThreadSet in self.AllocationMap.values()]
+            return [[[Injector(Flow = OutgoingFlow) for OutgoingFlow in Thread.OutgoingFlows] for Thread in ThreadSet] if isinstance(ThreadSet, list) else [[Injector(Flow = OutgoingFlow) for OutgoingFlow in ThreadSet.OutgoingFlows]] if isinstance(ThreadSet, Thread) else [[None]] for ThreadSet in self.AllocationMap.values()]
+            
+            injectors = []
+            for ThreadSet in self.AllocationMap.values():
+            
+                if isinstance(ThreadSet, Thread):
+                
+                    ThreadInSetList = [[Injector(Flow = OutgoingFlow) for OutgoingFlow in ThreadInSet.OutgoingFlows]]
+                    injectors.append(ThreadInSetList)
+                    
+                elif isinstance(ThreadSet, list):
+                
+                    ThreadInSetList = [[Injector(Flow = OutgoingFlow) for OutgoingFlow in ThreadInSet.OutgoingFlows] for ThreadInSet in ThreadSet]
+
+                    for ThreadInSet in ThreadSet:
+                    
+                        InjList = [Injector(Flow = OutgoingFlow) for OutgoingFlow in ThreadInSet.OutgoingFlows]
+                        
+                        for OutgoingFlow in ThreadInSet.OutgoingFlows:
+                            InjList.append(Injector(Flow = OutgoingFlow))
+                            
+                        ThreadInSetList.append(InjList)
+                        
+                    injectors.append(ThreadInSetList)
     
     @property
     def WrapperAddresses(self):
@@ -404,25 +428,26 @@ class Platform:
                     
                 elif isinstance(self.BaseNoC[x][y], Structure):
                     for PEinStruct in self.BaseNoC[x][y].PEs:
-                        wrapperAddresses[PEinStruct.PEPos] = self.BaseNoC[x][y].AddressInBaseNoC
+                        wrapperAddresses[PEinStruct.PEPos] = self.BaseNoC[x][y].BaseNoCPos
         
         #print(str(wrapperAddresses) + "\n")
         return wrapperAddresses
         
     
-    # Forces setting of PEPos values. Useful for when self.PEs getter method is never called, such as when generating Platform from JSON but not generating Injectors, but PE addresses still must be set
+    # Forces setting of PEPos values in PE objects. Useful for when self.PEs getter method is never called, such as when generating Platform from JSON, but PE addresses still must be set.
     def updatePEAddresses(self):
 
         for PEinPlatform in self.PEs:
             
-            xCoord = int(PEinPlatform.AddressInBaseNoC % self.BaseNoCDimensions[0])
-            yCoord = int(PEinPlatform.AddressInBaseNoC / self.BaseNoCDimensions[0])
+            xCoord = int(PEinPlatform.BaseNoCPos % self.BaseNoCDimensions[0])
+            yCoord = int(PEinPlatform.BaseNoCPos / self.BaseNoCDimensions[0])
             
             if isinstance(self.BaseNoC[xCoord][yCoord], PE):
                 self.BaseNoC[xCoord][yCoord].PEPos = PEinPlatform.PEPos
                 
             elif isinstance(self.BaseNoC[xCoord][yCoord], Structure):
-                self.BaseNoC[xCoord][yCoord].PEs[PEinPlatform.PosInStruct].PEPos = PEinPlatform.PEPos
+                #self.BaseNoC[xCoord][yCoord].PEs[PEinPlatform.PosInStruct].PEPos = PEinPlatform.PEPos
+                self.BaseNoC[xCoord][yCoord].PEs[PEinPlatform.StructPos].PEPos = PEinPlatform.PEPos
                 
     
     # Alters BaseNoC dimensions
@@ -441,7 +466,7 @@ class Platform:
 
             for x in range(BaseNoCDimensions[0]):
 
-                newBaseNoC[x][y] = PE(PEPos=i, AddressInBaseNoC = i, AppID=None, ThreadID=None, InjectorClockFrequency=self.ReferenceClock)
+                newBaseNoC[x][y] = PE(PEPos=i, BaseNoCPos = i, AppID=None, ThreadID=None, InjectorClockFrequency=self.ReferenceClock)
                 self.PEs[i] = newBaseNoC[x][y]
 
                 i += 1
@@ -452,7 +477,7 @@ class Platform:
         for Bus in Buses:
         
             # Tuple of (X,Y) in base NoC
-            XYAddr = tuple([int(Bus.AddressInBaseNoC % self.BaseNoCDimensions[0]), int(Bus.AddressInBaseNoC / self.BaseNoCDimensions[0])])
+            XYAddr = tuple([int(Bus.BaseNoCPos % self.BaseNoCDimensions[0]), int(Bus.BaseNoCPos / self.BaseNoCDimensions[0])])
             
             # Tries to add same struct in new base NoC at same XY coordinates
             try:
@@ -473,7 +498,7 @@ class Platform:
         for Crossbar in Crossbars:
         
             # Tuple of (X,Y) in base NoC
-            XYAddr = tuple([int(Crossbar.AddressInBaseNoC % self.BaseNoCDimensions[0]), int(Crossbar.AddressInBaseNoC / self.BaseNoCDimensions[0])])
+            XYAddr = tuple([int(Crossbar.BaseNoCPos % self.BaseNoCDimensions[0]), int(Crossbar.BaseNoCPos / self.BaseNoCDimensions[0])])
             
             # Tries to add same struct in new base NoC at same XY coordinates
             try:
@@ -535,10 +560,10 @@ class Platform:
             exit(1)
 
         self.BaseNoC[WrapperLocationInBaseNoC[0]][WrapperLocationInBaseNoC[1]] = NewStructure
-        NewStructure.AddressInBaseNoC = (WrapperLocationInBaseNoC[1] * self.BaseNoCDimensions[0]) + WrapperLocationInBaseNoC[0]
+        NewStructure.BaseNoCPos = (WrapperLocationInBaseNoC[1] * self.BaseNoCDimensions[0]) + WrapperLocationInBaseNoC[0]
         
         for PEinStruct in NewStructure.PEs:
-            PEinStruct.AddressInBaseNoC = (WrapperLocationInBaseNoC[1] * self.BaseNoCDimensions[0]) + WrapperLocationInBaseNoC[0]
+            PEinStruct.BaseNoCPos = (WrapperLocationInBaseNoC[1] * self.BaseNoCDimensions[0]) + WrapperLocationInBaseNoC[0]
 
 
     # Removes a given Bus/Crossbar (either as a Structure object <StructToRemove> or XY coordinates in base NoC <WrapperLocationInBaseNoC>) from Platform
@@ -621,8 +646,10 @@ class Platform:
                     return None
 
 
-    # Adds an application (containing various Thread objects) to platform
+    # Associates a Workload object (from AppComposer module) to Platform
     def setWorkload(self, Workload):
+
+        # TODO: Check if AllocationMap has already been set, and if so, update given Workload with allocation information, so that setAllocationMap() doesnt have to be called again
 
         Workload.ParentPlatform = self
         self.Workload = Workload
@@ -631,14 +658,18 @@ class Platform:
     # Sets allocation map (Maps AppID and ThreadID to an unique PE)
     def setAllocationMap(self, AllocationMap):
     
-        # AllocationMap[PEPos] = Thread object
+        # AllocationMap[PEPos] = Thread object, str (ThreadName), List or Dict of Thread objects
+
+        if len(AllocationMap) > self.AmountOfPEs:
+            print("Error: Amount of PEs in given AllocationMap <" + str(len(AllocationMap)) + "> exceeds amount of PEs in Platform (" + str(self.AmountOfPEs) + ")")
+            exit(1)
         
         # Sets PEPos values for Threads in Workload
         for PEPos, ThreadInAllocMap in enumerate(AllocationMap):
             
             if isinstance(ThreadInAllocMap, Thread):
 
-                # TODO: Find thread in workload wich is identical to thread in AllocMap dict and set its PEPos value
+                # TODO: Find Thread in Workload wich is identical to thread in AllocMap dict and set its PEPos value
                 #ThreadInAllocMap.PEPos = PEPos
                 NotImplementedError
 
@@ -649,13 +680,37 @@ class Platform:
                     exit(1)
 
                 ThreadInWorkload = self.Workload.getThread(ThreadName = ThreadInAllocMap)
-
+                
                 # DEBUG
-                print(ThreadInWorkload)
-
-                ThreadInWorkload.PEPos = PEPos
-                self.AllocationMap[PEPos] = ThreadInWorkload
-
+                #print(ThreadInWorkload)
+                #print("Thread object ID: " + str(id(ThreadInWorkload)))
+                
+                if ThreadInWorkload.PEPos is None:
+                
+                    ThreadInWorkload.PEPos = PEPos
+                    self.AllocationMap[PEPos] = ThreadInWorkload
+                    
+                else:
+                
+                    print("Error: Thread <" + str(ThreadInWorkload) + "> has already been allocated at PEPos <" + str(ThreadInWorkload.PEPos) + ">")
+                    exit(1)
+                
+            elif isinstance(ThreadInAllocMap, list):  # Assumes "ThreadInAllocMap" is a list of strings (Thread names)
+            
+                if self.Workload is None:
+                    print("Error: Thread lookup by ThreadName parameter is impossible if Workload hasnt been set before calling setAllocationMap()")
+                    exit(1)
+                
+                ThreadSet = [self.Workload.getThread(ThreadName = ThreadName) for ThreadName in ThreadInAllocMap]
+                
+                #ThreadInWorkload.PEPos = PEPos
+                for ThreadInSet in ThreadSet:
+                    ThreadInSet.PEPos = PEPos
+                    
+                # TODO: Check if allocated Threads allocated to a same PE communicate between themselves, and if so, dont generate Injectors for those Flows
+                    
+                self.AllocationMap[PEPos] = ThreadSet
+            
             elif ThreadInAllocMap is None:
 
                 print("Warning: PEPos <" + str(PEPos) + "> has no Thread allocated")
@@ -663,7 +718,7 @@ class Platform:
 
             else:
 
-                print("Error: <ThreadInAllocMap> is not a Thread object or string or None")
+                print("Error: <ThreadInAllocMap>'s type is not a Thread object, string, list or None")
                 exit(1)
         
         #self.AllocationMap = AllocationMap
@@ -704,7 +759,21 @@ class Platform:
             print("Error: No AllocationMap has been set, aborting generateJSON()")
             exit(1)
 
-        # TODO: Check if all Threads in Workload have benn allocated (Thread.PEPos is not None)
+        # Checks if all Threads in Workload have been allocated (Thread.PEPos is not None)
+        for App in self.Workload.Applications:
+        
+            for ThreadInApp in App.Threads:
+                
+                if ThreadInApp.PEPos is None:
+                
+                    print("Error: Thread <\n" + str(ThreadInApp) + "\n> has not been allocated, aborting generateJSON()")
+                    exit(1)
+                
+                elif ThreadInApp.PEPos > self.AmountOfPEs - 1:
+                
+                    print("Error: Thread\n" + str(ThreadInApp) + "\n's PEPos value <" + str(ThreadInApp.PEPos) + "> exceeds amount of PEs in Platform " + str(self.AmountOfPEs) + ", aborting generateJSON()")
+                    exit(1)
+                
 
         if self.ClusterClocks is None:
             print("Error: No ClusterClocks has been set, aborting generateJSON()")
@@ -717,15 +786,26 @@ class Platform:
         if len(self.ClusterClocks) != self.BaseNoCDimensions[0] * self.BaseNoCDimensions[1]:
             print("Warning: Platform ClusterClocks has different len <" + str(len(self.ClusterClocks)) + "> than expected <" + str(self.BaseNoCDimensions[0] * self.BaseNoCDimensions[1]) + ">") 
             
+        # Creates flow dirs (cant be done in projgen because AmountOfPEs information is not known at that stage)
+        for i in range(self.AmountOfPEs):
+            os.makedirs(ProjectPath + "/flow/PE " + str(i) + "/", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
+            
         # Writes PE config files
-        for PEinPlatform in self.PEs:
-            with open(ProjectPath + "/flow/PE" + str(PEinPlatform.PEPos) + ".json", 'w') as PEFile:
+        for i, PEinPlatform in enumerate(self.PEs):
+            with open(ProjectPath + "/flow/PE " + str(i) + "/PE " + str(PEinPlatform.PEPos) + ".json", 'w') as PEFile:
                 PEFile.write(PEinPlatform.toJSON())
                 
         # Writes Injector config files
-        for InjectorInPlatform in self.Injectors:
-            with open(ProjectPath + "/flow/INJ" + str(InjectorInPlatform.PEPos) + ".json", 'w') as INJFile:
-                INJFile.write(InjectorInPlatform.toJSON())
+        for PEPos, ThreadSet in enumerate(self.Injectors):
+            for ThreadNum, ThreadInSet in enumerate(ThreadSet):
+                for FlowNum, Injector in enumerate(ThreadInSet):
+                
+                    os.makedirs(ProjectPath + "/flow/PE " + str(PEPos) + "/Thread " + str(ThreadNum) + "/", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
+                    
+                    with open(ProjectPath + "/flow/PE " + str(PEPos) + "/Thread " + str(ThreadNum) + "/Flow " + str(FlowNum) + ".json", 'w') as INJFile:
+                        #INJFile.write(InjectorInPlatform.toJSON())
+                        if self.Injectors[PEPos][ThreadNum][FlowNum] is not None:
+                            INJFile.write(self.Injectors[PEPos][ThreadNum][FlowNum].toJSON())
                 
         # Writes Platform config file
         with open(ProjectPath + "/platform/PlatformConfig.json", 'w') as PlatformFile:
@@ -776,7 +856,7 @@ class Platform:
         JSONDict["BusPEIDs"] = BusPEIDs
         JSONDict["LargestBus"] = LargestBus
         
-        JSONDict["BusWrapperIDs"] = [int(BusInPlat.AddressInBaseNoC) for BusInPlat in self.Buses]
+        JSONDict["BusWrapperIDs"] = [int(BusInPlat.BaseNoCPos) for BusInPlat in self.Buses]
         
         # Crossbar info
         JSONDict["IsStandaloneCrossbar"] = self.IsStandaloneCrossbar
@@ -797,7 +877,7 @@ class Platform:
         JSONDict["CrossbarPEIDs"] = CrossbarPEIDs
         JSONDict["LargestCrossbar"] = LargestCrossbar
         
-        JSONDict["CrossbarWrapperIDs"] = [int(CrossbarInPlat.AddressInBaseNoC) for CrossbarInPlat in self.Crossbars]
+        JSONDict["CrossbarWrapperIDs"] = [int(CrossbarInPlat.BaseNoCPos) for CrossbarInPlat in self.Crossbars]
         
         # sort_keys must be set as False so Buses and Crossbars are inserted in the same order in reconstructed Platform object
         JSONString = json.dumps(JSONDict, sort_keys = False, indent = 4)
@@ -821,6 +901,7 @@ class Platform:
     
         # Generates dictionary from given JSON file
         JSONDict = json.loads(JSONString)
+        print(JSONDict)
         
         self.BaseNoCDimensions = tuple(JSONDict["BaseNoCDimensions"])
         #self.BaseNoC = [[None for x in range(BaseNoCDimensions[0])] for y in range(BaseNoCDimensions[1])]
@@ -845,7 +926,7 @@ class Platform:
 
             for x in range(self.BaseNoCDimensions[0]):
 
-                self.BaseNoC[x][y] = PE(PEPos=i, AddressInBaseNoC = i, CommStructure = "NoC", InjectorClockFrequency=self.ReferenceClock)
+                self.BaseNoC[x][y] = PE(PEPos=i, BaseNoCPos = i, CommStructure = "NoC")
                 #self.PEs[i] = self.BaseNoC[x][y]
 
                 i += 1

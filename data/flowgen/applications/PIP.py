@@ -1,7 +1,7 @@
 import AppComposer
 
 # Make Application
-PIP = AppComposer.Application(AppName = "PIP")
+PIP = AppComposer.Application(AppName = "PIP", StartTime = 0, StopTime = -1)
 
 # Make Threads
 InpMemA = AppComposer.Thread(ThreadName = "InpMemA")
@@ -32,8 +32,6 @@ JUG1.addFlow(AppComposer.Flow(TargetThread = MEM, Bandwidth = 64))          # JU
 InpMemB.addFlow(AppComposer.Flow(TargetThread = JUG2, Bandwidth = 64))      # InpMemB -- 64 -> JUG2
 JUG2.addFlow(AppComposer.Flow(TargetThread = MEM, Bandwidth = 64))          # JUG2 -- 64 -> MEM
 MEM.addFlow(AppComposer.Flow(TargetThread = OpDisp, Bandwidth = 64))        # MEM -- 64 -> OpDisp
-
-# print(str(PIP))
 
 # Save App to JSON
 PIP.toJSON(SaveToFile = True, FileName = "PIP")

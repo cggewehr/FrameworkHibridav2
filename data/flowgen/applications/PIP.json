@@ -1,0 +1,92 @@
+{
+    "AppName": "PIP",
+    "StartTime": 0,
+    "StopTime": -1,
+    "InpMemA": {
+        "Flows": [
+            {
+                "SourceThread": "InpMemA",
+                "TargetThread": "HS",
+                "Bandwidth": 128,
+                "StartTime": 0,
+                "StopTime": -1
+            },
+            {
+                "SourceThread": "InpMemA",
+                "TargetThread": "InpMemB",
+                "Bandwidth": 64,
+                "StartTime": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "HS": {
+        "Flows": [
+            {
+                "SourceThread": "HS",
+                "TargetThread": "VS",
+                "Bandwidth": 64,
+                "StartTime": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "VS": {
+        "Flows": [
+            {
+                "SourceThread": "VS",
+                "TargetThread": "JUG1",
+                "Bandwidth": 64,
+                "StartTime": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "JUG1": {
+        "Flows": [
+            {
+                "SourceThread": "JUG1",
+                "TargetThread": "MEM",
+                "Bandwidth": 64,
+                "StartTime": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "InpMemB": {
+        "Flows": [
+            {
+                "SourceThread": "InpMemB",
+                "TargetThread": "JUG2",
+                "Bandwidth": 64,
+                "StartTime": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "JUG2": {
+        "Flows": [
+            {
+                "SourceThread": "JUG2",
+                "TargetThread": "MEM",
+                "Bandwidth": 64,
+                "StartTime": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "MEM": {
+        "Flows": [
+            {
+                "SourceThread": "MEM",
+                "TargetThread": "OpDisp",
+                "Bandwidth": 64,
+                "StartTime": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "OpDisp": {
+        "Flows": []
+    }
+}

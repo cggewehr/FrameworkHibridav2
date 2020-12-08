@@ -18,11 +18,11 @@
 
 library ieee;
     use ieee.std_logic_1164.all;
-    use ieee.std_logic_unsigned.all;
     use ieee.numeric_std.all;
 
 library work;
     use work.HyHeMPS_PKG.all;
+    use work.Injector_PKG.all;
     use work.JSON.all;
 
 
@@ -30,11 +30,10 @@ entity PE is
 
     generic(
         -- Path to JSON file containing PE and APP parameters
-        PEConfigFile        : string := "PESample.json";
-        InjectorConfigFile  : string := "InjectorSample.json";
-        PlatformConfigFile  : string := "PlatformSample.json";
-        InboundLogFilename  : string;
-        OutboundLogFilename : string
+        PEConfigFile       : string;
+        PlatformConfigFile : string;
+        ConfigPath         : string := "./flow/";
+        LogPath            : string := "./log/"
     );
 
     port(
@@ -43,7 +42,7 @@ entity PE is
 	    --Clock   : in  std_logic;
         Reset   : in  std_logic;
 
-	      -- Output Interface (Injector)
+	    -- Output Interface (Injector)
         ClockTx : out std_logic;
         Tx      : out std_logic;
         DataOut : out DataWidth_t;
@@ -65,52 +64,118 @@ architecture Injector of PE is
     -- JSON config files
     constant PEJSONConfig: T_JSON := jsonLoad(PEConfigFile);
 
-    -- Injector parameters ("FXD", "DPD")
-    constant InjectorType: string(1 to 3) := jsonGetString(PEJSONConfig, "InjectorType");
-    constant InjectorClockPeriod: real := jsonGetReal(PEJSONConfig, "InjectorClockPeriod"); -- in ns
-    signal injectorClock: std_logic := '0';
+    constant PEPos: integer := jsonGetInteger(PEJSONConfig, "PEPos");
+    constant BusArbiter: string(1 to 2) := jsonGetString(PEJSONConfig, "BusArbiter");
+    constant BusBridgeBufferSize: integer := jsonGetInteger(PEJSONConfig, "BusBridgeBufferSize");
 
-    -- Buffer signals
-    constant BufferSize: integer := jsonGetInteger(PEJSONConfig, "OutBufferSize");
-    signal bufferDataIn: DataWidth_t;
-    signal bufferRx: std_logic;
-    signal bufferAVFlag: std_logic;
+    --
+    constant AmountOfThreads: integer := jsonGetInteger(PEJSONConfig, "AmountOfThreads");
+    constant AmountOfFlows: integer := jsonGetInteger(PEJSONConfig, "AmountOfFlows");
+    constant MaxAmountOfFlows: integer := jsonGetInteger(PEJSONConfig, "MaxAmountOfFlows");
+    constant AmountOfFlowsInThread: integer_vector(0 to AmountOfThreads - 1) := jsonGetIntegerArray(PEJSONConfig, "AmountOfFlowsInThread");
 
+    constant ThreadID: integer_vector(0 to AmountOfThreads - 1) := jsonGetIntegerArray(PEJSONConfig, "ThreadID");
+    constant AppID: integer_vector(0 to AmountOfThreads - 1) := jsonGetIntegerArray(PEJSONConfig, "AppID");
+
+    -- Injector/Trigger signals
+    type InjectorInterface_2vector is array(0 to AmountOfThreads - 1, 0 to MaxAmountOfFlows - 1) of InjectorInterface;
+    signal InjectorInterfaces_2D: InjectorInterface_2vector;
+
+    function InjectorInterfaceTo1D(InjectorInterfaces_2D: InjectorInterface_2vector; AmountOfFlows: integer) return InjectorInterface_vector is 
+        variable i : integer := 0;
+        variable InjectorInterfaces_1D : InjectorInterface_vector(0 to AmountOfFlows - 1);
+    begin
+
+        -- Instantiates Injectors
+        InjectorGenThread: for ThreadNum in 0 to AmountOfThreads - 1 loop
+
+            InjectorGenFlow: for FlowNum in 0 to AmountOfFlowsInThread(ThreadNum) - 1 loop
+
+                InjectorInterfaces_1D(i) := InjectorInterfaces_2D(ThreadNum, FlowNum);
+                i := i + 1;
+
+            end loop InjectorGenFlow;
+
+        end loop InjectorGenThread;
+
+        return InjectorInterfaces_1D;
+
+    end function InjectorInterfaceTo1D;
+
+    signal InjectorInterfaces_1D: InjectorInterface_vector(0 to AmountOfFlows - 1) := InjectorInterfaceTo1D(InjectorInterfaces_2D, AmountOfFlows);
+    
 begin 
 
-  	ClockTx <= injectorClock;
+    -- Instantiates Injectors
+  	InjectorGenThread: for ThreadNum in 0 to AmountOfThreads - 1 generate
+
+        InjectorGenFlow: for FlowNum in 0 to AmountOfFlowsInThread(ThreadNum) - 1 generate
+
+            Injector: entity work.Injector
+
+                generic map(
+                    InjectorConfigFile => ConfigPath & "PE " & integer'image(PEPos) & "/Thread " & integer'image(ThreadNum) & "/Flow " & integer'image(FlowNum) & ".json",
+                    PlatformConfigFile => PlatformConfigFile,
+                    OutboundLogFilename => LogPath & "PE " & integer'image(PEPos) & "/OutLog" & integer'image(PEPos) & "_" & integer'image(ThreadNum) & "_" & integer'image(FlowNum) & ".txt"
+                )
+                port map(
+                    Clock => InjectorInterfaces_2D(ThreadNum, FlowNum).Clock,
+                    Reset => InjectorInterfaces_2D(ThreadNum, FlowNum).Reset,
+                    Enable => InjectorInterfaces_2D(ThreadNum, FlowNum).Enable,
+                    DataOut => InjectorInterfaces_2D(ThreadNum, FlowNum).DataOut,
+                    DataOutAV => InjectorInterfaces_2D(ThreadNum, FlowNum).DataOutAV,
+                    OutputBufferAvailableFlag => InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag
+                );
+
+        end generate InjectorGenFlow;
+
+    end generate InjectorGenThread;
 
 
-  	-- Generates clock from clock period defined in JSON config
-  	InjectorClockGenerator: process begin
+    -- Instantiates Triggers for each Injector
+    TriggerGenThread: for ThreadNum in 0 to AmountOfThreads - 1 generate
 
-    	injectorClock <= '0';
-        wait for (InjectorClockPeriod / 2.0) * 1 ns;
-        injectorClock <= '1';
-        wait for (InjectorClockPeriod / 2.0) * 1 ns;
+        TriggerGenFlow: for FlowNum in 0 to AmountOfFlowsInThread(ThreadNum) - 1 generate
 
-    end process InjectorClockGenerator;
+            Trigger: entity work.Trigger
+
+                generic map(
+                    InjectorConfigFile => ConfigPath & "PE " & integer'image(PEPos) & "/Thread " & integer'image(ThreadNum) & "/Flow " & integer'image(FlowNum) & ".json",
+                    PlatformConfigFile => PlatformConfigFile
+                )
+                port map(
+                    Reset => InjectorInterfaces_2D(ThreadNum, FlowNum).Reset,
+                    Enable => InjectorInterfaces_2D(ThreadNum, FlowNum).Enable,
+                    InjectorClock => InjectorInterfaces_2D(ThreadNum, FlowNum).Clock,
+                    OutputBufferAvailableFlag => InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag
+                );
+
+        end generate TriggerGenFlow;
+
+    end generate TriggerGenThread;
 
 
-    -- Instantiates a message injector, which produces and logs messages and insert them in the output buffer
-    Injector: entity work.Injector
+    PEBus: entity work.PEBus
 
         generic map(
-            PEConfigFile => PEConfigFile,
-            InjectorConfigFile => InjectorConfigFile,
-            PlatformConfigFile => PlatformConfigFile,
-            OutboundLogFilename => OutboundLogFilename
-        )
+            Arbiter => BusArbiter,
+            AmountOfInjectors => AmountOfFlows,
+            BridgeBufferSize => BusBridgeBufferSize
+        ) 
         port map(
 
             -- Basic
-            Clock => injectorClock,
+            Clock => ClockRx,
             Reset => Reset,
 
-            -- Output Interface
-            DataOut => bufferDataIn,
-            DataOutAV => bufferRx,
-            OutputBufferSlotAvailable => bufferAVFlag
+            -- Input Interface (from Injectors)
+            InjectorInterfaces => InjectorInterfaces_1D,
+
+            -- Output Interface (to comm structure)
+            DataOut => DataOut,
+            DataOutAV => Tx,
+            CreditI => CreditI,
+            ClockTx => ClockTx
 
         );
 
@@ -119,7 +184,7 @@ begin
     Receiver: entity work.Receiver
 
       	generic map(
-      		InboundLogFilename => InboundLogFilename
+      		InboundLogFilename => LogPath & "PE " & integer'image(PEPos) & "/InLog" & integer'image(PEPos) & ".txt"
       	)
       	port map(
 
@@ -131,44 +196,4 @@ begin
 
       	);
 
-
-    -- Instantiates a buffer in which the Injector inserts flits
-    OutBuffer: entity work.CircularBuffer 
-
-        generic map(
-            BufferSize => BufferSize,
-            DataWidth  => DataWidth  -- from HyHeMPS_PKG
-        )
-        port map(
-            
-            -- Basic
-            Reset               => Reset,
-
-            -- PE Interface (Input)
-            ClockIn             => injectorClock,
-            DataIn              => bufferDataIn,
-            DataInAV            => bufferRx,
-            WriteACK            => open,
-
-            -- Comm structure interface (Output)
-            ClockOut            => injectorClock,
-            DataOut             => DataOut,
-            ReadConfirm         => CreditI,
-            ReadACK             => open,
-            
-            -- Status flags
-            BufferEmptyFlag     => open,
-            BufferFullFlag      => open,
-            BufferReadyFlag     => Tx,
-            BufferAvailableFlag => bufferAVFlag
-
-        );
-
 end architecture Injector;
-
-
---architecture Plasma of PE is
-
---begin
-    
---end architecture Plasma;

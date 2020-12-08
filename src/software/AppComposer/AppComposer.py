@@ -4,14 +4,14 @@ import json as JSON
 
 # TODO: Make Unrelated flow exception
 # TODO: Merge identical Flows when they are added to a Thread
-# TODO: Extende Flow class to support many types of flows (not only CBR), such as Markov chains and Pareto chains
+# TODO: Extend Flow class to support many types of flows (not only CBR), such as Markov chains and Pareto chains
 
 class Flow:
 
-    def __init__(self, Bandwidth, TargetThread, SourceThread = None, FlowType = "CBR"):
+    def __init__(self, Bandwidth, TargetThread, SourceThread = None, FlowType = "CBR", StartTime = 0, StopTime = -1, Periodic = False):
 
         # SourceThread must be a Thread object
-        if isinstance(SourceThread, Thread):
+        if isinstance(SourceThread, Thread) or SourceThread is None:
             self.SourceThread = SourceThread
             
         else:
@@ -28,6 +28,11 @@ class Flow:
            
         self.Bandwidth = Bandwidth  # In MBps
         self.FlowType = FlowType  # Only CBR currently supported
+        
+        # Dynamic parameters
+        self.StartTime = StartTime
+        self.StopTime = StopTime
+        self.Periodic = Periodic
 
 
     def __str__(self):
@@ -84,7 +89,7 @@ class Thread:
         self.IncomingBandwidth = 0
         
 
-    def addFlow(self, Flow, autoAddTargetThread = True):
+    def addFlow(self, Flow, autoAddTargetThread = True, autoSetStartStop = False):
 
         if (isinstance(Flow.SourceThread, Thread) and Flow.SourceThread is self) or Flow.SourceThread is None or str(Flow.SourceThread) == self.ThreadName:
             
@@ -129,6 +134,14 @@ class Thread:
             print("Thread: " + self.ThreadName)
             print("Flow: " + str(Flow))
             exit(1)
+        
+        if autoSetStartStop:
+            
+            if Flow.StartTime != self.StartTime or Flow.StopTime != self.StopTime:
+                print("Warning: Overriding Flow <StartTime, StopTime> values <" + str(Flow.StartTime) + ", " + str(Flow.StopTime) + "> with Thread " + self.ThreadName + " 's values <" + str(self.StartTime) + ", " + str(self.StopTime) + ">")
+            
+            Flow.StartTime = self.StartTime
+            Flow.StopTime = self.StopTime
             
             
     def removeFlow(self, Flow):
@@ -188,7 +201,39 @@ class Thread:
             else:
                 print("Warning: New given Thread name is not a string, maintaining old Thread name")
                 
+                
+    # Merges ThreadToMerge into self
+    def mergeThread(self, ThreadToMerge):
     
+        if ThreadToMerge == self:
+            print("Warning: Thread:\n" + str(self) + "\n is equivalent to Thread:\n" + str(ThreadToMerge) + "\n. Aborting mergeThreads().")
+            return self
+    
+        # Appends ThreadToMerge Flows to self's
+        self.OutgoingFlows += ThreadToMerge.OutgoingFlows
+        
+        if ThreadA.ParentApplication is None:
+        
+            print("Warning: Thread:\n" + str(ThreadA) + "has no ParentApplication. Aborting mergeThreads().")
+            return self
+        
+        # Updates ThreadToMerge references to self
+        for ExistingThread in ThreadToMerge.ParentApplication.Threads:
+            
+            if ExistingThread is ThreadToMerge:
+                continue
+            
+            for IncomingFlow in ExistingThread.IncomingFlows:
+                if IncomingFlow.SourceThread == ThreadToMerge:
+                    IncomingFlow.SourceThread = self
+            
+            for OutgoingFlow in ExistingThread.OutgoingFlows:
+                if IncomingFlow.TargetThread == ThreadToMerge:
+                    IncomingFlow.TargetThread = self
+        
+        return self
+        
+        
     def __str__(self):
 
         returnString = ""
@@ -203,6 +248,7 @@ class Thread:
             
         returnString += ("\n" + self.ThreadName + " Total Outgoing Bandwidth: " + str(self.OutgoingBandwidth))
         returnString += ("\n" + self.ThreadName + " Total Incoming Bandwidth: " + str(self.IncomingBandwidth))
+        returnString += ("\n PEPos: " + str(self.PEPos) + "\n")
         
         return returnString
         
@@ -223,7 +269,7 @@ class Thread:
     
 class Application:
 
-    def __init__(self, AppName = "DefaultAppName"):
+    def __init__(self, AppName = "DefaultAppName", StartTime = 0, StopTime = -1):
     
         self.AppName = str(AppName)
         
@@ -232,6 +278,9 @@ class Application:
         # To be set when Workload.addApplication(self) is called
         self.AppID = None
         self.ParentWorkload = None
+        
+        self.StartTime = StartTime
+        self.StopTime = StopTime
         
         
     @property
@@ -273,7 +322,7 @@ class Application:
         return ThreadsByID
         
 
-    def addThread(self, Thread):
+    def addThread(self, Thread, autoSetStartStop = True):
         
         # If in this App there already is a Thread with given Thread's name, rename it, else, add it to App
         if Thread.ThreadName in self.ThreadsByName.keys():
@@ -304,6 +353,15 @@ class Application:
             Thread.ThreadID = len(self.Threads)
             Thread.ParentApplication = self
             self.Threads.append(Thread)
+        
+        # TODO: Set all StartTime and StopTime for all Flows of added Thread 
+        #if autoSetStartStop:
+            
+            #if Thread.StartTime != self.StartTime or Thread.StopTime != self.StopTime:
+                #print("Warning: Overriding Thread <StartTime, StopTime> values with App " + self.AppName + " 's values <" + str(self.StartTime) + ", " + str(self.StopTime) + ">")
+            
+            #Thread.StartTime = self.StartTime
+            #Thread.StopTime = self.StopTime
             
             
     # Remove a given Thread from this Application
@@ -346,7 +404,7 @@ class Application:
                 print("New given Application name is not a string, maintaining old Application name")
                 
     
-    # Returns a Thread object associated with a given ThreadName od ThreadID. If there is no ThreadName or ThreadID associated, returns None
+    # Returns a Thread object associated with a given ThreadName or ThreadID. If there is no ThreadName or ThreadID associated, returns None
     def getThread(self, ThreadName = None, ThreadID = None):  # TODO: Check if ThreadName is a string and throw error if not so
     
         if ThreadName is None and ThreadID is None:
@@ -382,12 +440,15 @@ class Application:
             else:
                 print("Error: <ThreadID: " + str(ThreadID) + "> and <ThreadName: " + str(ThreadName) + "> correspond to different Threads")
                 exit(1)
-
+                    
     
     def toJSON(self, SaveToFile = False, FileName = None):
     
         appDict = dict()
+        
         appDict["AppName"] = self.AppName
+        appDict["StartTime"] = self.StartTime
+        appDict["StopTime"] = self.StopTime
         
         for Thread in self.Threads:
         
@@ -404,6 +465,8 @@ class Application:
                 flowDict["SourceThread"] = OutgoingFlow.SourceThread.ThreadName
                 flowDict["TargetThread"] = OutgoingFlow.TargetThread.ThreadName
                 flowDict["Bandwidth"] = OutgoingFlow.Bandwidth
+                flowDict["StartTime"] = OutgoingFlow.StartTime
+                flowDict["StopTime"] = OutgoingFlow.StopTime
                 
                 OutgoingFlows.append(flowDict)
 
@@ -434,6 +497,8 @@ class Application:
         JSONDict = JSON.loads(JSONString)
         
         self.AppName = JSONDict["AppName"]
+        self.StartTime = JSONDict["StartTime"]
+        self.StopTime = JSONDict["StopTime"]
         
         self.Threads = []
         #self.ThreadsByName = dict()
@@ -444,6 +509,8 @@ class Application:
         
         # Remove keys that arent associated with thread names
         JSONDict.pop("AppName", None)
+        JSONDict.pop("StartTime", None)
+        JSONDict.pop("StopTime", None)
         
         # Create Threads
         for ThreadName in JSONDict:
@@ -459,15 +526,14 @@ class Application:
 
                 SourceThread = self.getThread(ThreadName = FlowInThread["SourceThread"])
                 TargetThread = self.getThread(ThreadName = FlowInThread["TargetThread"])
-                ThreadInApp.addFlow(Flow(Bandwidth = FlowInThread["Bandwidth"], SourceThread = SourceThread, TargetThread = TargetThread))
+                ThreadInApp.addFlow(Flow(Bandwidth = FlowInThread["Bandwidth"], SourceThread = SourceThread, TargetThread = TargetThread, StartTime = FlowInThread["StartTime"], StopTime = FlowInThread["StopTime"]))
 
-                # TODO: call getThread(Threadname = FlowInThread["SourceThread"]) and getThread(Threadname = FlowInThread["TargetThread"]) and pass Thread object to Flow constructor 
 
     def __str__(self):
     
         returnString = ""
         
-        returnString == ("Parent Workload: " + str(self.ParentWorkload.WorkloadName) + "\n")
+        returnString += ("Parent Workload: " + str(self.ParentWorkload.WorkloadName) + "\n")
         returnString += ("Amount of Threads: " + str(len(self.Threads)) + "\n")
         returnString += ("Total Bandwidth: " + str(self.TotalBandwidth) + "\n")
         
@@ -624,7 +690,7 @@ class Workload:
             return AppByName
             
         
-    # TODO: Test for more arg combinations and display warning if they dont make sense (e.g AppName and AppID and )
+    # TODO: Test for more arg combinations and display warning if they dont make sense (e.g AppName and AppID)
     def getThread(self, AppName = None, ThreadName = None, AppID = None, ThreadID = None):
 
         # No args given

@@ -2,83 +2,87 @@
 def projgen(args):
     
     import os
+    import json
     
+    print(args)
+    
+    if args.AppendName is not None:
+    #if args.appendname is not None:
+        ProjectDir = args.ProjectDirectory + "/" + args.ProjectName
+    else:
+        ProjectDir = args.ProjectDirectory
+        
     # Check if given project path exists. If not, mkdir
-    if os.path.isdir(args.ProjectDirectory + "/" + args.ProjectName):
+    if os.path.isdir(ProjectDir):
         
         while True:
         
-            print("Warning: Project path <" + args.ProjectDirectory + "/" + args.ProjectName + "> already exists. Do you wish to proceed (Y/N)?")
-            ipt = raw_input()
+            print("Warning: Project path <" + ProjectDir + "> already exists. Do you wish to proceed (Y/N)?")
+            #ipt = raw_input()
+            ipt = input()
+            
+            # TODO: Prompt if projgen should wipe ProjectDirectory/ProjectName clean, so that only dirs created by projgen should exist within it
+            if ipt == "Y" or ipt == "y":
+                break
+                
+            elif ipt == "N" or ipt == "n":
+                exit(0)
+        
+    # Check if project name already exists
+    ConfigFile = open(os.environ["HIBRIDA_CONFIG_FILE"], "r")
+    ConfigDict = json.loads(ConfigFile.read())
+    
+    if args.ProjectName in ConfigDict["Projects"].keys():
+    
+        while True:
+    
+            print("Warning: Project <" + args.ProjectName + "> already exists. Do you wish to proceed (Y/N)?")
+            #ipt = raw_input()
+            ipt = input()
             
             if ipt == "Y" or ipt == "y":
                 # TODO: Prompt if projgen should wipe ProjectDirectory/ProjectName clean, so that only dirs created by projgen should exist within it
                 break
             elif ipt == "N" or ipt == "n":
                 exit(0)
-                
-    else:
+            
+    # Makes main project dir
+    os.makedirs(ProjectDir, exist_ok = True)
         
-        # TODO: Check if ProjectDirectory exists, and if not so, ask the user if it should be created
-        os.makedirs(args.ProjectDirectory + "/" + args.ProjectName)
+    # Updates framework config file
+    ProjectDict = dict()
+    ProjectDict["ProjectDir"] = ProjectDir
+    
+    ProjectDict["AllocationMapFile"] = None
+    ProjectDict["ClusterClocksFile"] = None
+    ProjectDict["TopologyFile"] = None
+    ProjectDict["WorkloadFile"] = None
+    
+    #ProjectDict["CustomHardware"] = args.CustomHardware
+    ProjectDict["Makefile"] = args.Makefile
+    
+    ConfigDict["Projects"][args.ProjectName] = ProjectDict
+    ConfigDict["MostRecentProject"] = args.ProjectName
+    
+    ConfigFile.close()
+    with open(os.environ["HIBRIDA_CONFIG_FILE"], "w") as ConfigFile:
+        ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
         
     # Makes "log", "flow" and "platform" dirs
-    try:
-        os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/flow")
-    except OSError:
-        pass
+    os.makedirs(ProjectDir + "/flow", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
+    os.makedirs(ProjectDir + "/log", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
+    os.makedirs(ProjectDir + "/platform", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
+    os.makedirs(ProjectDir + "/src_json", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
 
-    try:
-        os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/log")
-    except OSError:
-        pass
-
-    try:
-        os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/platform")
-    except OSError:
-        pass
-
-    try:
-        os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/src_json")
-    except OSError:
-        pass
-
-        if args.HardwareDirs:
-	
-            try:
-                os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/hardware")
-            except OSError:
-                pass
-	
-            try:
-                os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/hardware/Bus")
-            except OSError:
-                pass
-	    		
-            try:
-                os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/hardware/Crossbar")
-            except OSError:
-                pass
+    # Makes custom hardware dicts
+    if args.HardwareDirs:
     
-            try:
-                os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/hardware/Hermes")
-            except OSError:
-                pass
-	    		
-            try:
-                os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/hardware/Injector")
-            except OSError:
-                pass
-	    		
-            try:
-                os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/hardware/Misc")
-            except OSError:
-                pass
-	    		
-            try:
-                os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/hardware/Top")
-            except OSError:
-                pass
+        os.makedirs(ProjectDir + "/hardware/Bus", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
+        os.makedirs(ProjectDir + "/hardware/Crossbar", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
+        os.makedirs(ProjectDir + "/hardware/Hermes", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
+        os.makedirs(ProjectDir + "/hardware/Injector", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
+        os.makedirs(ProjectDir + "/hardware/Misc", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
+        os.makedirs(ProjectDir + "/hardware/Top", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
 	    		
     if args.Makefile is not None:
     
@@ -90,23 +94,15 @@ def projgen(args):
 		
         if MakefileName=="cadence":
 
-            try:
-                os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/INCA_libs")
-            except OSError:
-                pass
-				
-            try:
-                os.mkdir(args.ProjectDirectory + "/" + args.ProjectName + "/INCA_libs/worklib")
-            except OSError:
-                pass
-
-            # Create CDS file
-            with open(args.ProjectDirectory + "/" + args.ProjectName + "/cds.lib", 'w') as cds_file:
+            os.makedirs(ProjectDir + "/INCA_libs/worklib", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
+            
+            # Create cds.lib file
+            with open(ProjectDir + "/cds.lib", 'w') as cds_file:
                 cds_file.write("define worklib " + args.ProjectDirectory + "/" + args.ProjectName + "/INCA_libs/worklib\n")
                 cds_file.write("include $CDS_INST_DIR/tools/inca/files/cds.lib\n")
 				
             # Create Makefile file
-            with open(args.ProjectDirectory + "/" + args.ProjectName + "/makefile", 'w') as make_file:
+            with open(ProjectDir + "/makefile", 'w') as make_file:
                 make_file.write("########################################################################\n")
                 make_file.write("# Makefile geral para simulacao da Hybrid HeMPS no ambiente Nupedee\n")
                 make_file.write("########################################################################\n")
@@ -116,15 +112,15 @@ def projgen(args):
                 make_file.write("########################################################################\n")
                 make_file.write("\n")
                 make_file.write("########################## Command options #############################\n")
-                make_file.write("VHDL_OPTS=-work worklib -cdslib cds.lib -logfile ncvhdl.log -errormax 15 -update -v93 -linedebug -status\n")
-                make_file.write("ELAB_OPTS=-work worklib -cdslib cds.lib -logfile ncelab.log -errormax 15 -update -status\n")
-                make_file.write("SIMH_OPTS=-cdslib cds.lib -logfile ncsim.log -errormax 15 -gui\n")
+                make_file.write("VHDL_OPTS=-work worklib -cdslib cds.lib -logfile cadenceLogs/ncvhdl.log -errormax 15 -update -v93 -linedebug -status\n")
+                make_file.write("ELAB_OPTS=-work worklib -cdslib cds.lib -logfile cadenceLogs/ncelab.log -errormax 15 -update -status\n")
+                make_file.write("SIMH_OPTS=-cdslib cds.lib -logfile cadenceLogs/ncsim.log -errormax 15 -gui\n")
                 make_file.write("echo:\n")
                 make_file.write('	@echo "VHDL FILES"\n')
                 make_file.write("\n")
                 make_file.write("compile:\n")
                 make_file.write('	@echo "############################################################"\n')
-                make_file.write('	@echo "################    COMPILE VHDL Files #  ##################"\n')
+                make_file.write('	@echo "################### Compile VHDL Files #####################"\n')
                 make_file.write('	@echo "############################################################"\n')
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/JSON.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Misc/BufferCircular.vhd\n")
@@ -146,6 +142,7 @@ def projgen(args):
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Injector_PKG.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Injector.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/PE.vhd\n")
+                make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Trigger.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Receiver.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/HyHeMPS.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/HyHeMPS_TB.vhd\n")
@@ -153,7 +150,7 @@ def projgen(args):
                 make_file.write("\n")
                 make_file.write("elab:\n")
                 make_file.write('	@echo "############################################################"\n')
-                make_file.write('	@echo "################# ELABORATION  HYBRID ######################"\n')
+                make_file.write('	@echo "################# Elaborate Top Level ######################"\n')
                 make_file.write('	@echo "############################################################"\n')
                 make_file.write("	ncelab $(ELAB_OPTS) worklib.hyhemps_tb\n")
                 make_file.write('	@echo "########### FINALIZE ELABORATION  HYBRID Files #############"\n')
@@ -171,6 +168,4 @@ def projgen(args):
 			
     # TODO: Copy testbench HDL to project directory, in order to have project directory as reference directory in simulation tool
     
-    # os.environ["MOST_RECENT_HIBRIDA_PROJECT"] = args.ProjectDirectory + "/" + args.ProjectName
-    print("Created \"" + args.ProjectName + "\" at \"" + args.ProjectDirectory + "\"")
-    
+    print("Created project <" + args.ProjectName + "> at <" + os.path.abspath(ProjectDir) + ">")

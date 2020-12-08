@@ -1,8 +1,8 @@
 export HIBRIDA_NAME=hibrida
-export HIBRIDA_PATH=/home/carlos/Desktop/GitKraken/FrameworkHibridav2
+export HIBRIDA_PATH=D:\GitKraken\FrameworkHibridav2
 export PATH=$PATH:$HIBRIDA_PATH/scripts
-alias hibrida="python /home/carlos/Desktop/GitKraken/FrameworkHibridav2/scripts/mainScript.py"
-export HIBRIDA_DEFAULT_DIRECTORY=/home/carlos/Desktop/HibridaProjects
+alias hibrida="python D:\GitKraken\FrameworkHibridav2/scripts/mainScript.py"
+export HIBRIDA_DEFAULT_DIRECTORY=C:\Users\c_ara/Desktop/HibridaProjects
 export HIBRIDA_HARDWARE_PATH=$HIBRIDA_PATH/src/hardware
 export HIBRIDA_SOFTWARE_PATH=$HIBRIDA_PATH/src/software
 export HIBRIDA_APPCOMPOSER_PATH=$HIBRIDA_SOFTWARE_PATH/AppComposer

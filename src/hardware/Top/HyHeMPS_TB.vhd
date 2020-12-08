@@ -29,7 +29,7 @@ end entity HyHeMPS_TB;
 
 
 architecture RTL of HyHeMPS_TB is
-    constant PlatformConfigFile: string :=  "platform/PlatformConfig.json";
+    constant PlatformConfigFile: string :=  "./platform/PlatformConfig.json";
     constant PlatCFG: T_JSON := jsonLoad(PlatformConfigFile);
 
     constant ClusterClocksConfigFile: string := "platform/ClusterClocks.json";
@@ -96,9 +96,11 @@ begin
             generic map(
                 PlatformConfigFile  => PlatformConfigFile,
                 PEConfigFile        => "flow/PE" & integer'image(i) & ".json",
-                InjectorConfigFile  => "flow/INJ" & integer'image(i) & ".json",
-                InboundLogFilename  => "log/InLog" & integer'image(i) & ".txt",
-                OutboundLogFilename => "log/OutLog" & integer'image(i) & ".txt"
+                --InjectorConfigFile  => "flow/INJ" & integer'image(i) & ".json",
+                --InboundLogFilename  => "log/InLog" & integer'image(i) & ".txt",
+                --OutboundLogFilename => "log/OutLog" & integer'image(i) & ".txt"
+                ConfigPath => "./",
+                LogPath => "./"
             )
             port map (
                 Reset   => Reset,

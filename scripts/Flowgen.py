@@ -1,139 +1,135 @@
 
 def flowgen(args):
 
-    import sys
+    import json
     import os
-    import json as JSON
+    import sys
+    
     import PlatformComposer
     import AppComposer
 
     # Defines FileNotFoundError exception for Python 2 compatibility
-    try:
-        FileNotFoundError
-    except NameError:
-        FileNotFoundError = IOError
-        pass
-    except FileNotFoundError:
-        pass
+    # try:
+        # FileNotFoundError
+    # except NameError:
+        # FileNotFoundError = IOError
+        # pass
+    # except FileNotFoundError:
+        # pass
         
-    # TODO: Checks if dir args.ProjectDir exists
-
-    # Sets arguments
-    # $0 = Name of setup JSON file
-    try:
-        TopologyFileName = str(args.TopologyFile)
-    except KeyError or IndexError:
-        print("Error: Flowgen argument <TopologyFile> not given")
-        exit(1)
+    # Gets framework configs
+    ConfigFile = open(os.getenv("HIBRIDA_CONFIG_FILE"), "r")
+    ConfigDict = json.loads(ConfigFile.read())
     
-    # $1 = Name of application JSON file
-    try:
-        WorkloadFileName = str(args.WorkloadFile)
-    except KeyError or IndexError:
-        print("Error: Flowgen argument <WorkloadFile> not given")
+    ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
+
+    # Opens Allocation Map JSON file
+    AllocMapFileName = ConfigDict["Projects"][args.ProjectName]["AllocationMapFile"]
+        
+    if AllocMapFileName is None:
+        print("Error: Allocation Map file has not been set for project <" + args.ProjectName + ">. Aborting flowgen.")
         exit(1)
         
-    # $2 = Name of allocation map JSON file
     try:
-        AllocMapFileName = str(args.AllocMapFile)
-    except KeyError or IndexError:
-        print("Error: Flowgen argument <AllocMapFile> not given")
-        exit(1)
-        
-    # $3 = Name of cluster clock JSON file
-    try:
-        ClusterClocksFileName = str(args.ClusterClocksFile)
-    except KeyError or IndexError:
-        print("Error: Flowgen argument <ClusterClocksFile> not given")
-        exit(1)
-        
-
-    # Adds Topologies info path
-    try:
-        TopologyPath = str(os.getenv("FLOWGEN_TOPOLOGIES_PATH"))
-    except KeyError:
-        print("Warning: Environment variable \"FLOWGEN_TOPOLOGIES\" not found. \"FLOWGEN_SOURCES\" must be the directory which contains network topology information in JSON format")
-
-    # Adds Applications info path
-    try:
-        WorkloadPath = str(os.getenv("FLOWGEN_WORKLOADS_PATH"))
-    except KeyError:
-        print("Warning: Environment variable \"FLOWGEN_WORKLOADS\" not found. \"FLOWGEN_WORKLOADS\" must be the directory which contains application descriptions in JSON format")
-
-    # Adds Allocation Maps info path
-    try:
-        AllocMapPath = str(os.getenv("FLOWGEN_ALLOCATIONMAPS_PATH"))
-    except KeyError:
-        print("Warning: Environment variable \"FLOWGEN_ALLOCATIONMAPS\" not found. \"FLOWGEN_ALLOCATIONMAPS\" must be the directory which contains application mapping information in JSON format")
-        
-    # Adds Clocks info path
-    try:
-        ClusterClocksPath = str(os.getenv("FLOWGEN_CLUSTERCLOCKS_PATH"))
-    except KeyError:
-        print("Warning: Environment variable \"FLOWGEN_CLUSTERCLOCKS\" not found. \"FLOWGEN_CLUSTERCLOCKS\" must be the directory which contains cluster clock frequency information in JSON format")
-
-
-    # Opens Topology JSON file
-    try:
-        TopologyFile = open(TopologyPath + "/" + TopologyFileName + ".json")
+        AllocMapFile = open(AllocMapFileName, "r")
     except FileNotFoundError:
-        print("Error: Given Topology file \"" + str(TopologyFileName) + "\" not found at \"" + TopologyPath + "\". (.json extension is automatically added to given file name)")
+        print("Error: Allocation Map file <" + AllocMapFileName + "> not found")
+        exit(1)
+    except IOError:
+        print("Error: Allocation Map file <" + AllocMapFileName + "> cant be opened")
+        exit(1)
+        
+    # Opens Cluster Clocks JSON file
+    ClusterClocksFileName = ConfigDict["Projects"][args.ProjectName]["ClusterClocksFile"]
+        
+    if ClusterClocksFileName is None:
+        print("Error: Cluster Clocks file has not been set for project <" + args.ProjectName + ">. Aborting flowgen.")
+        exit(1)
+        
+    try:
+        ClusterClocksFile = open(ClusterClocksFileName, "r")
+    except FileNotFoundError:
+        print("Error: Cluster Clocks file <" + ClusterClocksFileName + "> not found")
+        exit(1)
+    except IOError:
+        print("Error: Cluster Clocks file <" + ClusterClocksFileName + "> cant be opened")
+        exit(1)
+        
+    # Opens Topology JSON file
+    TopologyFileName = ConfigDict["Projects"][args.ProjectName]["TopologyFile"]
+        
+    if TopologyFileName is None:
+        print("Error: Topology file has not been set for project <" + args.ProjectName + ">. Aborting flowgen.")
+        exit(1)
+        
+    try:
+        TopologyFile = open(TopologyFileName, "r")
+    except FileNotFoundError:
+        print("Error: Topology file <" + TopologyFileName + "> not found")
+        exit(1)
+    except IOError:
+        print("Error: Topology file <" + TopologyFileName + "> cant be opened")
         exit(1)
     
     # Opens Workload JSON file
-    try:
-        WorkloadFile = open(WorkloadPath + "/" + WorkloadFileName + ".json")
-    except FileNotFoundError:
-        print("Error: Given Workload file \"" + str(WorkloadFileName) + "\" not found at \"" + WorkloadPath + "\". (.json extension is automatically added to given file name)")
-        exit(1)
-
-    # Opens AllocMap JSON file
-    try:
-        AllocMapFile = open(AllocMapPath + "/" + AllocMapFileName + ".json")
-    except FileNotFoundError:
-        print("Error: Given Allocation Map file \"" + str(AllocMapFileName) + "\" not found at \"" + AllocMapPath + "\". (.json extension is automatically added to given file name)")
+    WorkloadFileName = ConfigDict["Projects"][args.ProjectName]["WorkloadFile"]
+        
+    if WorkloadFileName is None:
+        print("Error: Workload file has not been set for project <" + args.ProjectName + ">. Aborting flowgen.")
         exit(1)
         
-    # Opens Topology JSON file
     try:
-        ClusterClocksFile = open(ClusterClocksPath + "/" + ClusterClocksFileName + ".json")
+        WorkloadFile = open(WorkloadFileName, "r")
     except FileNotFoundError:
-        print("Error: Given Allocation Map file \"" + str(ClusterClocksFileName) + "\" not found at \"" + ClusterClocksPath + "\". (.json extension is automatically added to given file name)")
+        print("Error: Workload file <" + WorkloadFile + "> not found")
+        exit(1)
+    except IOError:
+        print("Error: Workload file <" + WorkloadFile + "> cant be opened")
         exit(1)
 
     # Reconstructs objects from given JSON files
+    print("Reading Allocation Map file <" + AllocMapFileName + ">")
+    AllocMap = json.loads(AllocMapFile.read())
+    print("Done reading Allocation Map file")
+    
+    print("Reading Cluster Clocks file <" + ClusterClocksFileName + ">")
+    ClusterClocks = json.loads(ClusterClocksFile.read())
+    print("Done reading Cluster Clocks file")
+    
+    print("Building Platform object from <" + TopologyFileName + ">")
     Platform = PlatformComposer.Platform(BaseNoCDimensions = (2,2), ReferenceClock = 10)  # Dummy constructor arguments, will be replaced by those in JSON file
     Platform.fromJSON(TopologyFile.read())
+    print("Done building Platform object")
     
+    print("Building Workload object from <" + WorkloadFileName + ">")
     Workload = AppComposer.Workload()
     Workload.fromJSON(WorkloadFile.read())
+    print("Done building Workload object")
     
-    AllocMap = JSON.loads(AllocMapFile.read())
-    
-    ClusterClocks = JSON.loads(ClusterClocksFile.read())
-    
-    #
+    # Generates PE and Injector JSON config files at given project dir
+    print("Implementing Workload to Platform")
     Platform.setWorkload(Workload)
     Platform.setAllocationMap(AllocMap)
     Platform.setClusterClocks(ClusterClocks)
-    
-    # Generates PE and Injector JSON config files at given project dir
-    Platform.generateJSON(args.ProjectDir)
+    Platform.generateJSON(ConfigDict["Projects"][args.ProjectName]["ProjectDir"])
+    print("Done implementing Workload to Platform")
+    print("JSON config files created at <" + os.path.join(ProjectDir, "flow") + ">")
 
     # Generate blank log text files for every PE
-    for i in range(Platform.AmountOfPEs):
-        logFile = open(args.ProjectDir + "/log/InLog" + str(i) + ".txt", "w")
-        logFile.close()
-        logFile = open(args.ProjectDir + "/log/OutLog" + str(i) + ".txt", "w")
-        logFile.close()
+    # for i in range(Platform.AmountOfPEs):
+        # logFile = open(args.ProjectDir + "/log/InLog" + str(i) + ".txt", "w")
+        # logFile.close()
+        # logFile = open(args.ProjectDir + "/log/OutLog" + str(i) + ".txt", "w")
+        # logFile.close()
 
     # Copies .json files to project dir
     from shutil import copy
-    copy(TopologyPath + "/" + TopologyFileName + ".json", args.ProjectDir + "/src_json/Topology.json")
-    copy(WorkloadPath + "/" + WorkloadFileName + ".json", args.ProjectDir + "/src_json/Workload.json")
-    copy(AllocMapPath + "/" + AllocMapFileName + ".json", args.ProjectDir + "/src_json/AllocationMap.json")
-    copy(ClusterClocksPath + "/" + ClusterClocksFileName + ".json", args.ProjectDir + "/src_json/ClusterClocks.json")
-        
+    SRCJSONBasePath = os.path.join(ProjectDir, "src_json")
+    copy(AllocMapFileName, os.path.join(SRCJSONBasePath, "AllocationMap.json"))
+    copy(ClusterClocksFileName, os.path.join(SRCJSONBasePath, "ClusterClocks.json"))
+    copy(TopologyFileName, os.path.join(SRCJSONBasePath, "Topology.json"))
+    copy(WorkloadFileName, os.path.join(SRCJSONBasePath, "Workload.json"))
+    
     # Generate log containing project information
     # ProjectInfo = open(args.ProjectDir + "/" + "ProjectInfo.txt", 'w')
     # ProjectInfo.write("Topology: " + TopologyFileName + "\n")
@@ -190,17 +186,13 @@ def flowgen(args):
     #     ProjectInfo.write("\tApplication is high demand")
     # else:
     #     ProjectInfo.write("\tApplication is low demand")
+
+    #ProjectInfo.close()
     
-    
-    # TODO: Close JSON files
-    TopologyFile.close()
-    WorkloadFile.close()
+    ConfigFile.close()
     AllocMapFile.close()
     ClusterClocksFile.close()
-    
-    #ProjectInfo.close()
+    TopologyFile.close()
+    WorkloadFile.close()
 
-    # Print final messages and exit successfully
-    print("JSON config files created at " + args.ProjectDir + "/flow/")
-    #print("Project info file created at " + ProjectDir)
-    print("Flow created successfully!\n")
+    print("flowgen ran successfully!")

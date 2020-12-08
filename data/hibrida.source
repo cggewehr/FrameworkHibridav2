@@ -1,0 +1,7 @@
+export HIBRIDA_NAME=hibrida
+export HIBRIDA_PATH=D:\GitKraken\FrameworkHibridav2
+export PATH=$PATH:$HIBRIDA_PATH/scripts
+alias hibrida="python D:\GitKraken\FrameworkHibridav2/scripts/mainScript.py"
+export HIBRIDA_CONFIG_FILE=$HIBRIDA_PATH/data/config.json
+export PYTHONPATH=$PYTHONPATH:$HIBRIDA_PATH/src/software/AppComposer
+export PYTHONPATH=$PYTHONPATH:$HIBRIDA_PATH/src/software/PlatformComposer

@@ -1,172 +1,95 @@
 
+import AppComposer
+
+# Implements an AppComposer.Flow object
 class Injector:
 
-    def __init__(self, PEPos, Thread, InjectorClockFrequency):
-
-        # Gets position value from AllocationTable dictionary
+    # Default message is ["ADDR", "SIZE", "PEPOS", "TMSTP", "RANDO", "RANDO", ..., "RANDO"] of length of 128 flits
+    def __init__(self, Flow, Header = ["ADDR", "SIZE"], Payload = ["PEPOS", "TMSTP"] + (["RANDO"] * (126 - 2)), DataWidth = 32):
         
-        #self.AppID = Thread.ParentApplication.AppID if Thread.ParentApplication is not None else 99
-        #self.ThreadID = Thread.ThreadID if Thread.ThreadID is not None else 99
+        # Checks if Flow argument is of AppComposser.Flow class
+        if not isinstance(Flow, AppComposer.Flow):
+            print("Error: Given Flow argument is not of class AppComposser.Flow")
+            exit(1)
         
-        self.PEPos = int(PEPos)
-        self.InjectorClockFrequency = InjectorClockFrequency
+        # Checks if SourceThread has been defined in associated Flow object
+        if isinstance(Flow.SourceThread, AppComposer.Thread):
+            SourceThread = Flow.SourceThread
+        else:
+            print("Error: Given Flow: \n" + str(Flow) + "\n 's SourceThread is not a AppComposer.Thread object")
+            exit(1)
+            
+        # Checks if TargetThread has been defined in associated Flow object
+        if isinstance(Flow.TargetThread, AppComposer.Thread):
+            TargetThread = Flow.TargetThread
+        else:
+            print("Error: Given Flow: \n" + str(Flow) + "\n 's TargetThread is not a AppComposer.Thread object")
+            exit(1)
+        
+        # Flow info
+        self.FlowType = Flow.FlowType  # Default = "CBR"
+        self.Bandwidth = Flow.Bandwidth  # in MBps
+        self.InjectorClockPeriod = (DataWidth / 8) / (Flow.Bandwidth * 1000)  # in nanoseconds
+        self.StartTime = Flow.StartTime  # in nanoseconds
+        self.StopTime = Flow.StopTime  # in nanoseconds
+        self.Periodic = Flow.Periodic
+        
+        # Thread info
+        self.SourcePEPos = SourceThread.PEPos
+        self.SourceBaseNoCPos = SourceThread.ParentApplication.ParentWorkload.ParentPlatform.WrapperAddresses[self.SourcePEPos]
+        self.TargetPEPos = TargetThread.PEPos
+        self.TargetBaseNoCPos = TargetThread.ParentApplication.ParentWorkload.ParentPlatform.WrapperAddresses[self.TargetPEPos]
         
         # Workload Info
-        self.AppID = Thread.ParentApplication.AppID if Thread is not None else -1
-        self.AppName = Thread.ParentApplication.AppName if Thread is not None else "IDLE"
-        self.ThreadID = Thread.ThreadID if Thread is not None else -1
-        self.ThreadName = Thread.ThreadName if Thread is not None else "IDLE"
-        self.WorkloadName = Thread.ParentApplication.ParentWorkload.WorkloadName if Thread is not None else "IDLE"
+        self.SourceThreadID = SourceThread.ThreadID
+        self.SourceThreadName = SourceThread.ThreadName
+        self.TargetThreadID = TargetThread.ThreadID
+        self.TargetThreadName = TargetThread.ThreadName
+        self.AppID = SourceThread.ParentApplication.AppID
+        self.AppName = SourceThread.ParentApplication.AppName
+        self.WorkloadName = SourceThread.ParentApplication.ParentWorkload.WorkloadName
 
-        # Checks for a dummy injector (PE is idle or doesnt send messages)
-        #if Thread.OutgoingBandwidth is not None:
-        if Thread is not None:
-
-            # LinkBandwidth = DataWidth (in bits) / 8 * ClockFrequency (of out buffer write port) (in bytes/second)
-            # Consumed Bandwidth = LinkBandwidth * InjectionRate
-            # InjectionRate = ConsumedBandwidth/(DataWidth * ClockFrequency)
-            #self.InjectionRate = int((Thread.TotalBandwidth * 100) / (32 * InjectorClockFrequency))
-
-            #print("ThreadInInj:" + str(Thread))
-            print("PE: " + str(self.PEPos))
-            print("Out buffer clock frequency: " + str(InjectorClockFrequency))
-            LinkBandwidth = 4 * InjectorClockFrequency
-            print("Link bandwidth: " + str(LinkBandwidth))
-            self.InjectionRate = int((Thread.OutgoingBandwidth * 100) / ((32 / 8) * InjectorClockFrequency))
-            print("Injection Rate: " + str(self.InjectionRate))
-            print("Consumed bandwidth (outgoing): " + str(LinkBandwidth * self.InjectionRate / 100) + "\n")
-
-            if self.InjectionRate == 0 and Thread.OutgoingBandwidth != 0:
-
-                print("Warning: Injection rate = 0% at injector <" + str(self.PEPos) + ">, setting it to 1%")
-                self.InjectionRate = 1
-
-            if self.InjectionRate > 100:
-
-                print("Warning: Injection rate > 100% (" + str(self.InjectionRate) + "%) at injector <" + str(self.PEPos) + ">, setting it to 100%")
-                self.InjectionRate = 100
-
-        else:
-
-            self.InjectionRate = 0
-
-        self.TargetPEs = []
-        self.AmountOfMessagesInBurst = []
-
-        if Thread is not None and Thread.OutgoingBandwidth != 0:
-
-            # Determines TargetPEs and AmountOfMessagesInBurst arrays based on required bandwidth
-            #for i in range(len(Thread.Targets)):
-
-                # #self.TargetPEs.append(Thread.ParentApplication.ParentWorkload.ParentPlatform.getPEPos(Thread.Targets[i].TargetThread))
-                # self.TargetPEs.append(Thread.ParentApplication.ParentWorkload.ParentPlatform.getPEPos(Thread.OutgoingFlows[i].TargetThread))
-                # #self.AmountOfMessagesInBurst.append(Thread.Targets[i].Bandwidth)
-                # self.AmountOfMessagesInBurst.append(Thread.OutgoingFlows[i].Bandwidth)
-
-            for OutgoingFlow in Thread.OutgoingFlows:
-                self.TargetPEs.append(OutgoingFlow.TargetThread.PEPos)
-                self.AmountOfMessagesInBurst.append(OutgoingFlow.Bandwidth)
-            
-            # WIP: Find greatest common divider for all AmountOfMessagesInBursts (maintains proportion but allows
-            # switching between targets without sending a large amount of messages
-            from fractions import gcd
-            from functools import reduce
-            GreatestCommonDivisor = reduce(gcd, self.AmountOfMessagesInBurst)
-            MinimalValue = min(self.AmountOfMessagesInBurst)
-            #print("GCD = " + str(GreatestCommonDivisor))
-            #print("MinVal = " + str(MinimalValue))
-            #print(self.AmountOfMessagesInBurst)
-
-            if MinimalValue < 1:
-                
-                try:
-
-                    # Finds a new minimal value > 1
-                    MinimalValue = min(i for i in self.AmountOfMessagesInBurst if i > 1)
-
-                    #  Reduces new minimal value (which will divide all elements of array) in order to 
-                    # maintain proportion (Values < 1, will be set to 1, but so will be any values ~= to new MinVal,
-                    # resulting in a equal perceived bandwidth in RTL simulation, even though their bandwidth
-                    # requirements as set in given application script may be very different). >10 and /2 are arbitrary 
-                    if MinimalValue > 10:
-                        MinimalValue = MinimalValue / 2
-
-                    #print("MinVal = " + str(MinimalValue))
-                
-                except ValueError:  # Thrown when an empty list is given as argument to min()
-                    
-                    # No value < 1 in AmountOfMessagesinBurst
-                    #for i in range(len(self.AmountOfMessagesInBurst)):
-                        #self.AmountOfMessagesInBurst[i] = int(round(self.AmountOfMessagesInBurst[i] / float(MinimalValue)))
-                    pass
-                # Sets all elements < 1 to new minimal value
-                for i in range(len(self.AmountOfMessagesInBurst)):
-                    self.AmountOfMessagesInBurst[i] = int(round(self.AmountOfMessagesInBurst[i] / float(MinimalValue)))
-                    #print(self.AmountOfMessagesInBurst[i])
-
-                for i in range(len(self.AmountOfMessagesInBurst)):
-                    if self.AmountOfMessagesInBurst[i] == 0:
-                        self.AmountOfMessagesInBurst[i] = 1
-
-            else:
-
-                # Divide all elements by either GreatestCommonDivisor or MinimalValue, whichever is the greatest
-                for i in range(len(self.AmountOfMessagesInBurst)):
-
-                    if GreatestCommonDivisor > 2:
-                        self.AmountOfMessagesInBurst[i] = int(round(self.AmountOfMessagesInBurst[i] / GreatestCommonDivisor))
-       
-                    else:
-                        self.AmountOfMessagesInBurst[i] = int(round(self.AmountOfMessagesInBurst[i] / MinimalValue))
-
-            #print("GCD = " + str(GreatestCommonDivisor))
-            #print(self.AmountOfMessagesInBurst)
-            #print("\n")
-
-        else:
-
-            # Set dummy values
-            self.TargetPEs.append(0)
-            self.AmountOfMessagesInBurst.append(99)
-
-        self.TargetPayloadSize = [126] * len(self.TargetPEs)
-
-        self.SourcePEs = [0]  # Default
-        self.SourcePayloadSize = 32  # Default
-        self.AmountOfSourcePEs = len(self.SourcePEs)
-        self.AmountOfTargetPEs = len(self.TargetPEs)
-        self.AverageProcessingTimeInClockPulses = 1  # Default, not used in current injector
-        self.InjectorType = "FXD"  # Default
-        self.FlowType = "RND"  # Default
-        self.HeaderSize = 2  # Default
-        self.timestampFlag = 1984626850  # Default
-        self.amountOfMessagesSentFlag = 2101596287  # Default
+        # Message info
+        self.HeaderSize = len(Header)
+        self.PayloadSize = len(Payload)
+        self.MessageSize = len(Header) + len(Payload)
+        
+        # Payload Real Time Flags
+        self.TimestampFlag = 2147483643  # Default
+        self.AmountOfMessagesSentFlag = 2147483644  # Default
         
         import random
-        self.RNGSeed1 = random.randint(0, 2147483646)  # Random Value
-        self.RNGSeed2 = random.randint(0, 2147483646)  # Random Value
+        self.RNGSeed1 = random.randint(0, 2147483646)  # Random Value [0, (2**32) - 2]
+        self.RNGSeed2 = random.randint(0, 2147483646)  # Random Value [0, (2**32) - 2]
 
-        self.Headers = dict()
-        self.Payloads = dict()
+        self.Header = Header  # Default = ["ADDR", "SIZE"]
+        self.Payload = Payload  # Deafult = ["PEPOS", "TMSTP"] + (["RANDO"] * 126 - 2)
+        
+        # Header filts can be : 
+        # "ADDR" (Address of target PE in network)
+        # "SIZE" (Size of payload in this message)
+        # "TIME" (Timestamp (in clock cycles) of when first flit of message leaves the injector)
+        # "BLNK" (Fills with zeroes)
+        
+        #  Payload flits can be:
+        # "PEPOS": (PE position in network), 
+        # "APPID": (ID of app being emulated by this injector), 
+        # "THDID": (ID of thread of the app being emulated in this PE),
+        # <UNSUPPORTED> "AVGPT": (Average processing time of a message received by the app being emulated by this PE),  
+        # "TMSTP": (Timestamp of message being sent (to be set in real time, not in this function)),
+        # "AMMSG": (Amount of messages sent by this PE (also to be se in real time)),
+        # "RANDO": (Randomize every bit)
+        # "BLANK": (Fills with zeroes)
 
-        for i in range(len(self.TargetPEs)):
 
-            payloads_aux = [  # Default
-                "PEPOS",
-                "TMSTP",
-                "RANDO",
-                "RANDO",
-                "RANDO",
-                "RANDO",
-            ]
-
-            for j in range(int(self.TargetPayloadSize[i]) - 6):
-                payloads_aux.append("RANDO")  # Preenche com RANDO #Default
-
-            self.Headers["Header" + str(self.TargetPEs[i])] = ["ADDR", "SIZE"]  # Default
-            self.Payloads["Payload" + str(self.TargetPEs[i])] = payloads_aux
-
-
+    def __str__(self):
+    
+        NotImplementedError
+        
+        returnString = ""
+        return returnString
+    
+    
     def toJSON(self):
         
         import json

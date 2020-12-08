@@ -1,0 +1,32 @@
+{
+    "AllocationMapsPaths": [
+        "D:\\GitKraken\\FrameworkHibridav2\\data\\flowgen\\allocationMaps"
+    ],
+    "ApplicationsPaths": [
+        "D:\\GitKraken\\FrameworkHibridav2\\data\\flowgen\\applications"
+    ],
+    "ClusterClocksPaths": [
+        "D:\\GitKraken\\FrameworkHibridav2\\data\\flowgen\\clusterClocks"
+    ],
+    "DefaultProjDir": "C:\\Users\\c_ara\\Desktop\\HibridaProjects",
+    "HibridaConfigFile": "D:\\GitKraken\\FrameworkHibridav2/data/config.json",
+    "HibridaName": "hibrida",
+    "HibridaPath": "D:\\GitKraken\\FrameworkHibridav2",
+    "MostRecentProject": "NovoProjeto",
+    "Projects": {
+        "NovoProjeto": {
+            "AllocationMapFile": "D:\\GitKraken\\FrameworkHibridav2\\data\\flowgen\\allocationMaps\\ExampleAllocMap.json",
+            "ClusterClocksFile": "D:\\GitKraken\\FrameworkHibridav2\\data\\flowgen\\clusterClocks\\ExampleClusterClocks.json",
+            "Makefile": "cadence",
+            "ProjectDir": "C:\\Users\\c_ara\\Desktop\\HibridaProjects/NovoProjeto",
+            "TopologyFile": "D:\\GitKraken\\FrameworkHibridav2\\data\\flowgen\\topologies\\TopologiaExemplo.json",
+            "WorkloadFile": "D:\\GitKraken\\FrameworkHibridav2\\data\\flowgen\\workloads\\PIP_WL.json"
+        }
+    },
+    "TopologiesPaths": [
+        "D:\\GitKraken\\FrameworkHibridav2\\data\\flowgen\\topologies"
+    ],
+    "WorkloadsPaths": [
+        "D:\\GitKraken\\FrameworkHibridav2\\data\\flowgen\\workloads"
+    ]
+}

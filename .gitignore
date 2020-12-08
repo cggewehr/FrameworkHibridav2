@@ -1,0 +1,16 @@
+# Ignores files created by python interpreter
+**/__pycache__
+**/_AppComposer.py
+
+# Ignores data folder, where files used in flowgen are usually stored, but keeps example files referenced in manual
+#/data  Uncomment when file gitkraken .gitignore parser decides to work again
+!/data/flowgen/allocationMaps/ExampleAllocMap.json
+!/data/flowgen/allocationMaps/ExampleAllocMap.py
+!/data/flowgen/applications/PIP.json
+!/data/flowgen/applications/PIP.py
+!/data/flowgen/clusterClocks/ExampleClusterClocks.json
+!/data/flowgen/clusterClocks/ExampleClusterClocks.py
+!/data/flowgen/topologies/TopologiaExemplo.json
+!/data/flowgen/topologies/TopologiaExemplo.py
+!/data/flowgen/workloads/PIP_WL.json
+!/data/flowgen/workloads/PIP_WL.py

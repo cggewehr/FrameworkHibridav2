@@ -1,4 +1,19 @@
-
+--------------------------------------------------------------------------------
+-- Title       : Injector_PKG
+-- Project     : HyHeMPS
+--------------------------------------------------------------------------------
+-- File        : HyHeMPS_PKG.vhd
+-- Author      : Carlos Gewehr (carlos.gewehr@ecomp.ufsm.br)
+-- Company     : UFSM, GMICRO (Grupo de Microeletronica)
+-- Standard    : VHDL-1993
+--------------------------------------------------------------------------------
+-- Description : Injector message compiling functions
+--------------------------------------------------------------------------------
+-- Revisions   : v0.01 - Initial implementation
+--------------------------------------------------------------------------------
+-- TODO        : Check if randomly generated flits are conflicting with real time flags
+--               Add more possibilities to payload flits, such as Flow bandwidth, real time RNG, etc...
+--------------------------------------------------------------------------------
 
 library ieee;
 	use ieee.std_logic_1164.all;
@@ -11,243 +26,197 @@ library work;
 
 package Injector_PKG is
 
+	type InjectorInterface is record
+
+		Clock: std_logic;
+		Reset: std_logic;
+
+		Enable: std_logic;
+
+		DataOut : DataWidth_t;
+		DataOutAV : std_logic;
+        OutputBufferAvailableFlag : std_logic;
+
+	end record;
+
+	type InjectorInterface_vector is array(natural range <>) of InjectorInterface;
+
     -- Function declarations for organizing data from JSON config file
-    function FillTargetMessageSizeArray(TargetPayloadSizeArray: integer_vector; HeaderSize: integer) return integer_vector;
-    function FillSourceMessageSizeArray(SourcePayloadSizeArray: integer_vector; HeaderSize: integer) return integer_vector;
-    function FindMaxPayloadSize(TargetPayloadSizeArray: integer_vector) return integer;
-    function BuildHeaders(InjCFG: T_JSON; PlatCFG: T_JSON; HeaderSize: integer; TargetPayloadSizeArray: integer_vector; TargetPEsArray: integer_vector) return HeaderFlits_t;
-    function BuildPayloads(InjCFG: T_JSON; TargetPayloadSizeArray: integer_vector; TargetPEsArray: integer_vector) return PayloadFlits_t;
+    function BuildHeader(InjCFG: T_JSON; PlatCFG: T_JSON) return DataWidth_vector;
+    function BuildPayload(InjCFG: T_JSON) return DataWidth_vector;
 
 end package Injector_PKG;
 
 
 package body Injector_PKG is
 
-    -- Fills array of source message size for each source PE
-    function FillSourceMessageSizeArray(SourcePayloadSizeArray: integer_vector; HeaderSize: integer) return integer_vector is
-        variable SourceMessageSizeArray : integer_vector(SourcePayloadSizeArray'range);
-    begin
-
-        FillSourceMessageSizeLoop: for i in SourcePayloadSizeArray'range loop 
-            SourceMessageSizeArray(i) := SourcePayloadSizeArray(i) + HeaderSize;
-        end loop FillSourceMessageSizeLoop;
-
-        return SourceMessageSizeArray;
-
-    end function;
-
-
-    -- Fills array of target message size (Payload + Header) for each target PE
-    function FillTargetMessageSizeArray(TargetPayloadSizeArray: integer_vector; HeaderSize: integer) return integer_vector is
-        variable TargetMessageSizeArray: integer_vector(TargetPayloadSizeArray'range);
-    begin
-
-        FillTargetMessageSizeLoop : for i in TargetPayloadSizeArray'range loop
-            TargetMessageSizeArray(i) := TargetPayloadSizeArray(i) + HeaderSize;
-        end loop;
-        
-        return TargetMessageSizeArray;
-        
-    end function FillTargetMessageSizeArray;
-
     -- Builds header for each target PE
-    function BuildHeaders(InjCFG: T_JSON; PlatCFG: T_JSON; HeaderSize: integer; TargetPayloadSizeArray: integer_vector; TargetPEsArray: integer_vector) return HeaderFlits_t is
+    function BuildHeader(InjCFG: T_JSON; PlatCFG: T_JSON) return DataWidth_vector is
+
+        constant SourcePEPos: integer := jsonGetInteger(InjCFG, "SourcePEPos");
+	    constant SourceBaseNoCPos: integer := jsonGetInteger(InjCFG, "SourceBaseNoCPos");
+	    constant TargetPEPos: integer := jsonGetInteger(InjCFG, "TargetPEPos");
+	    constant TargetBaseNoCPos: integer := jsonGetInteger(InjCFG, "TargetBaseNoCPos");
+
+	    constant PayloadSize: integer := jsonGetInteger(InjCFG, "PayloadSize");
         
-        variable Headers: HeaderFlits_t(TargetPEsArray'range, 0 to HeaderSize - 1);
-        variable headerFlitString: string(1 to 4);
-        
-        variable timestampFlag: integer := jsonGetInteger(InjCFG, "timestampFlag");
-        constant AmountOfPEs: integer := jsonGetInteger(PlatCFG, "AmountOfPEs");
+        variable TimestampFlag: integer := jsonGetInteger(InjCFG, "timestampFlag");
+
         constant NoCXSize: integer := jsonGetInteger(PlatCFG, "BaseNoCDimensions/0");
         constant SquareNoCBound: integer := jsonGetInteger(PlatCFG, "SquareNoCBound");
-        constant WrapperAddresses: integer_vector(0 to AmountOfPEs - 1) := jsonGetIntegerArray(PlatCFG, "WrapperAddresses");
-	    
-	    variable myID: integer := jsonGetInteger(InjCFG, "PEPos");
-        variable myWrapper:	integer := jsonGetInteger(PlatCFG, "WrapperAddresses/" & integer'image(myID));
-        variable targetID: integer;
-        variable targetWrapper: integer;
+
+        constant HeaderSize: integer := jsonGetInteger(InjCFG, "HeaderSize");
+        variable HeaderFlits: DataWidth_vector(0 to HeaderSize - 1);
+        variable HeaderFlitString: string(1 to 4);
 
     begin
 
-    	--report "Compiling header flits" severity note;
+    	report "Compiling header for message from PE ID <" & integer'image(SourcePEPos) & "> to PE ID <" & integer'image(TargetPEPos) & ">" severity note;
 
-        BuildHeaderLoop: for target in TargetPEsArray'range loop
-        
-        	targetID := TargetPEsArray(target);
-        	targetWrapper := WrapperAddresses(TargetID);
-        	
-        	--report "    Compiling header for target PE " & integer'image(targetID) severity note;
+        BuildFlitLoop: for flit in HeaderFlits'range loop
 
-            BuildFlitLoop: for flit in 0 to (HeaderSize - 1) loop
-
-                -- A header flit can be : "ADDR" (Address of target PE in network)
-                --                        "SIZE" (Size of payload in this message)
-                --                        "TIME" (Timestamp (in clock cycles) of when first flit of message leaves the injector)
-                --                        "BLNK" (Fills with zeroes)
-                
-                headerFlitString := jsonGetString(InjCFG, ( "Headers/" & "Header" & integer'image(targetID) & "/" & integer'image(flit)));
-
-                if headerFlitString = "ADDR" then 
-
-                    -- Wrapper Address @ least significative bits (used for NoC routing)
-                    Headers(target, flit)((DataWidth/2) - 1 downto 0) := RouterAddress(targetWrapper, NoCXSize);
-                    
-                    -- PE ID @ most significative bits (unique network address)
-                    Headers(target, flit)(DataWidth - 1 downto DataWidth/2) := RouterAddress(targetID, SquareNoCBound);
-
-                elsif headerFlitString = "SIZE" then
-
-                    Headers(target, flit) := std_logic_vector(to_unsigned(TargetPayloadSizeArray(target), DataWidth));
-
-                elsif headerFlitString = "TIME" then
-
-                    Headers(target, flit) := std_logic_vector(to_unsigned(timestampFlag, DataWidth));
-
-                elsif headerFlitString = "BLNK" then
-
-                    Headers(target, flit) := (others => '0');
-
-                else
-
-                     --report "        Flit " & integer'image(flit) & " of header of message to be delivered to PE ID " & integer'image(TargetPEsArray(target)) & " is not defined" severity warning;
-
-                end if;
-
-                --report "        Flit " & integer'image(flit) & " of header of message to be delivered to PE ID " & integer'image(TargetPEsArray(target)) & " is " & headerFlitString & " = " & integer'image(to_integer(unsigned(Headers(target, flit)))) severity note;
-
-            end loop BuildFlitLoop;
-
-        end loop BuildHeaderLoop;
-
-        return Headers;
-
-    end function BuildHeaders;
-
-
-    -- Builds payload for each target PE
-    function BuildPayloads(InjCFG: T_JSON; TargetPayloadSizeArray: integer_vector; TargetPEsArray: integer_vector) return PayloadFlits_t is
-
-        variable MaxPayloadSize : integer := FindMaxPayloadSize(TargetPayloadSizeArray);
-        variable Payloads : PayloadFlits_t(TargetPEsArray'range, 0 to MaxPayloadSize - 1);
-        variable payloadFlitString : string(1 to 5);
-        variable timestampFlag : integer := jsonGetInteger(InjCFG, "timestampFlag");
-        variable amountOfMessagesSentFlag : integer := jsonGetInteger(InjCFG, "amountOfMessagesSentFlag");
-
-        -- RNG
-        variable RNGSeed1: integer := 22;
-        variable RNGSeed2: integer := 32;
-        variable RandomNumber: real;
-
-    begin
-
-    	report "Compiling payload flits" severity note;
-
-        BuildPayloadLoop: for target in TargetPayloadSizeArray'range loop
-
-        	report "    Compiling payload for target PE " & integer'image(TargetPEsArray(target)) severity note;
-
-            BuildFlitLoop: for flit in 0 to (MaxPayloadSize - 1) loop 
-
-
-                -- Checks if current target has had its payload fully compiled (if the inner loop iterator > PayloadSize(target), break inner loop)
-                if flit = TargetPayloadSizeArray(target) then
-                    exit;
-                end if;
-
-                --                                                                                Translates loop iterator to PE ID
-                payloadFlitString := jsonGetString(InjCFG, "Payloads/" & "Payload" & integer'image(TargetPEsArray(target)) & "/" & integer'image(flit) );
-
-                -- A payload flit can be : "PEPOS" (PE position in network), 
-                --                         "APPID" (ID of app being emulated by this injector), 
-                --                         "THDID" (ID of thread of the app being emulated in this PE),
-                --                         "AVGPT" (Average processing time of a message received by the app being emulated by this PE),
-                --                         "TMSTP" (Timestamp of message being sent (to be set in real time, not in this function)),
-                --                         "AMMSG" (Amount of messages sent by this PE (also to be se in real time)),
-                --                         "RANDO" (Randomize every bit)
-                --                         "BLANK" (Fills with zeroes)
-                
-                if payloadFlitString = "PEPOS" then
-
-                    Payloads(target, flit) := std_logic_vector(to_unsigned(jsonGetInteger(InjCFG, "PEPos"), DataWidth));
-
-                elsif payloadFlitString = "APPID" then
-
-                    Payloads(target, flit) := std_logic_vector(to_unsigned(jsonGetInteger(InjCFG, "APPID"), DataWidth));
-
-                elsif payloadFlitString = "THDID" then
-
-                    Payloads(target, flit) := std_logic_vector(to_unsigned(jsonGetInteger(InjCFG, "ThreadID"), DataWidth));
-
-                elsif payloadFlitString = "AVGPT" then
-
-                    --Payloads(target, flit) := std_logic_vector(to_unsigned(jsonGetInteger(InjectorJSONConfig, "AverageProcessingTimeInClockPulses"), DataWidth));
-                    Payloads(target, flit) := (others => '1');
-
-                elsif payloadFlitString = "TMSTP" then
-
-                    -- Flags for "real time" processing
-                    Payloads(target, flit) := std_logic_vector(to_unsigned(timestampFlag, DataWidth));
-
-                elsif payloadFlitString = "AMMSG" then 
-
-                    -- Flags for "real time" processing
-                    Payloads(target, flit) := std_logic_vector(to_unsigned(amountOfMessagesSentFlag, DataWidth));
-
-                elsif payloadFlitString = "RANDO" then
-
-                    -- Randomizes each bit of current flit
-                    for i in 0 to DataWidth - 1 loop
-
-                        -- RandomNumber <= (0.0 < RNG < 1.0)
-                        Uniform(RNGSeed1, RNGSeed2, RandomNumber);
-
-                        if RandomNumber < 0.5 then
-
-                            Payloads(target, flit)(i) := '0';
-
-                        else
-
-                            Payloads(target, flit)(i) := '1';
-
-                        end if;
-
-                    end loop;
-
-                elsif payloadFlitString = "BLANK" then
-
-                    Payloads(target, flit) := (others=>'0');
-
-                end if;
-
-                report "        Flit " & integer'image(flit) & " of payload of message to be delivered to PE ID " & integer'image(TargetPEsArray(target)) & " is " & payloadFlitString & " = " & integer'image(to_integer(unsigned(Payloads(target, flit)))) severity note;
-
-            end loop BuildFlitLoop;
-
-        end loop BuildPayloadLoop;
-
-        return Payloads;
-
-    end function BuildPayloads;
-
-
-    -- Returns highest value in the TargetPayloadSizeArray array
-    function FindMaxPayloadSize(TargetPayloadSizeArray: integer_vector) return integer is
-        variable MaxPayloadSize : integer := 0;
-    begin
-
-        FindMaxPayloadSizeLoop : for i in TargetPayloadSizeArray'range loop
+            -- A header flit can be : "ADDR" (Address of target PE in network)
+            --                        "SIZE" (Size of payload in this message)
+            --                        "TIME" (Timestamp (in nanoseconds) of when first flit of message leaves the injector)
+            --                        "BLNK" (Fills with zeroes)
             
-            if TargetPayloadSizeArray(i) > MaxPayloadSize then
+            HeaderFlitString := jsonGetString(InjCFG, ("Header/" & integer'image(flit)));
 
-                MaxPayloadSize := TargetPayloadSizeArray(i);
+            if HeaderFlitString = "ADDR" then 
+
+                -- Wrapper Address @ least significative bits (used for NoC routing)
+                HeaderFlits(flit)((DataWidth/2) - 1 downto 0) := RouterAddress(TargetBaseNoCPos, NoCXSize);
+                
+                -- PE ID @ most significative bits (unique network address)
+                HeaderFlits(flit)(DataWidth - 1 downto DataWidth/2) := RouterAddress(TargetPEPos, SquareNoCBound);
+
+            elsif HeaderFlitString = "SIZE" then
+
+                HeaderFlits(flit) := std_logic_vector(to_unsigned(PayloadSize, DataWidth));
+
+            elsif HeaderFlitString = "TIME" then
+
+                HeaderFlits(flit) := std_logic_vector(to_unsigned(TimestampFlag, DataWidth));
+
+            elsif HeaderFlitString = "BLNK" then
+
+                HeaderFlits(flit) := (others => '0');
+
+            else
+
+                report "Flit number " & integer'image(flit) & " <" & HeaderFlitString & "> of header of message from PE ID <" & integer'image(SourcePEPos) & "> to PE ID <" & integer'image(TargetPEPos) & "> is not defined" severity error;
 
             end if;
 
-        end loop FindMaxPayloadSizeLoop;
+            --report "        Flit " & integer'image(flit) & " of header of message to be delivered to PE ID " & integer'image(TargetPEsArray(target)) & " is " & HeaderFlitString & " = " & integer'image(to_integer(unsigned(Headers(target, flit)))) severity note;
 
-        return MaxPayloadSize;
+        end loop BuildFlitLoop;
 
-    end function FindMaxPayloadSize;
+        return HeaderFlits;
+
+    end function BuildHeader;
+
+
+    -- Builds payload for each target PE
+    function BuildPayload(InjCFG: T_JSON) return DataWidth_vector is
+
+    	constant SourcePEPos: integer := jsonGetInteger(InjCFG, "SourcePEPos");
+	    constant SourceThreadID: integer := jsonGetInteger(InjCFG, "SourceThreadID");
+	    constant TargetPEPos: integer := jsonGetInteger(InjCFG, "TargetPEPos");
+	    constant TargetBaseNoCPos: integer := jsonGetInteger(InjCFG, "TargetBaseNoCPos");
+	    constant AppID: integer := jsonGetInteger(InjCFG, "AppID");
+
+	    constant TimestampFlag : integer := jsonGetInteger(InjCFG, "TimestampFlag");
+        constant AmountOfMessagesSentFlag : integer := jsonGetInteger(InjCFG, "AmountOfMessagesSentFlag");
+
+        -- RNG
+        variable RNGSeed1: integer := jsonGetInteger(InjCFG, "RNGSeed1");
+    	variable RNGSeed2: integer := jsonGetInteger(InjCFG, "RNGSeed2");
+        variable RandomNumber: real;
+
+        constant PayloadSize: integer := jsonGetInteger(InjCFG, "PayloadSize");
+        variable Payload: DataWidth_vector(0 to PayloadSize - 1);
+        variable PayloadFlitString : string(1 to 5);
+
+    begin
+
+    	report "Compiling header for message from PE ID <" & integer'image(SourcePEPos) & "> to PE ID <" & integer'image(TargetPEPos) & ">" severity note;
+
+        BuildFlitLoop: for flit in Payload'range loop 
+			
+			PayloadFlitString := jsonGetString(InjCFG, "Payload/" & integer'image(flit));
+
+            -- A payload flit can be : "PEPOS" (PE position in network), 
+            --                         "APPID" (ID of app being emulated by this injector), 
+            --                         "THDID" (ID of thread of the app being emulated in this PE),
+            --                         "AVGPT" (Average processing time of a message received by the app being emulated by this PE),
+            --                         "TMSTP" (Timestamp of message being sent (to be set in real time, not in this function)),
+            --                         "AMMSG" (Amount of messages sent by this PE (also to be se in real time)),
+            --                         "RANDO" (Randomize every bit)
+            --                         "BLANK" (Fills with zeroes)
+            
+            if PayloadFlitString = "PEPOS" then
+
+                Payload(flit) := std_logic_vector(to_unsigned(SourcePEPos, DataWidth));
+
+            elsif PayloadFlitString = "THDID" then
+
+                Payload(flit) := std_logic_vector(to_unsigned(SourceThreadID, DataWidth));
+
+            elsif PayloadFlitString = "APPID" then
+
+                Payload(flit) := std_logic_vector(to_unsigned(AppID, DataWidth));
+
+            elsif PayloadFlitString = "AVGPT" then
+
+                --Payloads(target, flit) := std_logic_vector(to_unsigned(jsonGetInteger(InjectorJSONConfig, "AverageProcessingTimeInClockPulses"), DataWidth));
+                Payload(flit) := (others => '1');
+
+            elsif PayloadFlitString = "TMSTP" then
+
+                -- Flags for "real time" processing
+                Payload(flit) := std_logic_vector(to_unsigned(TimestampFlag, DataWidth));
+
+            elsif PayloadFlitString = "AMMSG" then 
+
+                -- Flags for "real time" processing
+                Payload(flit) := std_logic_vector(to_unsigned(AmountOfMessagesSentFlag, DataWidth));
+
+            elsif PayloadFlitString = "RANDO" then
+
+                -- Randomizes each bit of current flit
+                for i in 0 to DataWidth - 1 loop
+
+                    -- RandomNumber <= (0.0 < RNG < 1.0)
+                    Uniform(RNGSeed1, RNGSeed2, RandomNumber);
+
+                    if RandomNumber < 0.5 then
+
+                        Payload(flit)(i) := '0';
+
+                    else
+
+                        Payload(flit)(i) := '1';
+
+                    end if;
+
+                end loop;
+
+            elsif PayloadFlitString = "BLANK" then
+
+                Payload(flit) := (others=>'0');
+
+            else
+
+            	report "Flit number " & integer'image(flit) & " <" & PayloadFlitString & "> of header of message from PE ID <" & integer'image(SourcePEPos) & "> to PE ID <" & integer'image(TargetPEPos) & "> is not defined" severity error;
+
+            end if;
+            
+        end loop BuildFlitLoop;
+
+        return Payload;
+
+    end function BuildPayload;
 
 
 end package body Injector_PKG;

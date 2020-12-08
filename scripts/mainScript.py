@@ -1,10 +1,13 @@
 #!/usr/bin/python
+import json
 import sys
 import os
 
 # Imports command scripts
+import AddSearchPath
 import Projgen
 import Flowgen
+import SetConfig
 #import Comp
 #import Elab
 #import Sim
@@ -13,77 +16,87 @@ import Flowgen
 import argparse
 
 if os.getenv("HIBRIDA_NAME") is None:
-    print("Error: Environment variable $HIBRIDA_NAME doesnt exist. Did you source the source file created by the setup script?")
+    print("Error: Environment variable $HIBRIDA_NAME doesnt exist. Did you source/call the .source/.bat file created by the setup script?")
     exit(1)
+    
+# Reads config.json file for framework config parameters
+ConfigFile = open(os.getenv("HIBRIDA_CONFIG_FILE"))
+ConfigDict = json.loads(ConfigFile.read())
 
 parser = argparse.ArgumentParser(prog = os.getenv("HIBRIDA_NAME"))
-
-#parser.add_argument("Command", type = str.lower, help = "Avaiable subcommands")
-
 subparsers = parser.add_subparsers(title = "Hibrida subcommands")
 
+# addSearchPath args
+parser_addSearchPath = subparsers.add_parser("addSearchPath", help = "Adds a deirectory where files passed as arguments to setConfig command can be searched for")
+parser_addSearchPath.set_defaults(func=AddSearchPath.addSearchPath)
+parser_addSearchPath.add_argument("-alo", "--AllocationMapsPath", nargs = "+", help = "Adds a directory where Allocation Map JSON files will also be looked for in", type = str)
+parser_addSearchPath.add_argument("-app", "--ApplicationsPath", nargs = "+", help = "Adds a directory where Applications JSON files will also be looked for in", type = str)
+parser_addSearchPath.add_argument("-clo", "--ClusterClocksPath", nargs = "+", help = "Adds a directory where Cluster Clocks JSON files will also be looked for in", type = str)
+parser_addSearchPath.add_argument("-top", "--TopologiesPath", nargs = "+", help = "Adds a directory where Topologies JSON files will also be looked for in", type = str)
+parser_addSearchPath.add_argument("-wor", "--WorkloadsPath", nargs = "+", help = "Adds a directory where Workloads JSON files will also be looked for in", type = str)
+# TODO: Add argument where search paths are printed out
+
 # projgen args
-parser_projgen = subparsers.add_parser("projgen", help = "Creates a new project at a given location")
+parser_projgen = subparsers.add_parser("projgen", help = "Creates a new project at a given directory")
 parser_projgen.set_defaults(func=Projgen.projgen)
-parser_projgen.add_argument("--ProjectDirectory", type = str, default = os.getenv("HIBRIDA_DEFAULT_DIRECTORY"))
-parser_projgen.add_argument("--ProjectName", type = str, default = "HibridaProject")
-parser_projgen.add_argument("--HardwareDirs", help = "Create directories and subdirectories for custom hardware", action="store_true")
-parser_projgen.add_argument("--Makefile", type = str, default = "cadence", help = "Create makefile for compile, elab and simulate project")
+parser_projgen.add_argument("-pd", "--ProjectDirectory", "--projdir",  type = str, default = ConfigDict["DefaultProjDir"])
+parser_projgen.add_argument("-pn", "--ProjectName", "--projname", type = str, default = "HibridaProject")
+parser_projgen.add_argument("-a", "--AppendName", "--appendname", help = "Appends ProjectName to ProjectDir path", action = "store_true", default = None)
+parser_projgen.add_argument("-hd", "--HardwareDirs", "--hardwaredirs", help = "Create directories and subdirectories for custom hardware", action = "store_true", default = False)
+parser_projgen.add_argument("-m", "--Makefile", "--makefile", type = str, help = "Create makefile for compiling, elaborating and simulating project", default = "cadence")
 
 # TODO: Create project from topology .json file
-#parser_projgen.add_argument("-f", "-F", "--TopologyFile", type = str, default = None)
+#parser_projgen.add_argument("-f", "--TopologyFile", type = str, default = None)
+
+# setConfig args
+parser_setConfig = subparsers.add_parser("setConfig", help = "Sets AllocationMap/ClusterClocks/Topology/Workloads config files for a given project")
+parser_setConfig.set_defaults(func=SetConfig.setConfig)
+parser_setConfig.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, required = True)
+parser_setConfig.add_argument("-a", "-alo", "--AllocationMapFile", "--allocationmapfile", help = "Allocation Map json file to be assotiated to given project", type = str)
+parser_setConfig.add_argument("-c", "-clk", "--ClusterClocksFile", "--clusterclocksfile", help = "Cluster Clocks json file to be assotiated to given project", type = str)
+parser_setConfig.add_argument("-t", "-top", "--TopologyFile", "--topologyfile", help = "Topology json file to be assotiated to given project", type = str)
+parser_setConfig.add_argument("-w", "-wrk", "--WorkloadFile", "--workloadfile", help = "Workload json file to be assotiated to given project", type = str)
+parser_setConfig.add_argument("-s", "--state", help = "Displays which AllocationMap/ClusterClocks/Topology/Workloads config files have been assotiated with given project", action = "store_true")
 
 # flowgen args
-parser_flowgen = subparsers.add_parser("flowgen", help = "Generates injector JSON config files, implementing a given workload in a given topology")
+parser_flowgen = subparsers.add_parser("flowgen", help = "Generates injector JSON config files, implementing a given workload in a given topology running at given clocks frequencies")
 parser_flowgen.set_defaults(func=Flowgen.flowgen)
-parser_flowgen.add_argument("--ProjectDir", type = str, required = True, help = "Path to project's location")
-parser_flowgen.add_argument("--TopologyFile", type = str, required = True, help = ".json file containing inteconnect topology information (AmountOfPEs, BusWrapperAddresses, ...)")
-parser_flowgen.add_argument("--WorkloadFile", type = str, required = True, help = ".json file containing workload information (Apps & Threads)")
-parser_flowgen.add_argument("--AllocMapFile", type = str, required = True, help = ".json file containing Thread to PE mapping information")
-parser_flowgen.add_argument("--ClusterClocksFile", type = str, required = True, help = ".json file containing cluster clock frequency information")
+parser_flowgen.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, required = True, help = "Name of target project")
 
-# TODO: Add arg so that paths to Topologies, Workloads, AllocMaps and ClusterClocks are infered from a single given diretory, such as <GivenDir>/Topologies, <GivenDir>/Workloads, ...
-
-if os.getenv("FLOWGEN_TOPOLOGIES_PATH") is not None:
-    parser_flowgen.add_argument("--TopologiesPath", type = str, default = os.getenv("FLOWGEN_TOPOLOGIES_PATH"))
-else:
-    print("Error: Environment variable $FLOWGEN_TOPOLOGIES_PATH doesnt exist. Did you run the .source/.bat file created by the setup script?")
-    exit(1)
-    
-if os.getenv("FLOWGEN_WORKLOADS_PATH") is not None:
-    parser_flowgen.add_argument("--WorkloadsPath", type = str, default = os.getenv("FLOWGEN_WORKLOADS_PATH"))
-else:
-    print("Error: Environment variable $FLOWGEN_WORKLOADS_PATH doesnt exist. Did you run the .source/.bat file created by the setup script?")
-    exit(1)
-    
-if os.getenv("FLOWGEN_ALLOCATIONMAPS_PATH") is not None:
-    parser_flowgen.add_argument("--AllocationMapsPath", type = str, default = os.getenv("FLOWGEN_ALLOCATIONMAPS_PATH"))
-else:
-    print("Error: Environment variable $FLOWGEN_ALLOCATIONMAPS_PATH doesnt exist. Did you run the .source/.bat file created by the setup script?")
-    exit(1)
-    
-if os.getenv("FLOWGEN_CLUSTERCLOCKS_PATH") is not None:    
-    parser_flowgen.add_argument("--ClusterClocksPath", type = str, default = os.getenv("FLOWGEN_CLUSTERCLOCKS_PATH"))
-else:
-    print("Error: Environment variable $FLOWGEN_CLUSTERCLOCKS_PATH doesnt exist. Did you run the .source/.bat file created by the setup script?")
-    exit(1)
-
-# TODO: compile args
-# parser_compile = subparsers.add_parser("compile", help = "Compiles VHDL files with a ")
-#supportedTools = ["Cadence", "Vivado", "ISE", "Modelsim"]
-#parser_compile.add_argument("ProjectPath", type = str, help = "Path to project to be compiled")
-#parser_compile.add_argument("-t", "--tool", type = str, choices = supportedTools, help = "Which tool to compile the project")
+# compile args
+parser_compile = subparsers.add_parser("compile", help = "Compiles VHDL files with a given tool")
+parser_compile.add_argument("-p", "-pn", "--projname", "--ProjectName", type = str, help = "Name of project to be compiled", required = True)
+supportedTools = ["cadence", "vivado"]
+parser_compile.add_argument("-t", "--tool", type = str, choices = supportedTools, help = "Tool to compile the project with", default = "cadence")
 # TODO: Make default tcl compilation scripts for each supported tool
-# parser_compile.add_argument("-f", "--file", type = str, help = "Custom script file to be executed", default = None)
+parser_compile.add_argument("-f", "--file", help = "Custom script file to be executed")
 
-# TODO: elab args
+# elab args
+parser_elab = subparsers.add_parser("elab", help = "Elabs top level entity after compilation step")
+parser_elab.add_argument("-p", "-pn", "--projname", "--ProjectName", type = str, help = "Name of project to be elaborated", required = True)
+supportedTools = ["cadence", "vivado"]
+parser_elab.add_argument("-t", "--tool", type = str, choices = supportedTools, help = "Tool to elaborate top level entity", default = "cadence")
+parser_elab.add_argument("-f", "--file", help = "Custom script file to be executed")
 
+# sim args
+parser_sim = subparsers.add_parser("sim", help = "Simulates project with waveform viewer")
+parser_sim.add_argument("-p", "-pn", "--projname", "--ProjectName", type = str, help = "Name of project to be simulated", required = True)
+supportedTools = ["cadence", "vivado"]
+parser_sim.add_argument("-t", "--tool", type = str, choices = supportedTools, help = "Tool to simulate project with", default = "cadence")
+parser_sim.add_argument("-f", "--file", help = "Custom script file to be executed")
 
-# TODO: sim args
-
+# simnogui
+parser_simnogui = subparsers.add_parser("sim", help = "Simulates project without waveform viewer")
+parser_simnogui.add_argument("-p", "-pn", "--projname", "--ProjectName", type = str, help = "Name of project to be simulated", required = True)
+supportedTools = ["cadence", "vivado"]
+parser_simnogui.add_argument("-t", "--tool", type = str, choices = supportedTools, help = "Tool to simulate project with", default = "cadence")
+parser_simnogui.add_argument("-f", "--file", help = "Custom script file to be executed")
 
 # TODO: loganalyser args
+
 
 # Parse args and execute given command
 args = parser.parse_args()
 args.func(args)
+
+ConfigFile.close()

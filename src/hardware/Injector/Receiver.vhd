@@ -1,21 +1,16 @@
 --------------------------------------------------------------------------------
--- Title       : <Title Block>
--- Project     : Default Project Name
+-- Title       : Receiver
+-- Project     : HyHeMPS
 --------------------------------------------------------------------------------
 -- File        : Receiver.vhd
 -- Author      : Carlos Gewehr (carlos.gewehr@ecomp.ufsm.br)
 -- Company     : UFSM, GMICRO
 -- Standard    : VHDL-1993
 --------------------------------------------------------------------------------
--- Copyright (c) 2020 User Company Name
--------------------------------------------------------------------------------
 -- Description: 
 --------------------------------------------------------------------------------
--- Revisions:  Revisions and documentation are controlled by
--- the revision control system (RCS).  The RCS should be consulted
--- on revision history.
--------------------------------------------------------------------------------
-
+-- TODO:
+--------------------------------------------------------------------------------
 
 library ieee;
 	use ieee.std_logic_1164.all;
