@@ -94,7 +94,7 @@ architecture RTL of Injector is
     -- Payload Real Time 
     constant AmountOfMessagesSentFlag: integer := jsonGetInteger(InjectorJSONConfig, "AmountOfMessagesSentFlag");
     --constant RealTimeRandomFlag: integer := jsonGetInteger(InjectorJSONConfig, "RealTimeRandomFlag");
-    constant TimestampFlag: integer := jsonGetInteger(InjectorJSONConfig, "TimestampFlag");
+    constant TimestampFlag: integer := 2020; -- := jsonGetInteger(InjectorJSONConfig, "TimestampFlag");
 
     -- RNG seeds (for real time randomization of flits, currently not implemented)
     --signal RNGSeed1: integer := jsonGetInteger(InjectorJSONConfig, "RNGSeed1");

@@ -63,7 +63,7 @@ with open("../data/" + args.InstallName + ".source", "w") as SourceFile:
     SourceFile.write("export HIBRIDA_NAME=" + args.InstallName + "\n")
     SourceFile.write("export HIBRIDA_PATH=" + os.path.abspath(args.InstallPath) + "\n")
     SourceFile.write("export PATH=$PATH:$HIBRIDA_PATH/scripts\n")
-    SourceFile.write("alias " + args.InstallName + "=\"python3 " + args.InstallPath + "/scripts/mainScript.py\"\n")
+    SourceFile.write("alias " + args.InstallName + "=\"python " + args.InstallPath + "/scripts/mainScript.py\"\n")
     SourceFile.write("export HIBRIDA_CONFIG_FILE=$HIBRIDA_PATH/data/config.json\n")
     #SourceFile.write("export HIBRIDA_DEFAULT_DIRECTORY=" + args.DefaultProjDir + "\n")
     

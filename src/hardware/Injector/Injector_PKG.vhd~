@@ -60,7 +60,7 @@ package body Injector_PKG is
 
 	    constant PayloadSize: integer := jsonGetInteger(InjCFG, "PayloadSize");
         
-        variable TimestampFlag: integer := jsonGetInteger(InjCFG, "TimestampFlag");
+        variable TimestampFlag: integer := jsonGetInteger(InjCFG, "timestampFlag");
 
         constant NoCXSize: integer := jsonGetInteger(PlatCFG, "BaseNoCDimensions/0");
         constant SquareNoCBound: integer := jsonGetInteger(PlatCFG, "SquareNoCBound");

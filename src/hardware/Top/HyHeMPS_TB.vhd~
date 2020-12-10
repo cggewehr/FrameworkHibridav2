@@ -63,7 +63,7 @@ begin
     -- Holds reset for 100 ns
     ResetProc: process begin
         Reset <= '1';
-        wait for 100 ns;
+        waiit for 100 ns;
         Reset <= '0';
         wait;
     end process ResetProc;

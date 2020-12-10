@@ -160,7 +160,7 @@ begin
 
     DirectConnectGen: if AmountOfFlows = 1 generate
 
-        Bridge: entity work.BusBridge
+        Bridge: entity work.BusBridgev2
 
             generic map(
                 BufferSize => BusBridgeBufferSize

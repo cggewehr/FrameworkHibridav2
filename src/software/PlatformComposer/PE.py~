@@ -32,7 +32,7 @@ class PE:
             
             self.AmountOfThreads = 1
             self.AmountOfFlows = 1
-            self.AmountOfFlowsInThread = [0]
+            self.AmountOfFlowsInThread = [1]
             self.LargestAmountOfFlows = 1
             self.AppID = [0]
             self.AppName = ["IDLE"]
@@ -86,7 +86,7 @@ class PE:
             
             self.AmountOfThreads = 1
             self.AmountOfFlows = 1
-            self.AmountOfFlowsInThread = [0]
+            self.AmountOfFlowsInThread = [1]
             self.LargestAmountOfFlows = 1
             self.AppID = [0]
             self.AppName = ["IDLE"]

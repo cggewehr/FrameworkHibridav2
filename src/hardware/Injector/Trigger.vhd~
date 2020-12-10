@@ -122,8 +122,6 @@ begin
 				
 			end loop;
 
-            wait;
-
 		end process;
 
 	end generate CBRGen;
