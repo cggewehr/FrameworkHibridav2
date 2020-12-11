@@ -28,10 +28,10 @@ def projgen(args):
             elif ipt == "N" or ipt == "n":
                 exit(0)
         
-    # Check if project name already exists
     ConfigFile = open(os.environ["HIBRIDA_CONFIG_FILE"], "r")
     ConfigDict = json.loads(ConfigFile.read())
     
+    # Check if project name already exists
     if args.ProjectName in ConfigDict["Projects"].keys():
     
         while True:
@@ -84,18 +84,16 @@ def projgen(args):
         os.makedirs(ProjectDir + "/hardware/Misc", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
         os.makedirs(ProjectDir + "/hardware/Top", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
 	    		
-    if args.Makefile is not None:
-    
-        try:
-            MakefileName = str(args.Makefile)
-        except KeyError or IndexError:
-            print("Error: Makefile argument <Makefile> not given")
-            exit(1)
+    if args.Tool is not None:
 		
-        if MakefileName=="cadence":
+        if args.Tool=="cadence":
 
             os.makedirs(ProjectDir + "/INCA_libs/worklib", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
             os.makedirs(ProjectDir + "/log/cadence", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
+            
+            # Create hdl.var file
+            with open(ProjectDir + "/hdl.var", 'w') as hdl_var:
+                hdl_var.write("DEFINE WORK work\n")
             
             # Create cds.lib file
             with open(ProjectDir + "/cds.lib", 'w') as cds_file:
@@ -113,10 +111,11 @@ def projgen(args):
                 make_file.write("########################################################################\n")
                 make_file.write("\n")
                 make_file.write("########################## Command options #############################\n")
+                make_file.write("PROJECT_DIR=" + ProjectDir + "\n")
                 make_file.write("HIBRIDA_HARDWARE_PATH=$HIBRIDA_PATH/src/hardware\n")
                 make_file.write("VHDL_OPTS=-work worklib -cdslib cds.lib -logfile log/cadence/ncvhdl.log -errormax 15 -update -v93 -linedebug -status\n")
                 make_file.write("ELAB_OPTS=-work worklib -cdslib cds.lib -logfile log/cadence/ncelab.log -errormax 15 -update -status\n")
-                make_file.write("SIMH_OPTS=-cdslib cds.lib -logfile log/cadence/ncsim.log -errormax 15 -gui\n")
+                make_file.write("SIMH_OPTS=-cdslib cds.lib -logfile log/cadence/ncsim.log -errormax 15\n")
                 make_file.write("\n")
                 make_file.write("echo:\n")
                 make_file.write('	@echo "VHDL FILES"\n')
@@ -156,18 +155,42 @@ def projgen(args):
                 make_file.write('	@echo "############################################################"\n')
                 make_file.write('	@echo "################# Elaborate Top Level ######################"\n')
                 make_file.write('	@echo "############################################################"\n')
-                make_file.write("	ncelab $(ELAB_OPTS) worklib.hyhemps_tb\n")
+                make_file.write("	ncelab $(ELAB_OPTS) worklib.hyhemps_tb -generic \":ProjectDir => \"$(ProjectDir)\"\" \n")
                 make_file.write('	@echo "########### FINALIZE ELABORATION  HYBRID Files #############"\n')
                 make_file.write("\n")
                 make_file.write("sim:\n")
                 make_file.write('	@echo "############################################################"\n')
                 make_file.write('	@echo "##################   SIMULATION HeMPS  #####################"\n')
                 make_file.write('	@echo "############################################################"\n')
+                make_file.write("	ncsim $(SIMH_OPTS) -gui worklib.hyhemps_tb:rtl\n")
+                make_file.write('	@echo "############### FINALIZE SIMULATION HYBRID #################"\n')
+                make_file.write("\n")
+                make_file.write("simnogui:\n")
+                make_file.write('	@echo "############################################################"\n')
+                make_file.write('	@echo "##################   SIMULATION HeMPS  #####################"\n')
+                make_file.write('	@echo "############################################################"\n')
                 make_file.write("	ncsim $(SIMH_OPTS) worklib.hyhemps_tb:rtl\n")
                 make_file.write('	@echo "############### FINALIZE SIMULATION HYBRID #################"\n')
-	    
+                make_file.write("\n")
+                make_file.write("all:\n")
+                make_file.write("	make compile\n")
+                make_file.write("	make elab\n")
+                make_file.write("	make sim\n")
+                
+                # TODO: make clean
+                
+        elif args.Tool == "vivado":
+        
+            # Runs vivado with create project script
+            TCLScript = os.path.join(ConfigDict["HibridaPath"], "scripts", "vivado", "projgen.tcl")
+            FPGA = "xcku040-ffva1156-2-e"
+            HardwarePath = os.path.join(ConfigDict["HibridaPath"], "src", "hardware")
+            TCLArgs = args.ProjectName + " " + ProjectDir + " " + FPGA + " " + HardwarePath
+            os.system("vivado -mode batch -source " + TCLScript + " -tclargs " + TCLArgs)
+        
         else:
-            print("Error: Makefile argument <Makefile> not valid")
+        
+            print("Error: Tool <" + args.Tool + "> is not recognized")
             exit(1)
 			
     # TODO: Copy testbench HDL to project directory, in order to have project directory as reference directory in simulation tool

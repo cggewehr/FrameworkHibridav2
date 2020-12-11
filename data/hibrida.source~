@@ -1,7 +1,0 @@
-export HIBRIDA_NAME=hibrida
-export HIBRIDA_PATH=/home/usr/cgewehr/Desktop/FrameworkHibrida
-export PATH=$PATH:$HIBRIDA_PATH/scripts
-alias hibrida="python /home/usr/cgewehr/Desktop/FrameworkHibrida/scripts/mainScript.py"
-export HIBRIDA_CONFIG_FILE=$HIBRIDA_PATH/data/config.json
-export PYTHONPATH=$PYTHONPATH:$HIBRIDA_PATH/src/software/AppComposer
-export PYTHONPATH=$PYTHONPATH:$HIBRIDA_PATH/src/software/PlatformComposer

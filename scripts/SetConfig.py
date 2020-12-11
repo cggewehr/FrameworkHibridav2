@@ -370,3 +370,4 @@ def setConfig(args):
         ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     
     print("setConfig ran successfully!")
+    

@@ -24,15 +24,20 @@ library work;
 
 
 entity HyHeMPS_TB is
+
+    generic(
+        ProjectDir: string  -- Absolute path
+    );
     
 end entity HyHeMPS_TB;
 
 
 architecture RTL of HyHeMPS_TB is
-    constant PlatformConfigFile: string :=  "./platform/PlatformConfig.json";
+
+    constant PlatformConfigFile: string :=  ProjectDir & "/platform/PlatformConfig.json";
     constant PlatCFG: T_JSON := jsonLoad(PlatformConfigFile);
 
-    constant ClusterClocksConfigFile: string := "platform/ClusterClocks.json";
+    constant ClusterClocksConfigFile: string := ProjectDir & "/platform/ClusterClocks.json";
     constant ClusterClocksCFG: T_JSON := jsonLoad(ClusterClocksConfigFile);
 
     constant AmountOfPEs: integer := jsonGetInteger(PlatCFG, "AmountOfPEs");
@@ -68,6 +73,7 @@ begin
         wait;
     end process ResetProc;
 
+
     -- Generates clocks for every router/wrapper
     ClockGen: for i in 0 to AmountOfNoCNodes - 1 generate
         signal ClockPeriods: real_vector(0 to AmountOfNoCNodes - 1);
@@ -100,14 +106,14 @@ begin
 
             generic map(
                 PlatformConfigFile  => PlatformConfigFile,
-                PEConfigFile        => "flow/PE " & integer'image(i) & "/" & "PE " & integer'image(i) &  ".json",
+                PEConfigFile        => ProjectDir & "/flow/PE " & integer'image(i) & "/" & "PE " & integer'image(i) & ".json",
                 --InjectorConfigFile  => "flow/INJ" & integer'image(i) & ".json",
                 --InboundLogFilename  => "log/InLog" & integer'image(i) & ".txt",
                 --OutboundLogFilename => "log/OutLog" & integer'image(i) & ".txt"
-                ConfigPath => "./flow/",
-                LogPath => "./log/"
+                ConfigPath => ProjectDir & "/flow/",
+                LogPath => ProjectDir & "/log/"
             )
-            port map (
+            port map(
                 Reset   => Reset,
                 ClockTx => PEInterfaces(i).ClockTx,
                 Tx      => PEInterfaces(i).Tx,

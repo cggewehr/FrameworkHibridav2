@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import argparse
 import json
 import sys
 import os
@@ -6,14 +7,14 @@ import os
 # Imports command scripts
 import AddSearchPath
 import Projgen
-import Flowgen
 import SetConfig
-#import Comp
-#import Elab
-#import Sim
-#import Loganalyser
-
-import argparse
+import Flowgen
+import Comp
+import Elab
+import Sim
+import SimNoGUI
+import Run
+import LogAnalyser
 
 if os.getenv("HIBRIDA_NAME") is None:
     print("Error: Environment variable $HIBRIDA_NAME doesnt exist. Did you source/call the .source/.bat file created by the setup script?")
@@ -43,7 +44,9 @@ parser_projgen.add_argument("-pd", "--ProjectDirectory", "--projdir",  type = st
 parser_projgen.add_argument("-pn", "--ProjectName", "--projname", type = str, default = "HibridaProject")
 parser_projgen.add_argument("-a", "--AppendName", "--appendname", help = "Appends ProjectName to ProjectDir path", action = "store_true", default = None)
 parser_projgen.add_argument("-hd", "--HardwareDirs", "--hardwaredirs", help = "Create directories and subdirectories for custom hardware", action = "store_true", default = False)
-parser_projgen.add_argument("-m", "--Makefile", "--makefile", type = str, help = "Create makefile for compiling, elaborating and simulating project", default = "cadence")
+#parser_projgen.add_argument("-m", "--Makefile", "--makefile", type = str, help = "Create makefile for compiling, elaborating and simulating project", default = "cadence")
+supportedTools = ["cadence", "vivado"]
+parser_projgen.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
 
 # TODO: Create project from topology .json file
 #parser_projgen.add_argument("-f", "--TopologyFile", type = str, default = None)
@@ -65,35 +68,49 @@ parser_flowgen.add_argument("-p", "-pn", "--ProjectName", "--projname", type = s
 
 # compile args
 parser_compile = subparsers.add_parser("compile", help = "Compiles VHDL files with a given tool")
-parser_compile.add_argument("-p", "-pn", "--projname", "--ProjectName", type = str, help = "Name of project to be compiled", required = True)
+parser_compile.set_defaults(func=Compile.comp)
+parser_compile.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be compiled", required = True)
 supportedTools = ["cadence", "vivado"]
-parser_compile.add_argument("-t", "--tool", type = str, choices = supportedTools, help = "Tool to compile the project with", default = "cadence")
+parser_projgen.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
 # TODO: Make default tcl compilation scripts for each supported tool
-parser_compile.add_argument("-f", "--file", help = "Custom script file to be executed")
+#parser_compile.add_argument("-f", "--file", help = "Custom script file to be executed")
 
 # elab args
 parser_elab = subparsers.add_parser("elab", help = "Elabs top level entity after compilation step")
-parser_elab.add_argument("-p", "-pn", "--projname", "--ProjectName", type = str, help = "Name of project to be elaborated", required = True)
+parser_elab = subparsers.set_defaults(func=Elab.elab)
+parser_elab.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be elaborated", required = True)
 supportedTools = ["cadence", "vivado"]
-parser_elab.add_argument("-t", "--tool", type = str, choices = supportedTools, help = "Tool to elaborate top level entity", default = "cadence")
-parser_elab.add_argument("-f", "--file", help = "Custom script file to be executed")
+parser_projgen.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
+#parser_elab.add_argument("-f", "--file", help = "Custom script file to be executed")
 
 # sim args
 parser_sim = subparsers.add_parser("sim", help = "Simulates project with waveform viewer")
-parser_sim.add_argument("-p", "-pn", "--projname", "--ProjectName", type = str, help = "Name of project to be simulated", required = True)
+parser_sim = subparsers.set_defaults(func=Sim.sim)
+parser_sim.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be simulated", required = True)
 supportedTools = ["cadence", "vivado"]
-parser_sim.add_argument("-t", "--tool", type = str, choices = supportedTools, help = "Tool to simulate project with", default = "cadence")
-parser_sim.add_argument("-f", "--file", help = "Custom script file to be executed")
+parser_projgen.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
+#parser_sim.add_argument("-f", "--file", help = "Custom script file to be executed")
 
-# simnogui
-parser_simnogui = subparsers.add_parser("sim", help = "Simulates project without waveform viewer")
-parser_simnogui.add_argument("-p", "-pn", "--projname", "--ProjectName", type = str, help = "Name of project to be simulated", required = True)
+# simnogui args
+parser_simnogui = subparsers.add_parser("simnogui", help = "Simulates project without waveform viewer")
+parser_simnogui = subparsers.set_defaults(func=SimNoGUI.simnogui)
+parser_simnogui.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be simulated", required = True)
 supportedTools = ["cadence", "vivado"]
-parser_simnogui.add_argument("-t", "--tool", type = str, choices = supportedTools, help = "Tool to simulate project with", default = "cadence")
-parser_simnogui.add_argument("-f", "--file", help = "Custom script file to be executed")
+parser_projgen.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
+#parser_simnogui.add_argument("-f", "--file", help = "Custom script file to be executed")
 
-# TODO: loganalyser args
+# run args
+parser_simnogui = subparsers.add_parser("run", help = "Compiles, elaborates and simulates project with waveform viewer")
+parser_simnogui = subparsers.set_defaults(func=Run.run)
+parser_simnogui.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be simulated", required = True)
+supportedTools = ["cadence", "vivado"]
+parser_projgen.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
+#parser_simnogui.add_argument("-f", "--file", help = "Custom script file to be executed")
 
+# loganalyzer args
+parser_loganalyzer = subparsers.add_parser("loganalyzer", help = "Analyzes log generated by simulation and informs performance parameters such as average latency")
+parser_loganalyzer = subparsers.set_defaults(func=LogAnalyser.loganalyzer)
+parser_loganalyzer.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project whose logs will be analyzed", required = True)
 
 # Parse args and execute given command
 args = parser.parse_args()

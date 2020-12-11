@@ -1,7 +1,7 @@
 import json
 import os
 
-def elab(args):
+def run(args):
 
     ConfigFile = open(os.environ["HIBRIDA_CONFIG_FILE"], "r")
     ConfigDict = json.loads(ConfigFile.read())
@@ -21,13 +21,13 @@ def elab(args):
             print("Error: Makefile does not exist for project <" + args.ProjectName + ">")
             print("Did you run projgen for another tool? To compile/elab/sim with with Cadence tools you must run projgen with Tool set as \"cadence\".")
         
-        # Runs makefile with elab rule
-        os.system("make -f " + os.path.join(ProjectDir, args.ProjectName) + " makefile elab")
+        # Runs makefile with all rule
+        os.system("make -f " + os.path.join(ProjectDir, args.ProjectName) + " makefile all")
         
     elif args.Tool == "vivado":
         
-        # Runs vivado with elab script
-        TCLScript = os.path.join(ConfigDict["HibridaPath"], "scripts", "vivado", "elab.tcl")
+        # Runs vivado with run script
+        TCLScript = os.path.join(ConfigDict["HibridaPath"], "scripts", "vivado", "run.tcl")
         TCLArgs = args.ProjectName + " " + ProjectDir
         os.system("vivado -mode batch -source " + TCLScript + " -tclargs " + TCLArgs)
         
@@ -36,6 +36,6 @@ def elab(args):
         print("Error: Tool <" + args.Tool + "> is not recognized")
         exit(1)
     
-    print("elab ran successfully!")
+    print("run ran successfully!")
     ConfigFile.close()
     
