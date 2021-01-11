@@ -117,7 +117,7 @@ package JSON is
 	function jsonGetIntegerArray(JSONContext : T_JSON; Path : string; Len : positive) return integer_vector;
 	--function jsonGetIntegerArray(JSONContext : T_JSON; Path : string; Len : positive) return integerArray;
 	function jsonGetRealArray(JSONContext : T_JSON; Path : string) return real_vector;
-	function jsonGetRealArray(JSONContext : T_JSON; Path : string, Len: positive) return real_vector;
+	function jsonGetRealArray(JSONContext : T_JSON; Path : string; Len: positive) return real_vector;
 
 	function jsonIsBoolean(JSONContext : T_JSON; Path : STRING) return BOOLEAN;
 	function jsonIsNull(JSONContext : T_JSON; Path : STRING) return BOOLEAN;
@@ -1667,7 +1667,7 @@ package body JSON is
 	begin
 	  for i in 0 to Len-1 loop
 	    --return_value(i) := to_natural_dec(jsonGetString(JSONContext, Path & "/" & integer'image(i)));
-	    return_value(i) := real'image(jsonGetString(JSONContext, Path & "/" & integer'image(i)));
+	    return_value(i) := integer'image(jsonGetString(JSONContext, Path & "/" & integer'image(i)));
 	  end loop;
 	  return return_value;
 	end function;
@@ -1685,11 +1685,11 @@ package body JSON is
 
 	-- function to get a real_vector of a fixed length from the compressed content extracted from a JSON input
 	function jsonGetRealArray(JSONContext: T_JSON; Path: string; Len: positive) return real_vector is
-	  variable return_value : integer_vector(Len-1 downto 0);
+	  variable return_value : real_vector(Len-1 downto 0);
 	begin
 	  for i in 0 to Len-1 loop
 	    --return_value(i) := to_natural_dec(jsonGetString(JSONContext, Path & "/" & to_string(i)));
-	    return_value(i) := to_natural_dec(jsonGetString(JSONContext, Path & "/" & integer'image(i)));
+	    return_value(i) := real'image(jsonGetString(JSONContext, Path & "/" & integer'image(i)));
 	  end loop;
 	  return return_value;
 	end function;
