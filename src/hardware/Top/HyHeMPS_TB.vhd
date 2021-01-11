@@ -49,6 +49,7 @@ architecture RTL of HyHeMPS_TB is
 
     signal Reset: std_logic := '1';
     signal Clocks: std_logic_vector(0 to AmountOfNoCNodes - 1);
+    constant ClockPeriods: real_vector(0 to AmountOfNoCNodes - 1) := jsonGetRealArray(ClusterClocksCFG, "ClusterClockPeriods");
 
     procedure GenerateClock(constant ClockPeriod: in time; signal Clock: out std_logic) is begin
 
@@ -67,18 +68,19 @@ begin
 
     -- Holds reset for 100 ns
     ResetProc: process begin
+
         Reset <= '1';
         wait for 100 ns;
+        
         Reset <= '0';
         wait;
+
     end process ResetProc;
 
 
     -- Generates clocks for every router/wrapper
     ClockGen: for i in 0 to AmountOfNoCNodes - 1 generate
-        signal ClockPeriods: real_vector(0 to AmountOfNoCNodes - 1);
-    begin
-        ClockPeriods(i) <= jsonGetReal(ClusterClocksCFG, "ClusterClockPeriods/" & integer'image(i));
+
         GenerateClock(ClockPeriods(i) * 1 ns, Clocks(i));
 
     end generate ClockGen;

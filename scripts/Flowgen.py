@@ -20,7 +20,6 @@ def flowgen(args):
     # Gets framework configs
     ConfigFile = open(os.getenv("HIBRIDA_CONFIG_FILE"), "r")
     ConfigDict = json.loads(ConfigFile.read())
-    
     ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
 
     # Opens Allocation Map JSON file
@@ -28,6 +27,7 @@ def flowgen(args):
         
     if AllocMapFileName is None:
         print("Error: Allocation Map file has not been set for project <" + args.ProjectName + ">. Aborting flowgen.")
+        print("Please use the setConfig command with -a option to set an Allocation Map file")
         exit(1)
         
     try:
@@ -44,6 +44,7 @@ def flowgen(args):
         
     if ClusterClocksFileName is None:
         print("Error: Cluster Clocks file has not been set for project <" + args.ProjectName + ">. Aborting flowgen.")
+        print("Please use the setConfig command with -c option to set a Cluster Clocks file")
         exit(1)
         
     try:
@@ -60,6 +61,7 @@ def flowgen(args):
         
     if TopologyFileName is None:
         print("Error: Topology file has not been set for project <" + args.ProjectName + ">. Aborting flowgen.")
+        print("Please use the setConfig command with -t option to set a Topology file")
         exit(1)
         
     try:
@@ -76,6 +78,7 @@ def flowgen(args):
         
     if WorkloadFileName is None:
         print("Error: Workload file has not been set for project <" + args.ProjectName + ">. Aborting flowgen.")
+        print("Please use the setConfig command with -w option to set a Workload file")
         exit(1)
         
     try:

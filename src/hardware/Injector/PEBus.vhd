@@ -176,8 +176,8 @@ begin
 	end generate INJConnectGen;
 
 	-- Connects Bus to comm structure
-	DataOut <= busData;
-	DataOutAV <= busTx;
+	DataOut <= busData when Reset = '0' else (others => '0');
+	DataOutAV <= busTx when Reset = '0' else '0';
 	ClockTx <= Clock; 
 
 end architecture RTL;

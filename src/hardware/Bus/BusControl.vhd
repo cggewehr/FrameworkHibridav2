@@ -77,7 +77,7 @@ architecture RTL of BusControl is
 
 		end loop;
 
-		return Addresses'high;  -- Return index of wrapper if given ADDR was not found in bus
+		return Addresses'high;  -- Return index of wrapper (always @ the greatest postition) if given ADDR was not found in bus
 		
 	end function GetIndexOfAddr;
 

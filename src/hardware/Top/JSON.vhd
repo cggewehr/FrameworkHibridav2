@@ -43,6 +43,7 @@ use			IEEE.STD_LOGIC_1164.all;
 
 
 package JSON is
+
 	constant C_JSON_VERBOSE		: BOOLEAN		:= FALSE;
 	constant C_JSON_NUL				: CHARACTER	:= NUL;
 
@@ -72,18 +73,18 @@ package JSON is
 	constant C_JSONFILE_INDEX_MAX : T_UINT16 := 16*C_JSON_INDEX_MAX;
 
 	type T_JSON is record
-		Content				: STRING(1 to T_UINT16'high);
+		Content			: STRING(1 to T_UINT16'high);
 		ContentCount	: T_UINT16;
-		Index					: T_JSON_INDEX(0 to C_JSON_INDEX_MAX);
+		Index			: T_JSON_INDEX(0 to C_JSON_INDEX_MAX);
 		IndexCount		: T_UINT16;
-		Error					: STRING(1 to C_JSON_ERROR_MESSAGE_LENGTH);
+		Error			: STRING(1 to C_JSON_ERROR_MESSAGE_LENGTH);
 	end record;
 
 	type T_JSON_PATH_ELEMENT_TYPE is (PATH_ELEM_KEY, PATH_ELEM_INDEX);
 
 	type T_JSON_PATH_ELEMENT is record
 		StringStart		: T_UINT16;
-		StringEnd			: T_UINT16;
+		StringEnd		: T_UINT16;
 		ElementType		: T_JSON_PATH_ELEMENT_TYPE;
 	end record;
 
@@ -107,19 +108,22 @@ package JSON is
 	procedure jsonReportIndex(Index : T_JSON_INDEX; Content : STRING; StringBuffer : inout STRING; StringWriter : inout NATURAL);
 
 	function jsonGetBoolean(JSONContext : T_JSON; Path : STRING) return BOOLEAN;
-  function jsonGetReal(JSONContext : T_JSON; Path : STRING) return real;
+    function jsonGetReal(JSONContext : T_JSON; Path : STRING) return real;
 	function jsonGetInteger(JSONContext : T_JSON; Path : STRING) return integer;
 	function jsonGetString(JSONContext : T_JSON; Path : STRING) return STRING;
+
 	function jsonGetIntegerArray(JSONContext : T_JSON; Path : string) return integer_vector;
 	--function jsonGetIntegerArray(JSONContext : T_JSON; Path : string) return integerArray;
 	function jsonGetIntegerArray(JSONContext : T_JSON; Path : string; Len : positive) return integer_vector;
 	--function jsonGetIntegerArray(JSONContext : T_JSON; Path : string; Len : positive) return integerArray;
---	function jsonGetRealArray(JSONContext : T_JSON; Path : string) return real_vector;
+	function jsonGetRealArray(JSONContext : T_JSON; Path : string) return real_vector;
+	function jsonGetRealArray(JSONContext : T_JSON; Path : string, Len: positive) return real_vector;
 
 	function jsonIsBoolean(JSONContext : T_JSON; Path : STRING) return BOOLEAN;
 	function jsonIsNull(JSONContext : T_JSON; Path : STRING) return BOOLEAN;
 	function jsonIsString(JSONContext : T_JSON; Path : STRING) return BOOLEAN;
 	function jsonIsNumber(JSONContext : T_JSON; Path : STRING) return BOOLEAN;
+
 end package;
 
 
@@ -1497,7 +1501,7 @@ package body JSON is
 				end if;	-- Index = 0
 				for j in 1 to Index loop
 					if (IndexElement.NextIndex = 0) then
-						report "jsonGetElementIndex: Reached last element in chain." severity NOTE; --FAILURE
+						report "jsonGetElementIndex: Reached last element in chain. Path:" & Path severity NOTE; --FAILURE
 						return 0;
 					end if;
 					IndexElement		:= JSONContext.Index(IndexElement.NextIndex);
@@ -1656,10 +1660,32 @@ package body JSON is
 	end;
 
 	-- function to get a integer_vector of a fixed length from the compressed content extracted from a JSON input
-	function jsonGetIntegerArray(JSONContext : T_JSON; Path : string; Len : positive) return integer_vector is
+	function jsonGetIntegerArray(JSONContext: T_JSON; Path: string; Len: positive) return integer_vector is
 	--function jsonGetIntegerArray(JSONContext : T_JSON; Path : string; Len : positive) return integerArray is
 	  variable return_value : integer_vector(Len-1 downto 0);
 	  --variable return_value : integerArray(Len-1 downto 0);
+	begin
+	  for i in 0 to Len-1 loop
+	    --return_value(i) := to_natural_dec(jsonGetString(JSONContext, Path & "/" & integer'image(i)));
+	    return_value(i) := real'image(jsonGetString(JSONContext, Path & "/" & integer'image(i)));
+	  end loop;
+	  return return_value;
+	end function;
+
+	-- function to get a real_vector from the compressed content extracted from a JSON input
+	function jsonGetRealArray(JSONContext: T_JSON; Path: string) return integer_vector is
+	  variable len: natural:=0;
+	begin
+	  --while jsonIsNumber(JSONContext, Path & "/" & to_string(len)) loop
+	  while jsonIsNumber(JSONContext, Path & "/" & integer'image(len)) loop
+	    len := len+1;
+	  end loop;
+	  return jsonGetRealArray(JSONContext, Path, len);
+	end;
+
+	-- function to get a real_vector of a fixed length from the compressed content extracted from a JSON input
+	function jsonGetRealArray(JSONContext: T_JSON; Path: string; Len: positive) return integer_vector is
+	  variable return_value : integer_vector(Len-1 downto 0);
 	begin
 	  for i in 0 to Len-1 loop
 	    --return_value(i) := to_natural_dec(jsonGetString(JSONContext, Path & "/" & to_string(i)));

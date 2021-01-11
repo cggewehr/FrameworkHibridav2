@@ -106,7 +106,7 @@ architecture RTL of CrossbarControl is
 
 		end loop;
 
-		return 0;  -- Return index of wrapper if given ADDR was not found in crossbar
+		return Addresses'high;  -- Return index of wrapper (always @ the greatest postition) if given ADDR was not found in crossbar
 		
 	end function GetIndexOfAddr;
 
