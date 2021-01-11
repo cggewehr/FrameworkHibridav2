@@ -1673,7 +1673,7 @@ package body JSON is
 	end function;
 
 	-- function to get a real_vector from the compressed content extracted from a JSON input
-	function jsonGetRealArray(JSONContext: T_JSON; Path: string) return integer_vector is
+	function jsonGetRealArray(JSONContext: T_JSON; Path: string) return real_vector is
 	  variable len: natural:=0;
 	begin
 	  --while jsonIsNumber(JSONContext, Path & "/" & to_string(len)) loop
@@ -1684,7 +1684,7 @@ package body JSON is
 	end;
 
 	-- function to get a real_vector of a fixed length from the compressed content extracted from a JSON input
-	function jsonGetRealArray(JSONContext: T_JSON; Path: string; Len: positive) return integer_vector is
+	function jsonGetRealArray(JSONContext: T_JSON; Path: string; Len: positive) return real_vector is
 	  variable return_value : integer_vector(Len-1 downto 0);
 	begin
 	  for i in 0 to Len-1 loop
