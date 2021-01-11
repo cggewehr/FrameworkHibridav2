@@ -1667,7 +1667,7 @@ package body JSON is
 	begin
 	  for i in 0 to Len-1 loop
 	    --return_value(i) := to_natural_dec(jsonGetString(JSONContext, Path & "/" & integer'image(i)));
-	    return_value(i) := integer'image(jsonGetString(JSONContext, Path & "/" & integer'image(i)));
+	    return_value(i) := integer'value(jsonGetString(JSONContext, Path & "/" & integer'image(i)));
 	  end loop;
 	  return return_value;
 	end function;
@@ -1689,7 +1689,7 @@ package body JSON is
 	begin
 	  for i in 0 to Len-1 loop
 	    --return_value(i) := to_natural_dec(jsonGetString(JSONContext, Path & "/" & to_string(i)));
-	    return_value(i) := real'image(jsonGetString(JSONContext, Path & "/" & integer'image(i)));
+	    return_value(i) := real'value(jsonGetString(JSONContext, Path & "/" & integer'image(i)));
 	  end loop;
 	  return return_value;
 	end function;
