@@ -12,7 +12,7 @@
 -- Revisions   : v0.01 - Initial implementation
 --             : v1.0 - Verified
 --------------------------------------------------------------------------------
--- TODO        :
+-- TODO        : Make NI
 --------------------------------------------------------------------------------
 
 
@@ -42,13 +42,13 @@ entity PE is
 	    --Clock   : in  std_logic;
         Reset   : in  std_logic;
 
-	    -- Output Interface (Injector)
+	    -- Output Interface (from Injectors, through PEBus)
         ClockTx : out std_logic;
         Tx      : out std_logic;
         DataOut : out DataWidth_t;
         CreditI : in  std_logic;
 
-        -- Input Interface (Receiver)
+        -- Input Interface (to Receiver)
         ClockRx : in  std_logic;        
         Rx      : in  std_logic;
         DataIn  : in  DataWidth_t;
@@ -92,6 +92,7 @@ architecture Injector of PE is
             InjectorGenFlow: for FlowNum in 0 to AmountOfFlowsInThread(ThreadNum) - 1 loop
 
                 InjectorInterfaces_1D(i) := InjectorInterfaces_2D(ThreadNum, FlowNum);
+
                 i := i + 1;
 
             end loop InjectorGenFlow;
@@ -123,7 +124,7 @@ begin
                 )
                 port map(
                     Clock => InjectorInterfaces_2D(ThreadNum, FlowNum).Clock,
-                    Reset => InjectorInterfaces_2D(ThreadNum, FlowNum).Reset,
+                    Reset => Reset,
                     Enable => InjectorInterfaces_2D(ThreadNum, FlowNum).Enable,
                     DataOut => InjectorInterfaces_2D(ThreadNum, FlowNum).DataOut,
                     DataOutAV => InjectorInterfaces_2D(ThreadNum, FlowNum).DataOutAV,
@@ -147,7 +148,7 @@ begin
                     PlatformConfigFile => PlatformConfigFile
                 )
                 port map(
-                    Reset => InjectorInterfaces_2D(ThreadNum, FlowNum).Reset,
+                    Reset => Reset,
                     Enable => InjectorInterfaces_2D(ThreadNum, FlowNum).Enable,
                     InjectorClock => InjectorInterfaces_2D(ThreadNum, FlowNum).Clock,
                     OutputBufferAvailableFlag => InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag

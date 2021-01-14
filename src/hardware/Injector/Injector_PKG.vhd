@@ -29,7 +29,7 @@ package Injector_PKG is
 	type InjectorInterface is record
 
 		Clock: std_logic;
-		Reset: std_logic;
+		--Reset: std_logic;
 
 		Enable: std_logic;
 
