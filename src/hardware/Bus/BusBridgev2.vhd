@@ -47,7 +47,7 @@ entity BusBridge is
 		CreditI  : in std_logic;
 
 		-- Arbiter Interface
-		Ack      : out std_logic;
+		ACK      : out std_logic;
 		Request  : out std_logic;
 		Grant    : in std_logic
 
@@ -61,7 +61,7 @@ architecture RTL of BusBridge is
 	type state_t is (Sreset, Sstandby, SwaitForGrant, Stransmit);
 	signal currentState: state_t;
 	
-	signal flitCounter: integer;
+	--signal flitCounter: integer;
 
 	signal dataTristate: DataWidth_t;
 
@@ -102,8 +102,8 @@ begin
 		);
 
 
-	-- 
-	ClockTx <= Clock;
+	-- Same as struct clock (clock domain crossing occurs at InjBuffer)
+	ClockTx <= ClockRx;
 
 
 	-- 
@@ -115,16 +115,16 @@ begin
 
 
 	-- 
-	ControlFSM: process(Clock) begin
+	ControlFSM: process(ClockRx) begin
 
-		if rising_edge(Clock) then
+		if rising_edge(ClockRx) then
 
 			case currentState is
 
 				-- Sets default values
 				when Sreset => 
 
-					Ack <= 'Z';
+					ACK <= 'Z';
 					Request <= '0';
 
 				-- Waits for a new message
@@ -144,11 +144,11 @@ begin
 				-- Waits for arbiter grant signal
 				when SwaitForGrant => 
 
-					flitCounter <= to_integer(unsigned(DataIn)) + 2;
+					--flitCounter <= to_integer(unsigned(DataIn)) + 2;
 
 					if Grant = '1' then
 
-						Ack <= '1';
+						ACK <= '0';
 						Request <= '0';
 
 						currentState <= Stransmit;
@@ -162,15 +162,17 @@ begin
 				-- Transmits message through bus
 				when Stransmit => 
 
-					Ack <= 'Z';
+					--ACK <= 'Z';
 
-					if CreditI = '1' then
-						flitCounter <= flitCounter - 1;
+					--if CreditI = '1' then
+					--	flitCounter <= flitCounter - 1;
 
-					end if;
+					--end if;
 
 					-- Determines if this is the last flit of msg
-					if flitCounter = 1 and CreditI = '1' then
+					--if flitCounter = 1 and CreditI = '1' then
+					if bufferAVFlag = '0' then
+						ACK <= '1';
 						currentState <= Sstandby;
 
 					else
@@ -181,7 +183,6 @@ begin
 			end case;
 
 			if Reset = '1' then
-
 				currentState <= Sreset;
 
 			end if;

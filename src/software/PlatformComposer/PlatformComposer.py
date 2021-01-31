@@ -12,7 +12,7 @@ from Injector import Injector
 class Platform:
 
     # Constructor
-    def __init__(self, BaseNoCDimensions, ReferenceClock, StandaloneStruct = False, BridgeBufferSize = 512):
+    def __init__(self, BaseNoCDimensions, ReferenceClock, StandaloneStruct = False, BridgeBufferSize = 512, MasterPEPos = 0, DVFSServiceID, "200"):
 
         #self.BaseNoC = [[None for x in range(BaseNoCDimensions[0])] for y in range(BaseNoCDimensions[1])]
 
@@ -26,6 +26,9 @@ class Platform:
         self.StandaloneFlag = bool(StandaloneStruct)
 
         self.BridgeBufferSize = BridgeBufferSize
+        
+        # WARNING: Any value other than 0 for master PE location will not reflect on any actual changes as of yet, since in computeClusterClocks() a 0 value for PEPos is assumed
+        self.MasterPEPos = MasterPEPos
 
         self.Buses = []
         self.Crossbars = []
@@ -688,6 +691,18 @@ class Platform:
                 if ThreadInWorkload.PEPos is None:
                 
                     ThreadInWorkload.PEPos = PEPos
+                    ThreadInWorkload.BaseNoCPos = self.PEs[PEPos].BaseNoCPos
+                    
+                    # Allocated PE is in a Bus/Crossbar
+                    try:
+                        for PE in self.BaseNoC[PEPos % self.SquareNoCBound][PEPos / self.SquareNoCBound].PEs:
+                            if PEPos = PE.PEPos:
+                                ThreadInWorkload.StructPos = PE.StructPos
+                            
+                    # Allocated PE is in base NoC
+                    except AttributeError:
+                        ThreadInWorkload.StructPos = self.BaseNoC[PEPos % self.SquareNoCBound][PEPos / self.SquareNoCBound].StructPos
+                            
                     self.AllocationMap[PEPos] = ThreadInWorkload
                     
                 else:
@@ -705,7 +720,18 @@ class Platform:
                 
                 #ThreadInWorkload.PEPos = PEPos
                 for ThreadInSet in ThreadSet:
+                
                     ThreadInSet.PEPos = PEPos
+                    ThreadInSet.BaseNoCPos = self.PEs[PEPos].BaseNoCPos
+                    
+                    try:
+                        for PE in self.BaseNoC[PEPos % self.SquareNoCBound][PEPos / self.SquareNoCBound].PEs:
+                            if PEPos = PE.PEPos:
+                                ThreadInSet.StructPos = PE.StructPos
+                            
+                    # Allocated PE is in base NoC
+                    except AttributeError:
+                        ThreadInSet.StructPos = self.BaseNoC[PEPos % self.SquareNoCBound][PEPos / self.SquareNoCBound].StructPos
                     
                 # TODO: Check if allocated Threads allocated to a same PE communicate between themselves, and if so, dont generate Injectors for those Flows
                     
@@ -740,7 +766,240 @@ class Platform:
             # Assumes values are periods (in nanoseconds)
             self.ClusterClocks = ClusterClocks
         
+    
+    # Defines cluster clocks from computed link usage
+    def computeClusterClocks(self, Policy = "RMSD"):
+        
+        if self.Workload is None:
+            print("Error: A Workload has not yet been defined. Aborting computeLinkUsage()")
+            exit(1)
+            
+        if self.AllocationMap is None:
+            print("Error: An Allocation Map has not yet been defined. Aborting computeLinkUsage()")
+            exit(1)   
+            
+        import numpy
+            
+        def SequentialToXY(SequentialCoord):
+            return SequentialCoord % self.BaseNoCDimensions[0], SequentialCoord / self.BaseNoCDimensions[0]
+           
+           
+        def XYToSequential(XYTuple):
+            return (XYTuple[1] * self.BaseNoCDimensions[0]) + XYTuple[0]
+               
+        # Returns a list of routers according to the XY routing algorithm
+        def RouteFlow(FlowToRoute, TimeBarriers, RoutingAlgorithm = "XY", GenDVFSInjectors = False):
+            
+            SourceX, SourceY = SequentialToXY(FlowToRoute.SourceThread.BaseNoCPos)
+            TargetX, TargetY = SequentialToXY(FlowToRoute.TargetThread.BaseNoCPos)
+            
+            # [XDimension][YDimension][Port][TimeBarrier]
+            # Ports as numbers: EAST = 0, WEST = 1, NORTH = 2, SOUTH = 3, LOCAL = 4;
+            OutputPortUsage = [[[[0 for TimeBarrier in TimeBarriers] for i in range(5)] for y in range(self.BaseNoCDimensions[1])] for x in range(self.BaseNoCDimensions[0])]
+            InputPortUsage = [[[[0 for TimeBarrier in TimeBarriers] for i in range(5)] for y in range(self.BaseNoCDimensions[1])] for x in range(self.BaseNoCDimensions[0])]
+            
+            if RoutingAlgorithm = "XY":
+                RouterList = [(X, SourceY) for X in range(SourceX, TargetX + 1] + [(TargetX, Y) for Y in range(SourceY, TargetY + 1)]
+            
+            FlowTimeBarriers = []
+            for TimeBarrier in TimeBarriers:
+                if TimeBarrier >= FlowToRoute.StartTime and (TimeBarrier <= FlowToRoute.StopTime or FlowToRoute.StopTime == -1):
+                    FlowTimeBarriers.append(TimeBarrier)
+                    
+            # Set router ports along the routed path
+            for i, Router in enumerate(RouterList):
+            
+                X = Router[0]
+                Y = Router[1]
+                
+                OutputLink = None
+                InputLink = None
+                
+                try:
+                    NextX = RouterList[i+1][0]
+                    NextY = RouterList[i+1][1]
+                    
+                # Last router in path, set local ports and return
+                except IndexError:  
+                    OutputPortUsage[SourceX][SourceY][4][TimeBarrier] = FlowToRoute.Bandwidth
+                    InputPortUsage[TargetX][TargetY][4][TimeBarrier] = FlowToRoute.Bandwidth
+                    break
+                
+                # Horizontal movement
+                if NextX != X:
+                
+                    # West -> East
+                    if NextX > X:
+                        OutputLink = 1
+                        InputLink = 0
+                        
+                    # East -> West
+                    else:
+                        OutputLink = 0
+                        InputLink = 1
 
+                # Vertical movement
+                else:
+                
+                    # South -> North
+                    if NextY > Y:
+                        OutputLink = 3
+                        InputLink = 2
+                        
+                    # North -> South
+                    else:
+                        OutputLink = 2
+                        InputLink = 3
+                
+                for TimeBarrier in FlowTimeBarriers:
+                
+                    OutputPortUsage[X][Y][OutputLink][TimeBarrier] = FlowToRoute.Bandwidth
+                    InputPortUsage[NextX][NextY][InputLink][TimeBarrier] = FlowToRoute.Bandwidth
+            
+            FlowLinkUsage = [[[[max(OutputPortUsage[x][y][i][TimeBarrier], InputPortUsage[x][y][i][TimeBarrier]) for TimeBarrier in TimeBarriers] for i in range(5)] for y in range(self.BaseNoCDimensions[1])] for x in range(self.BaseNoCDimensions[0])]
+            return numpy.array(FlowLinkUsage)
+        
+        # TODO: Check if any Flows have hard real-time restrictions
+        
+        # Finds all Flow StartTime and StopTime values
+        TimeBarriers = []
+        
+        for App in self.Workload.Applications:
+            for ThreadInApp in App:
+                for OutgoingFlow in ThreadInApp.OutgoingFlows:
+                
+                    if OutgoingFlow.StartTime not in TimeBarriers:
+                        TimeBarriers.append(OutgoingFlow.StartTime)
+                        
+                    if OutgoingFlow.StopTime not in TimeBarriers:
+                        TimeBarriers.append(OutgoingFlow.StopTime)
+             
+        TimeBarriers.sort()
+        
+        # For Routers set clock according to the max of its links usages. 
+        # For Buses, set it as the sum of usages of PEs in it + local port of associated router
+        # For Crossbars, set it as the max of usages of PEs in it + local port of associated router
+        
+        BusUsage = [[0 for TimeBarrier in TimeBarriers] for BusInPlat in self.Buses]
+        #CrossbarUsage = [[[0 for PosInStruct in range(CrossbarInPlat.AmountOfPEs)] for TimeBarrier in TimeBarriers] for CrossbarInPlat in self.Crossbars] 
+        CrossbarOutputUsage = [[[0 for TimeBarrier in TimeBarriers] for PosInStruct in range(CrossbarInPlat.AmountOfPEs)] for CrossbarInPlat in self.Crossbars] 
+        CrossbarInputUsage = [[[0 for TimeBarrier in TimeBarriers] for PosInStruct in range(CrossbarInPlat.AmountOfPEs)] for CrossbarInPlat in self.Crossbars] 
+        NoCLinkUsage = numpy.array([[[[0 for TimeBarrier in TimeBarriers] for i in range(5)] for y in range(self.BaseNoCDimensions[1])] for x in range(self.BaseNoCDimensions[0])])
+
+        # Compute NoC link and Bus/Crossbar usages
+        for App in self.Workload.Applications:
+            for ThreadInApp in App:
+                for OutgoingFlow in ThreadInApp.OutgoingFlows:
+                    
+                    # Bus/Crossbar -> Bus/Crossbar
+                    #if OutgoingFlow.SourceThread.BaseNoCPos = BusinPlat.BaseNoCPos:
+                    if OutgoingFlow.SourceThread.BaseNoCPos = OutgoingFlow.TargetThread.BaseNoCPos:
+                    
+                        FlowTimeBarriers = []
+                        for TimeBarrier in TimeBarriers:
+                            if TimeBarrier >= OutgoingFlow.StartTime and (TimeBarrier <= OutgoingFlow.StopTime or OutgoingFlow.StopTime == -1):
+                                FlowTimeBarriers.append(TimeBarrier)
+                        
+                        BaseNoCX, BaseNoCY = SequentialToXY(OutgoingFlow.SourceThread.BaseNoCPos)
+                        
+                        # Source Struct = Bus
+                        if isinstance(self.BaseNoC[BaseNoCX][BaseNoCY], Bus):
+                            for TimeBarrier in FlowTimeBarriers:
+                                BusUsage[i][TimeBarrier] += OutgoingFlow.Bandwidth
+                           
+                        # Source Struct = Crossbar
+                        elif isinstance(self.BaseNoC[BaseNoCX][BaseNoCY], Crossbar):
+                            for TimeBarrier in FlowTimeBarriers:
+                                CrossbarOutputUsage[i][OutgoingFlow.SourceThread.StructPos][TimeBarrier] += OutgoingFlow.Bandwidth
+                                CrossbarInputUsage[i][OutgoingFlow.TargetThread.StructPos][TimeBarrier] += OutgoingFlow.Bandwidth
+                    
+                    else:
+                    
+                        NoCLinkUsage += RouteFlow(OutgoingFlow, TimeBarriers)
+             
+        # Compute final usages per cluster
+        RouterUsage = [0] * (self.BaseNoCDimensions[0] * self.BaseNoCDimensions[1])
+        BusUsage = numpy.array(BusUsage)
+        CrossbarUsage = numpy.array([[[max(CrossbarOutputUsage[i][PosInStruct][TimeBarrier], CrossbarInputUsage[i][PosInStruct][TimeBarrier]) for TimeBarrier in TimeBarriers] for PosInStruct in range(CrossbarInPlat.AmountOfPEs)] for i, CrossbarInPlat in enumerate(self.Crossbars)])
+        BusCount = 0
+        CrossbarCount = 0           
+        
+        if not GenDVFSInjectors:
+        
+            # Compute max bandwidth per router
+            for x in range(self.BaseNoCDimensions[0]):
+                for y in range(self.BaseNoCDimensions[1]):
+                
+                    # Add local Bus usage to associated router's local port
+                    if isinstance(self.BaseNoC[x][y], Bus):
+                    
+                        NoCLinkUsage[x][y][4] += BusUsage[BusCount]
+                        BusCount += 1
+                        
+                    # Set local Crossbar usage to associated router's local port
+                    elif isinstance(self.BaseNoC[x][y], Crossbar):
+                    
+                        NoCLinkUsage[x][y][4] = numpy.amax(CrossbarUsage[CrossbarCount])
+                        CrossbarCount += 1
+                    
+                    # Set router usage as max of link usages
+                    RouterUsage[XYToSequential((x,y))] = numpy.amax(NoCLinkUsage[x][y])
+                    
+            # Compute periods (in nanoseconds) such that the calculated bandwidth is provided
+            # self.InjectorClockPeriod = (DataWidth / 8) / (Flow.Bandwidth * 1000)  # in nanoseconds
+            ClusterClocks = [(32 / 8) / (MaxBandwidthPerRouter * 1000) for MaxBandwidthPerRouter in RouterUsage]
+            return ClusterClocks
+        
+        else:
+        
+            # Compute max bandwidth per router
+            for x in range(self.BaseNoCDimensions[0]):
+                for y in range(self.BaseNoCDimensions[1]):
+                
+                    # Add local Bus usage to associated router's local port
+                    if isinstance(self.BaseNoC[x][y], Bus):
+                    
+                        NoCLinkUsage[x][y][4] += BusUsage[BusCount]
+                        BusCount += 1
+                        
+                    # Set local Crossbar usage to associated router's local port
+                    elif isinstance(self.BaseNoC[x][y], Crossbar):
+                    
+                        for TimeBarrier in TimeBarriers:
+                            
+                            CrossbarUsagePerTimeBarrier = [UsagePerPosInStruct[TimeBarrier] for UsagePerPosInStruct in CrossbarUsage[CrossbarCount]]
+                            NoCLinkUsage[x][y][4][TimeBarrier] = numpy.amax(LocalCrossbarUsage)
+                            
+                        CrossbarCount += 1
+                    
+                    # Set router usage as max of link usages
+                    #RouterUsage[XYToSequential((x,y))] = numpy.amax(NoCLinkUsage[x][y])
+                    
+            # Generates DVFS config injectors for every cluster for every time barrier
+            DVFSControlThread = AppComposer.Thread(ThreadName = "DVFSControlThread")
+            # TODO: Make DVFSControlThread.PEPos = self.MasterPEPos and determine BaseNoCPos and StructPos accordingly
+            DVFSControlThread.PEPos = 0
+            DVFSControlThread.BaseNoCPos = 0
+            DVFSControlThread.StructPos = 0
+            
+            # TODO: Add to DVFSControlThread allocated ThreadSet
+            
+            for x in range(self.BaseNoCDimensions[0]):
+                for y in range(self.BaseNoCDimensions[1]):
+                    for TimeBarrier in TimeBarriers:
+                        
+                        DummyReceiverThread = AppComposer.Thread(ThreadName = "DVFSDummyReceiverThread")
+                        # TODO: Add PEPos, BaseNoCPos & StructPos to DummyReceiverThread
+                        
+                        DVFSFlow = Flow(Bandwidth = 100, SourceThread = DVFSControlThread, TargetThread = DummyReceiverThread, StartTime = TimeBarrier, MSGAmount = 1, ControlFlowFlag = True)
+                        DVFSControlThread.addFlow(DVFSFlow)
+                    
+                        # TODO: Compute payload for DVFS control message using calibration data from syntesis
+                        #getVoltageLevel(Frequency)
+                        
+            return True
+                        
+        
     # Generate JSON config files for PEs, Injectors and Platform
     def generateJSON(self, ProjectPath):
 
@@ -836,6 +1095,7 @@ class Platform:
         #JSONDict["WrapperAddresses"] = [self.WrapperAddresses[PEPos] for PEPos in self.WrapperAddresses.keys()]  #  Dict -> List
         JSONDict["WrapperAddresses"] = self.WrapperAddresses
         JSONDict["BridgeBufferSize"] = self.BridgeBufferSize
+        JSONDict["MasterPEPos"] = self.MasterPEPos
 
         # Bus info
         JSONDict["IsStandaloneBus"] = self.IsStandaloneBus
@@ -909,6 +1169,7 @@ class Platform:
         self.ReferenceClock = JSONDict["ReferenceClock"]  # In MHz
         self.StandaloneFlag = True if JSONDict["IsStandaloneBus"] or JSONDict["IsStandaloneCrossbar"] else False
         #self.BridgeBufferSize = JSONDict["BridgeBufferSize"]        
+        self.MasterPEPos = JSONDict["MasterPEPos"]        
         
         self.Buses = []
         self.Crossbars = []

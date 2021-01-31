@@ -8,7 +8,7 @@ import json as JSON
 
 class Flow:
 
-    def __init__(self, Bandwidth, TargetThread, SourceThread = None, FlowType = "CBR", StartTime = 0, StopTime = -1, Periodic = False):
+    def __init__(self, Bandwidth, TargetThread, SourceThread = None, FlowType = "CBR", StartTime = 0, StopTime = -1, Periodic = False, MSGAmount = 0, ControlFlowFlag = False):
 
         # SourceThread must be a Thread object
         if isinstance(SourceThread, Thread) or SourceThread is None:
@@ -27,12 +27,14 @@ class Flow:
             exit(1)
            
         self.Bandwidth = Bandwidth  # In MBps
-        self.FlowType = FlowType  # Only CBR currently supported
+        self.FlowType = FlowType  # Only CBR type currently supported
         
         # Dynamic parameters
         self.StartTime = StartTime
         self.StopTime = StopTime
         self.Periodic = Periodic
+        self.MSGAmount = MSGAmount
+        self.ControlFlowFlag = ControlFlowFlag
 
 
     def __str__(self):
@@ -79,8 +81,10 @@ class Thread:
         self.ParentApplication = None
         self.ThreadID = None
         
-        # To be set when Thread is allocated in parent Platform
+        # To be set when Thread is allocated in parent Platform with setAllocationMap()
+        self.BaseNoCPos = None
         self.PEPos = None
+        self.StructPos = None
 
         self.OutgoingFlows = []
         self.OutgoingBandwidth = 0
@@ -467,6 +471,9 @@ class Application:
                 flowDict["Bandwidth"] = OutgoingFlow.Bandwidth
                 flowDict["StartTime"] = OutgoingFlow.StartTime
                 flowDict["StopTime"] = OutgoingFlow.StopTime
+                flowDict["Periodic"] = OutgoingFlow.Periodic
+                flowDict["MSGAmount"] = OutgoingFlow.MSGAmount
+                flowDict["ControlFlowFlag"] = OutgoingFlow.ControlFlowFlag
                 
                 OutgoingFlows.append(flowDict)
 
@@ -526,7 +533,7 @@ class Application:
 
                 SourceThread = self.getThread(ThreadName = FlowInThread["SourceThread"])
                 TargetThread = self.getThread(ThreadName = FlowInThread["TargetThread"])
-                ThreadInApp.addFlow(Flow(Bandwidth = FlowInThread["Bandwidth"], SourceThread = SourceThread, TargetThread = TargetThread, StartTime = FlowInThread["StartTime"], StopTime = FlowInThread["StopTime"]))
+                ThreadInApp.addFlow(Flow(Bandwidth = FlowInThread["Bandwidth"], SourceThread = SourceThread, TargetThread = TargetThread, StartTime = FlowInThread["StartTime"], StopTime = FlowInThread["StopTime"], Periodic = FlowInThread["Periodic"], MSGAmount = FlowInThread["MSGAmount"], ControlFlowFlag = FlowInThread["ControlFlowFlag"]))
 
 
     def __str__(self):

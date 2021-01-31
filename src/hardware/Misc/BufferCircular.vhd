@@ -44,6 +44,7 @@ entity CircularBuffer is
 		ReadACK             : out std_logic;
 		
 		-- Status flags
+		--DataCount           : out integer;
 		BufferEmptyFlag     : out std_logic;
 		BufferFullFlag      : out std_logic;
 		BufferReadyFlag     : out std_logic;

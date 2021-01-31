@@ -33,6 +33,7 @@ class Injector:
         self.StartTime = float(Flow.StartTime)  # in nanoseconds
         self.StopTime = float(Flow.StopTime)  # in nanoseconds
         self.Periodic = Flow.Periodic
+        self.MSGAmount = Flow.MSGAmount
         
         # Thread info
         self.SourcePEPos = SourceThread.PEPos

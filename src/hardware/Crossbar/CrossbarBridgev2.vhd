@@ -34,7 +34,7 @@ entity CrossbarBridge is
 		CreditI  : in std_logic_vector;
 
 		-- Arbiters Interface
-		Ack      : out std_logic_vector;
+		ACK      : out std_logic_vector;
 		Request  : out std_logic_vector;
 		Grant    : in std_logic_vector
 
@@ -124,7 +124,7 @@ begin
 			-- Set default values
 			when Sreset =>
 
-				Ack <= (others => '0');
+				ACK <= (others => '0');
 				Request <= (others => '0');
 
 			-- Wait for a new message to be sent
@@ -155,7 +155,7 @@ begin
 
 				if Grant(targetIndex) = '1' then
 
-					Ack(targetIndex) <= '1';
+					--ACK(targetIndex) <= '1';
 					Request(targetIndex) <= '0';
 
 					currentState <= Stransmit;
@@ -169,7 +169,7 @@ begin
 			-- Sends message
 			when Stransmit => 
 
-				Ack(targetIndex) <= '0';
+				--ACK(targetIndex) <= '0';
 
 				if CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
 					flitCounter <= flitCounter - 1;
@@ -177,6 +177,7 @@ begin
 				end if;
 
 				if flitCounter = 1 and CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
+					Ack(targetIndex) <= '1';
 					currentState <= Sstandby;
 
 				else

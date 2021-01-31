@@ -1638,6 +1638,7 @@ package body JSON is
   -- NEW
 	function jsonGetInteger(JSONContext : T_JSON; Path : STRING) return integer is
 	begin
+		report Path severity warning;
 		return integer'value(jsonGetString(JSONContext, Path));
 	end function;
 

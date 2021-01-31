@@ -71,7 +71,8 @@ begin
 	-- Instantiates bridges
 	BusBridgeGen: for i in 0 to AmountOfInjectors - 1 generate
 
-		BusBridge: entity work.BusBridge
+		--BusBridge: entity work.BusBridge
+		InjBuffer: entity work.InjBuffer
 
 			generic map(
 				BufferSize => BridgeBufferSize

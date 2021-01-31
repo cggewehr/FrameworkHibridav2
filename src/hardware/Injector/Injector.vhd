@@ -32,24 +32,24 @@ library work;
 entity Injector is
 
 	generic(
-        InjectorConfigFile   : string;
-        PlatformConfigFile   : string;
-        OutboundLogFilename  : string
+        InjectorConfigFile: string;
+        PlatformConfigFile: string;
+        OutboundLogFilename: string
 	);
 
 	port(
 
 		-- Basic
-		Clock : in std_logic;
-		Reset : in std_logic;
+		Clock: in std_logic;
+		Reset: in std_logic;
 
         -- Input Interface (From Trigger)
-        Enable : in std_logic;
+        Enable: in std_logic;
 
 		-- Output Interface (To Output Buffer)
-		DataOut : out DataWidth_t;
-		DataOutAV : out std_logic;
-        OutputBufferAvailableFlag : in std_logic
+		DataOut: out DataWidth_t;
+		DataOutAV: out std_logic;
+        OutputBufferAvailableFlag: in std_logic
 
 	);
 

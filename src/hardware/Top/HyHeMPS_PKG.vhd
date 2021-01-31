@@ -111,6 +111,7 @@ package HyHeMPS_PKG is
     procedure UNIFORM(SEED1, SEED2: inout POSITIVE; X: out REAL); -- Used for random number generation
     function incr(value: integer; maxValue: in integer; minValue: in integer) return integer;
     function decr(value: integer; maxValue: in integer; minValue: in integer) return integer;
+    function decode(decodeIn: std_logic_vector) return std_logic_vector;
 
 end package HyHeMPS_PKG;
 
@@ -331,5 +332,27 @@ package body HyHeMPS_PKG is
 
     end function decr;
 
+    function decode(decodeIn: std_logic_vector) return std_logic_vector is
+
+        constant minValue: unsigned(decodeIn'range) := (others => '0');
+        constant maxValue: unsigned(decodeIn'range) := (others => '1');
+
+        variable decodeOut: std_logic_vector(2**decodeIn'length - 1 downto 0) := (others => '0');
+
+    begin
+
+        for i in to_integer(minValue) to to_integer(maxValue) loop 
+
+            if i = unsigned(decodeIn) then
+
+                decodeOut(i) := '1';
+
+            end if;
+
+        end loop;
+
+        return decodeOut;
+        
+    end function decode;
 
 end package body HyHeMPS_PKG;
