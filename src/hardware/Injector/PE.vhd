@@ -77,70 +77,62 @@ architecture Injector of PE is
     constant ThreadID: integer_vector(0 to AmountOfThreads - 1) := jsonGetIntegerArray(PEJSONConfig, "ThreadID");
     constant AppID: integer_vector(0 to AmountOfThreads - 1) := jsonGetIntegerArray(PEJSONConfig, "AppID");
 
-    -- FIFO -> Buffer signals
-    signal FIFODataOut: DataWidth_vector(0 to AmountOfFlows - 1);
-    signal FIFODataAV: std_logic_vector(0 to AmountOfFlows - 1);
-    signal FIFOCreditI: std_logic_vector(0 to AmountOfFlows - 1);
-
     -- Injector/Trigger signals
     type InjectorInterface_2vector is array(0 to AmountOfThreads - 1, 0 to MaxAmountOfFlows - 1) of InjectorInterface;
     signal InjectorInterfaces_2D: InjectorInterface_2vector;
 
-    --function InjectorInterfaceTo1D(InjectorInterfaces_2D: InjectorInterface_2vector; AmountOfFlows: integer) return InjectorInterface_vector is 
+    function get_i(ThreadNum: integer; FlowNum: integer; AmountOfFlowsInThread: integer_vector) return integer is 
+        variable i: integer := 0;
+        variable loopBound: integer := 0;
+    begin
+
+        if ThreadNum = 0 then
+            return FlowNum;
+        end if;
+
+        -- Sum amount of flows in previous threads (before thread of interest)
+        SumPrevThreads: for Thread in 0 to ThreadNum - 1 loop
+            i := i + AmountOfFlowsInThread(Thread);
+        end loop SumPrevThreads;
+
+        return i + FlowNum;
+
+    end function get_i;
+
+    --signal InjectorInterfaces_1D: InjectorInterface_vector(0 to AmountOfFlows - 1) := InjectorInterfaceTo1D(InjectorInterfaces_2D, AmountOfFlows);
+    signal InjectorInterfaces_1D: InjectorInterface_vector(0 to AmountOfFlows - 1);
+
+    -- Translates interface mapping from InjInterfaces2D[Thread][Flow] to InjInterfaces1D[i], where 0 < i < MaxAmountOfFlows
+    --procedure InjectorInterfaceTo1D(signal InjectorInterfaces_1D: inout InjectorInterface_vector; signal InjectorInterfaces_2D: inout InjectorInterface_2vector; constant AmountOfThreads: in integer; constant AmountOfFlowsInThread: in integer_vector) is
     --    variable i: integer := 0;
-    --    variable InjectorInterfaces_1D: InjectorInterface_vector(0 to AmountOfFlows - 1);
     --begin
 
     --    InjectorGenThread: for ThreadNum in 0 to AmountOfThreads - 1 loop
 
     --        InjectorGenFlow: for FlowNum in 0 to AmountOfFlowsInThread(ThreadNum) - 1 loop
 
-    --            InjectorInterfaces_1D(i) := InjectorInterfaces_2D(ThreadNum, FlowNum);
+    --            --InjectorInterfaces_1D(i) := InjectorInterfaces_2D(ThreadNum, FlowNum);
+    --            InjectorInterfaces_1D(i).Clock <= InjectorInterfaces_2D(ThreadNum, FlowNum).Clock;
+    --            InjectorInterfaces_1D(i).Enable <= InjectorInterfaces_2D(ThreadNum, FlowNum).Enable;
+    --            InjectorInterfaces_1D(i).DataOut <= InjectorInterfaces_2D(ThreadNum, FlowNum).DataOut;
+    --            InjectorInterfaces_1D(i).DataOutAV <= InjectorInterfaces_2D(ThreadNum, FlowNum).DataOutAV;
+    --            InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag <= InjectorInterfaces_1D(i).OutputBufferAvailableFlag;
 
     --            i := i + 1;
 
     --        end loop InjectorGenFlow;
 
     --    end loop InjectorGenThread;
-
-    --    return InjectorInterfaces_1D;
-
-    --end function InjectorInterfaceTo1D;
-
-    --signal InjectorInterfaces_1D: InjectorInterface_vector(0 to AmountOfFlows - 1) := InjectorInterfaceTo1D(InjectorInterfaces_2D, AmountOfFlows);
-    signal InjectorInterfaces_1D: InjectorInterface_vector(0 to AmountOfFlows - 1);
-
-    -- Translates interface mapping from InjInterfaces2D[Thread][Flow] to InjInterfaces1D[i], where 0 < i < MaxAmountOfFlows
-    procedure InjectorInterfaceTo1D(signal InjectorInterfaces_1D: inout InjectorInterface_vector; signal InjectorInterfaces_2D: inout InjectorInterface_2vector; constant AmountOfThreads: in integer; constant AmountOfFlowsInThread: in integer_vector) is
-        variable i: integer := 0;
-    begin
-
-        InjectorGenThread: for ThreadNum in 0 to AmountOfThreads - 1 loop
-
-            InjectorGenFlow: for FlowNum in 0 to AmountOfFlowsInThread(ThreadNum) - 1 loop
-
-                --InjectorInterfaces_1D(i) := InjectorInterfaces_2D(ThreadNum, FlowNum);
-                InjectorInterfaces_1D(i).Clock <= InjectorInterfaces_2D(ThreadNum, FlowNum).Clock;
-                InjectorInterfaces_1D(i).Enable <= InjectorInterfaces_2D(ThreadNum, FlowNum).Enable;
-                InjectorInterfaces_1D(i).DataOut <= InjectorInterfaces_2D(ThreadNum, FlowNum).DataOut;
-                InjectorInterfaces_1D(i).DataOutAV <= InjectorInterfaces_2D(ThreadNum, FlowNum).DataOutAV;
-                InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag <= InjectorInterfaces_1D(i).OutputBufferAvailableFlag;
-
-                i := i + 1;
-
-            end loop InjectorGenFlow;
-
-        end loop InjectorGenThread;
         
-    end procedure InjectorInterfaceTo1D;
+    --end procedure InjectorInterfaceTo1D;
     
 begin 
 
     -- Translates injector interface mapping
     --InjectorInterfaces_1D <= InjectorInterfaceTo1D(InjectorInterfaces_2D, AmountOfFlows);
-     InjectorInterfaceTo1D(InjectorInterfaces_1D, InjectorInterfaces_2D, AmountOfThreads, AmountOfFlowsInThread);
+    --InjectorInterfaceTo1D(InjectorInterfaces_1D, InjectorInterfaces_2D, AmountOfThreads, AmountOfFlowsInThread);
 
-    -- Instantiates Injectors
+    -- Instantiates Injectors and Triggers
   	InjectorGenThread: for ThreadNum in 0 to AmountOfThreads - 1 generate
 
         InjectorGenFlow: for FlowNum in 0 to AmountOfFlowsInThread(ThreadNum) - 1 generate
@@ -161,16 +153,6 @@ begin
                     OutputBufferAvailableFlag => InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag
                 );
 
-        end generate InjectorGenFlow;
-
-    end generate InjectorGenThread;
-
-
-    -- Instantiates Triggers for each Injector
-    TriggerGenThread: for ThreadNum in 0 to AmountOfThreads - 1 generate
-
-        TriggerGenFlow: for FlowNum in 0 to AmountOfFlowsInThread(ThreadNum) - 1 generate
-
             Trigger: entity work.Trigger
 
                 generic map(
@@ -184,9 +166,39 @@ begin
                     OutputBufferAvailableFlag => InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag
                 );
 
-        end generate TriggerGenFlow;
+            -- Translates interface mapping from InjInterfaces2D[Thread][Flow] to InjInterfaces1D[i], where 0 < i < MaxAmountOfFlows
+            InjectorInterfaces_1D(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)).Clock <= InjectorInterfaces_2D(ThreadNum, FlowNum).Clock;
+            InjectorInterfaces_1D(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)).Enable <= InjectorInterfaces_2D(ThreadNum, FlowNum).Enable;
+            InjectorInterfaces_1D(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)).DataOut <= InjectorInterfaces_2D(ThreadNum, FlowNum).DataOut;
+            InjectorInterfaces_1D(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)).DataOutAV <= InjectorInterfaces_2D(ThreadNum, FlowNum).DataOutAV;
+            InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag <= InjectorInterfaces_1D(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)).OutputBufferAvailableFlag;
 
-    end generate TriggerGenThread;
+        end generate InjectorGenFlow;
+
+    end generate InjectorGenThread;
+
+
+    -- Instantiates Triggers for each Injector
+    --TriggerGenThread: for ThreadNum in 0 to AmountOfThreads - 1 generate
+
+    --    TriggerGenFlow: for FlowNum in 0 to AmountOfFlowsInThread(ThreadNum) - 1 generate
+
+    --        Trigger: entity work.Trigger
+
+    --            generic map(
+    --                InjectorConfigFile => ConfigPath & "PE " & integer'image(PEPos) & "/Thread " & integer'image(ThreadNum) & "/Flow " & integer'image(FlowNum) & ".json",
+    --                PlatformConfigFile => PlatformConfigFile
+    --            )
+    --            port map(
+    --                Reset => Reset,
+    --                Enable => InjectorInterfaces_2D(ThreadNum, FlowNum).Enable,
+    --                InjectorClock => InjectorInterfaces_2D(ThreadNum, FlowNum).Clock,
+    --                OutputBufferAvailableFlag => InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag
+    --            );
+
+    --    end generate TriggerGenFlow;
+
+    --end generate TriggerGenThread;
 
 
     -- Directly connects buffer to PE output interface (no PEBus is necessary)
@@ -203,7 +215,8 @@ begin
                 Reset => Reset,
 
                 -- Injector Interface
-                ClockRx => ClockRx,
+                --ClockRx => ClockRx,
+                ClockRx => InjectorInterfaces_1D(0).Clock,
                 Rx => InjectorInterfaces_1D(0).DataOutAV,
                 DataIn => InjectorInterfaces_1D(0).DataOut,
                 CreditO => InjectorInterfaces_1D(0).OutputBufferAvailableFlag,
