@@ -12,7 +12,7 @@ from Injector import Injector
 class Platform:
 
     # Constructor
-    def __init__(self, BaseNoCDimensions, ReferenceClock, StandaloneStruct = False, BridgeBufferSize = 512, MasterPEPos = 0, DVFSServiceID, "200"):
+    def __init__(self, BaseNoCDimensions, ReferenceClock, StandaloneStruct = False, BridgeBufferSize = 512, MasterPEPos = 0, DVFSServiceID = "200"):
 
         #self.BaseNoC = [[None for x in range(BaseNoCDimensions[0])] for y in range(BaseNoCDimensions[1])]
 
@@ -696,7 +696,7 @@ class Platform:
                     # Allocated PE is in a Bus/Crossbar
                     try:
                         for PE in self.BaseNoC[PEPos % self.SquareNoCBound][PEPos / self.SquareNoCBound].PEs:
-                            if PEPos = PE.PEPos:
+                            if PEPos == PE.PEPos:
                                 ThreadInWorkload.StructPos = PE.StructPos
                             
                     # Allocated PE is in base NoC
@@ -726,7 +726,7 @@ class Platform:
                     
                     try:
                         for PE in self.BaseNoC[PEPos % self.SquareNoCBound][PEPos / self.SquareNoCBound].PEs:
-                            if PEPos = PE.PEPos:
+                            if PEPos == PE.PEPos:
                                 ThreadInSet.StructPos = PE.StructPos
                             
                     # Allocated PE is in base NoC
@@ -798,8 +798,8 @@ class Platform:
             OutputPortUsage = [[[[0 for TimeBarrier in TimeBarriers] for i in range(5)] for y in range(self.BaseNoCDimensions[1])] for x in range(self.BaseNoCDimensions[0])]
             InputPortUsage = [[[[0 for TimeBarrier in TimeBarriers] for i in range(5)] for y in range(self.BaseNoCDimensions[1])] for x in range(self.BaseNoCDimensions[0])]
             
-            if RoutingAlgorithm = "XY":
-                RouterList = [(X, SourceY) for X in range(SourceX, TargetX + 1] + [(TargetX, Y) for Y in range(SourceY, TargetY + 1)]
+            if RoutingAlgorithm == "XY":
+                RouterList = [(X, SourceY) for X in range(SourceX, TargetX + 1)] + [(TargetX, Y) for Y in range(SourceY, TargetY + 1)]
             
             FlowTimeBarriers = []
             for TimeBarrier in TimeBarriers:
@@ -892,8 +892,8 @@ class Platform:
                 for OutgoingFlow in ThreadInApp.OutgoingFlows:
                     
                     # Bus/Crossbar -> Bus/Crossbar
-                    #if OutgoingFlow.SourceThread.BaseNoCPos = BusinPlat.BaseNoCPos:
-                    if OutgoingFlow.SourceThread.BaseNoCPos = OutgoingFlow.TargetThread.BaseNoCPos:
+                    #if OutgoingFlow.SourceThread.BaseNoCPos == BusinPlat.BaseNoCPos:
+                    if OutgoingFlow.SourceThread.BaseNoCPos == OutgoingFlow.TargetThread.BaseNoCPos:
                     
                         FlowTimeBarriers = []
                         for TimeBarrier in TimeBarriers:

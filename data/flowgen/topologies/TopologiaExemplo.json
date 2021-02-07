@@ -6,6 +6,7 @@
         3
     ],
     "ReferenceClock": 100,
+    "MasterPEPos": 0,
     "SquareNoCBound": 5,
     "WrapperAddresses": [
         0,

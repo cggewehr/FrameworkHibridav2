@@ -210,16 +210,24 @@ begin
             ConnectCrossbarToBaseNoC: if not IsStandaloneCrossbar generate
 
                 -- Input interface of wrapper
-                LocalPortInterfaces(CrossbarWrapperIDs(i)).ClockRx <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).ClockTx; 
-                LocalPortInterfaces(CrossbarWrapperIDs(i)).Rx <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).Tx; 
-                LocalPortInterfaces(CrossbarWrapperIDs(i)).DataIn <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).DataOut; 
-                CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).CreditI <= LocalPortInterfaces(CrossbarWrapperIDs(i)).CreditO; 
+                --LocalPortInterfaces(CrossbarWrapperIDs(i)).ClockRx <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).ClockTx; 
+                LocalPortInterfaces(CrossbarWrapperIDs(i)).ClockRx <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).ClockRx; 
+                --LocalPortInterfaces(CrossbarWrapperIDs(i)).Rx <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).Tx; 
+                LocalPortInterfaces(CrossbarWrapperIDs(i)).Rx <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).Rx; 
+                --LocalPortInterfaces(CrossbarWrapperIDs(i)).DataIn <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).DataOut; 
+                LocalPortInterfaces(CrossbarWrapperIDs(i)).DataIn <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).DataIn; 
+                --CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).CreditI <= LocalPortInterfaces(CrossbarWrapperIDs(i)).CreditO; 
+                CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).CreditO <= LocalPortInterfaces(CrossbarWrapperIDs(i)).CreditO;
 
                 -- Output interface of wrapper
-                CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).ClockRx <= LocalPortInterfaces(CrossbarWrapperIDs(i)).ClockTx;
-                CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).Rx <= LocalPortInterfaces(CrossbarWrapperIDs(i)).Tx;
-                CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).DataIn <= LocalPortInterfaces(CrossbarWrapperIDs(i)).DataOut;
-                LocalPortInterfaces(CrossbarWrapperIDs(i)).CreditI <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).CreditO;
+                --CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).ClockRx <= LocalPortInterfaces(CrossbarWrapperIDs(i)).ClockTx;
+                CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).ClockTx <= LocalPortInterfaces(CrossbarWrapperIDs(i)).ClockTx;
+                --CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).Rx <= LocalPortInterfaces(CrossbarWrapperIDs(i)).Tx;
+                CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).Tx <= LocalPortInterfaces(CrossbarWrapperIDs(i)).Tx;
+                --CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).DataIn <= LocalPortInterfaces(CrossbarWrapperIDs(i)).DataOut;
+                CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).DataOut <= LocalPortInterfaces(CrossbarWrapperIDs(i)).DataOut;
+                --LocalPortInterfaces(CrossbarWrapperIDs(i)).CreditI <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).CreditO;
+                LocalPortInterfaces(CrossbarWrapperIDs(i)).CreditI <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).CreditI;
 
             end generate ConnectCrossbarToBaseNoC;
 
@@ -284,6 +292,8 @@ begin
             --assert false report "PE ID " & integer'image(i) & " connected to crossbar " & integer'image(crossbarID(i)) & " at crossbar position " & integer'image(crossbarPosition(i)) severity note;
         
         end generate ConnectToCrossbar;
+
+        assert not (PEInfo(i).InterfacingStructure /= "NOC" and PEInfo(i).InterfacingStructure /= "BUS" and PEInfo(i).InterfacingStructure /= "XBR") report "PEInfo(" & integer'image(i) & ").InterfacingStructure value <" & PEInfo(i).InterfacingStructure & "> not recognized" severity failure;
 
     end generate PEConnectGen;
 

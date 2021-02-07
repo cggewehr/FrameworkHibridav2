@@ -58,19 +58,22 @@ end InjBuffer;
 
 architecture RTL of InjBuffer is
 
-	type rxState_t is (Sreset, Sstandby, Ssize, Sfill, SwaitForGrant, Stransmit);
+	type rxState_t is (Sstandby, Ssize, Sfill, SwaitForGrant, Stransmit);
 	signal rxState: rxState_t;
 
-	type txState_t is (Sreset, Sstandby, Stransmit);
+	type txState_t is (Sstandby, Stransmit);
 	signal txState: txState_t;
 	
-	signal rxCounter: unsigned(DataWidth - 1 downto 0);
-	signal txCounter: unsigned(DataWidth - 1 downto 0);
+	signal rxCounter: unsigned(DataWidth - 1 downto 0) := (others => '1');
+	signal txCounter: unsigned(DataWidth - 1 downto 0) := (others => '1');
 
-	signal txEnable: std_logic;
+	shared variable txEnable: std_logic;
+
+    signal getSizeInTx: std_logic;
 
 	signal FIFODataOut: DataWidth_t;
-	signal FIFODataCount: integer;
+	--signal FIFODataCount: integer;
+    signal FIFOCreditI: std_logic;
 	signal FIFOAVFlag: std_logic;
 	signal FIFOReadyFlag: std_logic;
 
@@ -97,7 +100,8 @@ begin
 			-- Bus interface (Output)
 			ClockOut            => Clock,
 			DataOut             => FIFODataOut,
-			ReadConfirm         => CreditI,
+			--ReadConfirm         => CreditI,
+            ReadConfirm         => FIFOCreditI,
 			ReadACK             => open,
 			
 			-- Status flags
@@ -117,16 +121,19 @@ begin
 
 	-- 
 	--Tx <= bufferAVFlag when currentState = Stransmit else 'Z';
-	--Tx <= FIFOAVFlag when currentState = Stransmit else 'Z';
+	Tx <= FIFOAVFlag when txState = Stransmit else 'Z';
 	--Tx <= FIFOAVFlag when FIFODataCount > 0 and txEnable = '1' else 'Z';
-	Tx <= FIFOAVFlag when txEnable = '1' else 'Z';
+	--Tx <= FIFOAVFlag when txEnable = '1' else 'Z';
 
 
 	-- 
 	--DataOut <= dataTristate when currentState = Stransmit else (others => 'Z');
-	--DataOut <= FIFODataOut when currentState = Stransmit else (others => 'Z');
+	DataOut <= FIFODataOut when txState = Stransmit else (others => 'Z');
 	--DataOut <= FIFODataOut when FIFODataCount > 0 and txEnable = '1' else (others => 'Z');
-	DataOut <= FIFODataOut when txEnable = '1' else (others => 'Z');
+	--DataOut <= FIFODataOut when txEnable = '1' else (others => 'Z');
+
+    --FIFOCreditI <= CreditI when txEnable = '1' else '0';
+    FIFOCreditI <= CreditI when txState = Stransmit else '0';
 
 
 	-- 
@@ -138,34 +145,37 @@ begin
 	-- 
 	RxFSM: process(ClockRx, Reset) begin
 
-		if Reset = '1' then
-			rxState <= Sreset;
+        if Reset = '1' then
+
+            rxCounter <= (others => '0');
+			txCounter <= (others => '0');
+
+			txEnable := '0';
+            getSizeInTX <= '0';
+
+			ACK <= 'Z';
+			Request <= '0';
+
+			rxState <= Sstandby;
 
 		elsif rising_edge(ClockRx) then
 
 			case rxState is
-
-				-- Sets default values
-				when Sreset => 
-
-					rxCounter <= (others => '0');
-					txCounter <= (others => '0');
-
-					txEnable <= '0';
-
-					ACK <= 'Z';
-					Request <= '0';
-
-					rxState <= Sstandby;
 
 				-- Waits for a new message
 				when Sstandby => 
 
 					ACK <= 'Z';
 
-					-- New message with ADDR flit @ data in
-					if Rx = '1' and FIFOReadyFlag = '1' then
+					-- New message with ADDR flit @ data in (no data already in buffer)
+					if Rx = '1' and FIFOReadyFlag = '1' and FIFOAVFlag = '0' then
 					--if structSideReadyFlag = '1' and injSideAVFlag = '1' then
+                        getSizeFromTX <= '0';
+						rxState <= Ssize;
+
+                    -- New message already in buffer
+                    elsif FIFOAVFlag = '1' then
+                        getSizeFromTX <= '1';
 						rxState <= Ssize;
 
 					else
@@ -173,11 +183,11 @@ begin
 
 					end if;
 
-				-- Captures message size
+				-- Captures message size from dataIn
 				when Ssize => 
 
 					--if Rx = '1' and bufferReadyFlag = '1' then
-					if Rx = '1' and FIFOReadyFlag = '1' then
+					if Rx = '1' and FIFOReadyFlag = '1' and getSizeFromTX = '0' then
 
 						rxCounter <= unsigned(DataIn);
 						txCounter <= unsigned(DataIn) + 2;
@@ -212,7 +222,7 @@ begin
 						ACK <= '0';
 						Request <= '0';
 
-						txEnable <= '1';
+						txEnable := '1';
 
 						rxState <= Stransmit;
 
@@ -259,49 +269,35 @@ begin
 
 	TxFSM: process(Clock, Reset) begin
 
-		if Reset = '1' then
-			txState <= Sreset;
+        if Reset = '1' then 
+            txState <= Sstandby;
 
-		elsif rising_edge(Clock) then
+        elsif rising_edge(Clock) then
 
-			case txState is
+            case txState is
 
-				when Sreset =>
-					txState <= Sstandby;
-					
-				-- TODO: This state is not really needed, it should be merged into Stransmit with an additional "txEnable = '1'" check in addition to CreditI and FIFOAVFlag
-				when Sstandby =>
+                when Sstandby => 
 
-					if txEnable = '1' then
-						txState <= Stransmit;
-					else
-						txState <= Sstandby;
-					end if;
-				
-				when Stransmit => 
+                    if txEnable = '1' then
+                        txState <= Stransmit;
+                    else
+                        txState <= Sstandby;
+                    end if;
 
-					if CreditI = '1' and FIFOAVFlag = '1' then
+                when Stransmit =>
 
-						txCounter <= txCounter - 1;
+                    --if FIFOAVFlag = '1' then
+                    if CreditI = '1' and TxCounter = 1 then
+                        txState <= Stransmit;
+                    else    
+                        txEnable := '0';
+                        txState <= Sstandby;
+                    end if; 
 
-						if txCounter = 1 then
+            end case;
 
-							ACK <= '1';
-							txEnable  <= '0';
+        end if;
 
-							txState <= Sstandby;
-
-						end if;
-
-					else
-						txState <= Stransmit;
-					end if;
-
-			end case;
-
-		end if;
-
-
-	end process TxFSM;
+    end process TxFSM;
 	
 end architecture RTL;

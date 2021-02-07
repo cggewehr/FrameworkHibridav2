@@ -37,8 +37,12 @@ entity PEBus is
 		Clock: in std_logic;
 		Reset: in std_logic;
 
-		-- Input Interface (from Injectors)
-		InjectorInterfaces: inout InjectorInterface_vector;
+		-- Input Interfaces (from Injectors)
+		--InjectorInterfaces: inout InjectorInterface_vector;
+        ClockRx: in std_logic_vector(0 to AmountOfInjectors - 1);
+        Rx: in std_logic_vector(0 to AmountOfInjectors - 1);
+        DataIn: in DataWidth_vector(0 to AmountOfInjectors - 1);
+        CreditO: out std_logic_vector(0 to AmountOfInjectors - 1);
 
 		-- Output Interface (to comm structure)
 		DataOut: out DataWidth_t;
@@ -69,7 +73,7 @@ architecture RTL of PEBus is
 begin
 
 	-- Instantiates bridges
-	BusBridgeGen: for i in 0 to AmountOfInjectors - 1 generate
+	InjBufferGen: for i in 0 to AmountOfInjectors - 1 generate
 
 		--BusBridge: entity work.BusBridge
 		InjBuffer: entity work.InjBuffer
@@ -84,15 +88,19 @@ begin
 				Reset   => Reset,
 
 				-- Input interface (from Injectors)
-				ClockRx => InjectorInterfaces(i).Clock,
-				Rx      => InjectorInterfaces(i).DataOutAV,
-				DataIn  => InjectorInterfaces(i).DataOut,
-				CreditO => InjectorInterfaces(i).OutputBufferAvailableFlag,
+				--ClockRx => InjectorInterfaces(i).Clock,
+                ClockRx => ClockRx(i),
+				--Rx      => InjectorInterfaces(i).DataOutAV,
+				Rx      => Rx(i),
+				--DataIn  => InjectorInterfaces(i).DataOut,
+				DataIn  => DataIn(i),
+				--CreditO => InjectorInterfaces(i).OutputBufferAvailableFlag,
+				CreditO => CreditO(i),
 
 				-- Output interface (to comm structure)
 				ClockTx => open,
-				Tx      => BusTx,
-				DataOut => BusData,
+				Tx      => busTx,
+				DataOut => busData,
 				CreditI => CreditI,
 
 				-- Arbiter interface
@@ -102,7 +110,7 @@ begin
 
 			);
 
-	end generate BusBridgeGen;
+	end generate InjBufferGen;
 	
 
 	-- Controls Rx of PEs based on what PE is currently using the bus
@@ -168,13 +176,13 @@ begin
 
 
 	-- Connects PE interfaces to bus 
-	INJConnectGen: for i in 0 to AmountOfInjectors - 1 generate
+	--INJConnectGen: for i in 0 to AmountOfInjectors - 1 generate
 	
-		busData <= InjectorInterfaces(i).DataOut;  -- Tristated @ bridge
-		busTx <= InjectorInterfaces(i).DataOutAV;  -- Tristated @ bridge
-		InjectorInterfaces(i).OutputBufferAvailableFlag <= CreditI;
+		--busData <= InjectorInterfaces(i).DataOut;  -- Tristated @ bridge
+		--busTx <= InjectorInterfaces(i).DataOutAV;  -- Tristated @ bridge
+		--InjectorInterfaces(i).OutputBufferAvailableFlag <= CreditI;
 		
-	end generate INJConnectGen;
+	--end generate INJConnectGen;
 
 	-- Connects Bus to comm structure
 	DataOut <= busData when Reset = '0' else (others => '0');

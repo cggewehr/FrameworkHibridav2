@@ -76,6 +76,9 @@ begin
 	-- Instantiates bridges
 	CrossbarBridgeGen: for i in 0 to AmountOfPEs - 1 generate
 
+        PEInterfaces(i).ClockTx <= Clock;
+        PEInterfaces(i).ClockRx <= Clock;
+
 		CrossbarBridge: entity work.CrossbarBridge
 
 			generic map(

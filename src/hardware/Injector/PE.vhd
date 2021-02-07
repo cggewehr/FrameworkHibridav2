@@ -81,6 +81,11 @@ architecture Injector of PE is
     type InjectorInterface_2vector is array(0 to AmountOfThreads - 1, 0 to MaxAmountOfFlows - 1) of InjectorInterface;
     signal InjectorInterfaces_2D: InjectorInterface_2vector;
 
+    signal ClockRxBus: std_logic_vector(0 to AmountOfFlows - 1);
+    signal RxBus: std_logic_vector(0 to AmountOfFlows - 1);
+    signal DataInBus: DataWidth_vector(0 to AmountOfFlows - 1);
+    signal CreditOBus: std_logic_vector(0 to AmountOfFlows - 1);
+
     function get_i(ThreadNum: integer; FlowNum: integer; AmountOfFlowsInThread: integer_vector) return integer is 
         variable i: integer := 0;
         variable loopBound: integer := 0;
@@ -167,11 +172,16 @@ begin
                 );
 
             -- Translates interface mapping from InjInterfaces2D[Thread][Flow] to InjInterfaces1D[i], where 0 < i < MaxAmountOfFlows
-            InjectorInterfaces_1D(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)).Clock <= InjectorInterfaces_2D(ThreadNum, FlowNum).Clock;
-            InjectorInterfaces_1D(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)).Enable <= InjectorInterfaces_2D(ThreadNum, FlowNum).Enable;
-            InjectorInterfaces_1D(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)).DataOut <= InjectorInterfaces_2D(ThreadNum, FlowNum).DataOut;
-            InjectorInterfaces_1D(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)).DataOutAV <= InjectorInterfaces_2D(ThreadNum, FlowNum).DataOutAV;
-            InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag <= InjectorInterfaces_1D(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)).OutputBufferAvailableFlag;
+            --InjectorInterfaces_1D(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)).Clock <= InjectorInterfaces_2D(ThreadNum, FlowNum).Clock;
+            --InjectorInterfaces_1D(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)).Enable <= InjectorInterfaces_2D(ThreadNum, FlowNum).Enable;
+            --InjectorInterfaces_1D(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)).DataOut <= InjectorInterfaces_2D(ThreadNum, FlowNum).DataOut;
+            --InjectorInterfaces_1D(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)).DataOutAV <= InjectorInterfaces_2D(ThreadNum, FlowNum).DataOutAV;
+            --InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag <= InjectorInterfaces_1D(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)).OutputBufferAvailableFlag;
+
+            ClockRxBus(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)) <= InjectorInterfaces_2D(ThreadNum, FlowNum).Clock;
+            RxBus(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)) <= InjectorInterfaces_2D(ThreadNum, FlowNum).DataOutAV;
+            DataInBus(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread)) <= InjectorInterfaces_2D(ThreadNum, FlowNum).DataOut;
+            InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag <= CreditOBus(get_i(ThreadNum, FlowNum, AmountOfFlowsInThread));
 
         end generate InjectorGenFlow;
 
@@ -253,7 +263,11 @@ begin
                 Reset => Reset,
 
                 -- Input Interface (from Injectors)
-                InjectorInterfaces => InjectorInterfaces_1D,
+                --InjectorInterfaces => InjectorInterfaces_1D,
+                ClockRx => ClockRxBus,
+                Rx => RxBus,
+                DataIn => DataInBus,
+                CreditO => CreditOBus,
 
                 -- Output Interface (to comm structure)
                 DataOut => DataOut,
