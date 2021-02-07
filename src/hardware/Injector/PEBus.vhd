@@ -29,7 +29,8 @@ entity PEBus is
 	generic(
 		Arbiter: string;
 		AmountOfInjectors: integer;
-		BridgeBufferSize: integer
+		BridgeBufferSize: integer;
+		PEPos: integer
 	);
 	port(
 
@@ -79,7 +80,8 @@ begin
 		InjBuffer: entity work.InjBuffer
 
 			generic map(
-				BufferSize => BridgeBufferSize
+				BufferSize => BridgeBufferSize,
+				PEPos => PEPos
 			)
 			port map(
 

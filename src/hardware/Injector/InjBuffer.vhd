@@ -26,7 +26,9 @@ library work;
 entity InjBuffer is
 
 	generic(
-		BufferSize : integer
+		BufferSize : integer;
+		MaxAmountOfBufferedMessages : integer  := 4;
+		PEPos: integer
 	);
 	port(
 
@@ -58,29 +60,34 @@ end InjBuffer;
 
 architecture RTL of InjBuffer is
 
-	type rxState_t is (Sstandby, Ssize, Sfill, SwaitForGrant, Stransmit);
+	type rxState_t is (Sstandby, Ssize, Sfill);
 	signal rxState: rxState_t;
 
-	type txState_t is (Sstandby, Stransmit);
+	type txState_t is (Sstandby, SwaitForGrant, Stransmit);
 	signal txState: txState_t;
 	
 	signal rxCounter: unsigned(DataWidth - 1 downto 0) := (others => '1');
 	signal txCounter: unsigned(DataWidth - 1 downto 0) := (others => '1');
 
-	shared variable txEnable: std_logic;
+	signal sizeTemp: DataWidth_t;
 
-    signal getSizeInTx: std_logic;
+	--shared variable txEnable: std_logic;
 
-	signal FIFODataOut: DataWidth_t;
-	--signal FIFODataCount: integer;
-    signal FIFOCreditI: std_logic;
-	signal FIFOAVFlag: std_logic;
-	signal FIFOReadyFlag: std_logic;
+	signal MessagesFIFODataOut: DataWidth_t;
+    signal MessagesFIFOCreditI: std_logic;
+	signal MessagesFIFOAVFlag: std_logic;
+	signal MessagesFIFOReadyFlag: std_logic;
+
+	signal SizesFIFODataOut: DataWidth_t;
+	signal SizesFIFOEnable: std_logic;
+	signal SizesFIFOCreditI: std_logic;
+	signal SizesFIFOAVFlag: std_logic;
+	signal SizesFIFOReadyFlag: std_logic;
 
 begin
 
-	-- Instantiates a bisynchronous FIFO
-	FIFO: entity work.CircularBuffer
+	-- Instantiates a bisynchronous FIFO for storing whole messages
+	MessagesFIFO: entity work.CircularBuffer
 
 		generic map(
 			BufferSize => BufferSize,
@@ -99,9 +106,9 @@ begin
 
 			-- Bus interface (Output)
 			ClockOut            => Clock,
-			DataOut             => FIFODataOut,
+			DataOut             => MessagesFIFODataOut,
 			--ReadConfirm         => CreditI,
-            ReadConfirm         => FIFOCreditI,
+            ReadConfirm         => MessagesFIFOCreditI,
 			ReadACK             => open,
 			
 			-- Status flags
@@ -109,8 +116,44 @@ begin
 			BufferEmptyFlag     => open,
 			BufferFullFlag      => open,
 			--BufferReadyFlag     => CreditO,
-			BufferReadyFlag     => FIFOReadyFlag,
-			BufferAvailableFlag => FIFOAVFlag
+			BufferReadyFlag     => MessagesFIFOReadyFlag,
+			BufferAvailableFlag => MessagesFIFOAVFlag
+
+		);
+
+
+	-- Instantiates a bisynchronous FIFO for storing only message sizes
+	SizesFIFO: entity work.CircularBuffer
+
+		generic map(
+			BufferSize => MaxAmountOfBufferedMessages,
+			DataWidth  => DataWidth
+		)
+		port map(
+			
+			-- Basic
+			Reset               => Reset,
+
+			-- PE Interface (Input)
+			ClockIn             => ClockRx,
+			DataIn              => sizeTemp,
+			DataInAV            => SizesFIFOEnable,
+			WriteACK            => open,
+
+			-- Bus interface (Output)
+			ClockOut            => Clock,
+			DataOut             => SizesFIFODataOut,
+			--ReadConfirm         => CreditI,
+            ReadConfirm         => SizesFIFOCreditI,
+			ReadACK             => open,
+			
+			-- Status flags
+			--DataCount           => FIFODataCount,
+			BufferEmptyFlag     => open,
+			BufferFullFlag      => open,
+			--BufferReadyFlag     => CreditO,
+			BufferReadyFlag     => SizesFIFOReadyFlag,
+			BufferAvailableFlag => SizesFIFOAVFlag
 
 		);
 
@@ -121,24 +164,24 @@ begin
 
 	-- 
 	--Tx <= bufferAVFlag when currentState = Stransmit else 'Z';
-	Tx <= FIFOAVFlag when txState = Stransmit else 'Z';
+	Tx <= MessagesFIFOAVFlag when txState = Stransmit else 'Z';
 	--Tx <= FIFOAVFlag when FIFODataCount > 0 and txEnable = '1' else 'Z';
 	--Tx <= FIFOAVFlag when txEnable = '1' else 'Z';
 
 
 	-- 
 	--DataOut <= dataTristate when currentState = Stransmit else (others => 'Z');
-	DataOut <= FIFODataOut when txState = Stransmit else (others => 'Z');
+	DataOut <= MessagesFIFODataOut when txState = Stransmit else (others => 'Z');
 	--DataOut <= FIFODataOut when FIFODataCount > 0 and txEnable = '1' else (others => 'Z');
 	--DataOut <= FIFODataOut when txEnable = '1' else (others => 'Z');
 
     --FIFOCreditI <= CreditI when txEnable = '1' else '0';
-    FIFOCreditI <= CreditI when txState = Stransmit else '0';
+    MessagesFIFOCreditI <= CreditI when txState = Stransmit else '0';
 
 
 	-- 
 	--CreditO <= '0' when currentState = Stransmit or currentState = SwaitForGrant else bufferReadyFlag;
-	CreditO <= FIFOReadyFlag;
+	CreditO <= MessagesFIFOReadyFlag;
 	--injSideCreditI <= '0' when currentState = Stransmit or currentState = SwaitForGrant else structSideReadyFlag;
 
 
@@ -149,9 +192,6 @@ begin
 
             rxCounter <= (others => '0');
 			txCounter <= (others => '0');
-
-			txEnable := '0';
-            getSizeInTX <= '0';
 
 			ACK <= 'Z';
 			Request <= '0';
@@ -165,19 +205,11 @@ begin
 				-- Waits for a new message
 				when Sstandby => 
 
-					ACK <= 'Z';
+					SizesFIFOEnable <= '0';
 
-					-- New message with ADDR flit @ data in (no data already in buffer)
-					if Rx = '1' and FIFOReadyFlag = '1' and FIFOAVFlag = '0' then
-					--if structSideReadyFlag = '1' and injSideAVFlag = '1' then
-                        getSizeFromTX <= '0';
+					-- New message with ADDR flit @ data in
+					if Rx = '1' and MessagesFIFOReadyFlag = '1'then
 						rxState <= Ssize;
-
-                    -- New message already in buffer
-                    elsif FIFOAVFlag = '1' then
-                        getSizeFromTX <= '1';
-						rxState <= Ssize;
-
 					else
 						rxState <= Sstandby;
 
@@ -187,10 +219,12 @@ begin
 				when Ssize => 
 
 					--if Rx = '1' and bufferReadyFlag = '1' then
-					if Rx = '1' and FIFOReadyFlag = '1' and getSizeFromTX = '0' then
+					if Rx = '1' and MessagesFIFOReadyFlag = '1' then
 
 						rxCounter <= unsigned(DataIn);
-						txCounter <= unsigned(DataIn) + 2;
+						--txCounter <= unsigned(DataIn) + 2;
+
+						sizeTemp <= std_logic_vector(unsigned(DataIn) + to_unsigned(2, DataWidth));
 
 						rxState <= Sfill;
 
@@ -201,63 +235,28 @@ begin
 				-- Fills buffer with payload
 				when Sfill => 
 
-					if Rx = '1' and FIFOReadyFlag = '1' then
+					if Rx = '1' and MessagesFIFOReadyFlag = '1' then
 					--if structSideReadyFlag = '1' and injSideAVFlag = '1' then
 						rxCounter <= rxCounter - 1;
-					end if;
+					
+						-- Done filling buffer, ready to transmit
+						if rxCounter = 1 then
 
-					-- Done filling buffer, ready to transmit
-					if rxCounter = 1 then
-						Request <= '1';
-						rxState <= SwaitForGrant;
-					else
-						rxState <= Sfill;
-					end if;
+							SizesFIFOEnable <= '1';
 
-				-- Waits for arbiter grant signal
-				when SwaitForGrant => 
+							if SizesFIFOReadyFlag = '0' then
 
-					if Grant = '1' then
+								report "No available slot on sizes FIFO at PEPos <" & integer'image(PEPos) & ">" severity error;
+								rxState <= Sfill;
 
-						ACK <= '0';
-						Request <= '0';
+							else
+								rxState <= Sstandby;
+							end if;
+							
+						else
+							rxState <= Sfill;
+						end if;
 
-						txEnable := '1';
-
-						rxState <= Stransmit;
-
-					else
-						rxState <= SwaitForGrant;
-
-					end if;
-
-				-- Transmits message through bus
-				when Stransmit => 
-
-					--if CreditI = '1' then
-					--	flitCounter <= flitCounter - 1;
-
-					--end if;
-
-					-- Frees bus if done transmiting
-					--if flitCounter = 1 and CreditI = '1' then
-					--if FIFODataCount = 0 then
-					--	currentState <= Sstandby;
-					--	ACK <= '1';
-
-					--else
-					--	currentState <= Stransmit;
-
-					--end if;
-
-					if txEnable = '0' then
-
-						ACK <= '1';
-
-						rxState <= Sstandby;
-
-					else
-						rxState <= Stransmit;
 					end if;
 
 			end case;
@@ -270,7 +269,13 @@ begin
 	TxFSM: process(Clock, Reset) begin
 
         if Reset = '1' then 
-            txState <= Sstandby;
+
+        	SizesFIFOCreditI <= '0';
+
+        	Request <= '0';
+        	ACK <= 'Z';
+
+        	txState <= Sstandby;
 
         elsif rising_edge(Clock) then
 
@@ -278,19 +283,44 @@ begin
 
                 when Sstandby => 
 
-                    if txEnable = '1' then
-                        txState <= Stransmit;
+                	-- Default values
+                	Request <= '0';
+        			ACK <= 'Z'; 
+
+                    if SizesFIFOAVFlag = '1' then
+
+                    	SizesFIFOCreditI <= '1';
+                    	Request <= '1';
+                    	txCounter <= unsigned(SizesFIFODataOut);
+
+                        txState <= SwaitForGrant;
                     else
                         txState <= Sstandby;
                     end if;
 
+                when SwaitForGrant => 
+
+                	SizesFIFOCreditI <= '0';
+
+                	if Grant = '1' then
+                		txState <= Stransmit;
+                	else
+                		txState <= SwaitForGrant;
+                	end if;
+
                 when Stransmit =>
 
+                	Request <= '0';
+
+                	if CreditI = '1' and txCounter > 0 then
+                		txCounter <= txCounter - 1;
+                	end if;
+
                     --if FIFOAVFlag = '1' then
-                    if CreditI = '1' and TxCounter = 1 then
+                    if CreditI = '1' and txCounter = 1 then
+                    	ACK <= '1';
                         txState <= Stransmit;
                     else    
-                        txEnable := '0';
                         txState <= Sstandby;
                     end if; 
 
