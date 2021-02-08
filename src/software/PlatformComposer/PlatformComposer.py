@@ -946,8 +946,8 @@ class Platform:
                     RouterUsage[XYToSequential((x,y))] = numpy.amax(NoCLinkUsage[x][y])
                     
             # Compute periods (in nanoseconds) such that the calculated bandwidth is provided
-            # self.InjectorClockPeriod = (DataWidth / 8) / (Flow.Bandwidth * 1000)  # in nanoseconds
-            ClusterClocks = [(32 / 8) / (MaxBandwidthPerRouter * 1000) for MaxBandwidthPerRouter in RouterUsage]
+            # self.InjectorClockPeriod = (1000 * DataWidth / 8) / (Flow.Bandwidth)  # in nanoseconds
+            ClusterClocks = [(1000 * 32 / 8) / (MaxBandwidthPerRouter) for MaxBandwidthPerRouter in RouterUsage]
             return ClusterClocks
         
         else:

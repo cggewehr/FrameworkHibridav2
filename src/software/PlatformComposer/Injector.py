@@ -29,7 +29,8 @@ class Injector:
         # Flow info
         self.FlowType = Flow.FlowType  # Default = "CBR"
         self.Bandwidth = Flow.Bandwidth  # in MBps
-        self.InjectorClockPeriod = (DataWidth / 8) / (Flow.Bandwidth * 1000)  # in nanoseconds
+        #self.InjectorClockPeriod = (DataWidth / 8) / (Flow.Bandwidth * 1000)  # in nanoseconds
+        self.InjectorClockPeriod = (1000 * DataWidth / 8) / (Flow.Bandwidth)  # in nanoseconds
         self.StartTime = float(Flow.StartTime)  # in nanoseconds
         self.StopTime = float(Flow.StopTime)  # in nanoseconds
         self.Periodic = Flow.Periodic
