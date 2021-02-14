@@ -112,10 +112,20 @@ def flowgen(args):
     # Generates PE and Injector JSON config files at given project dir
     print("Implementing Workload to Platform")
     Platform.setWorkload(Workload)
-    Platform.setAllocationMap(AllocMap)
-    Platform.setClusterClocks(ClusterClocks)
-    Platform.generateJSON(ConfigDict["Projects"][args.ProjectName]["ProjectDir"])
     print("Done implementing Workload to Platform")
+    
+    print("Implementing AllocationMap to Platform")
+    print(AllocMap)
+    Platform.setAllocationMap(AllocMap)
+    print("Done implementing AllocationMap to Platform")
+
+    print("Implementing ClusterClocks to Platform")
+    Platform.setClusterClocks(ClusterClocks)
+    print("Done implementing ClusterClocks to Platform")
+
+    print("Generating Platform JSON file")
+    Platform.generateJSON(ConfigDict["Projects"][args.ProjectName]["ProjectDir"])
+    print("Done generating Platform JSON file")
     print("JSON config files created at <" + os.path.join(ProjectDir, "flow") + ">")
 
     # Generate blank log text files for every PE

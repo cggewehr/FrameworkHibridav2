@@ -51,6 +51,8 @@ architecture RTL of HyHeMPS_TB is
     signal Clocks: std_logic_vector(0 to AmountOfNoCNodes - 1);
     constant ClockPeriods: real_vector(0 to AmountOfNoCNodes - 1) := jsonGetRealArray(ClusterClocksCFG, "ClusterClockPeriods");
 
+    signal txBuffer: std_ulogic_vector(0 to AmountOfPEs - 1);
+
     procedure GenerateClock(constant ClockPeriod: in time; signal Clock: out std_logic) is begin
 
         ClockLoop: loop
@@ -104,6 +106,8 @@ begin
     -- Instantiates PEs (which then instantiate Injectors) to provide stimulus
     PEsGen: for i in 0 to AmountOfPEs - 1 generate
 
+        PEInterfaces(i).Tx <= txBuffer(i);
+
         PE: entity work.PE
 
             generic map(
@@ -118,7 +122,8 @@ begin
             port map(
                 Reset   => Reset,
                 ClockTx => PEInterfaces(i).ClockTx,
-                Tx      => PEInterfaces(i).Tx,
+                --Tx      => PEInterfaces(i).Tx,
+                Tx      => txBuffer(i),
                 DataOut => PEInterfaces(i).DataOut,
                 CreditI => PEInterfaces(i).CreditI,
                 ClockRx => PEInterfaces(i).ClockRx,
@@ -126,6 +131,8 @@ begin
                 DataIn  => PEInterfaces(i).DataIn,
                 CreditO => PEInterfaces(i).CreditO
             );
+
+            
 
     end generate PEsGEN;
 

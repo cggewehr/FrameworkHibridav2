@@ -39,8 +39,10 @@ class Platform:
         #self.Injectors = dict()
         #self.PEs = dict()
         
-        self.AllocationMap = dict()
-        self.ClusterClocks = dict()
+        #self.AllocationMap = dict()
+        self.AllocationMap = None
+        #self.ClusterClocks = dict()
+        self.ClusterClocks = None
         self.Workload = None
         
         # Generate initial PE objects at every NoC address (to be replaced by a Bus/Crossbar when addStructure() is called)
@@ -230,6 +232,7 @@ class Platform:
                         #PEPos = self.BaseNoC[x][y].PEPos
                         #PEThread = self.AllocationMap[PEPos]  # TODO: Build such that AllocMap[PEPos] = (Thread object)
                         #self.BaseNoC[x][y] = PE(PEPos = PEPos, CommStructure = "NoC", Thread = PEThread, InjectorClockFrequency = self.ReferenceClock)
+                        print(self.AllocationMap)
                         PEinNoC.updateWorkloadInfo(ThreadSet = self.AllocationMap[PEinNoC.PEPos])
                     
                 elif isinstance(self.BaseNoC[x][y], Structure):
@@ -392,7 +395,7 @@ class Platform:
         else:
             # AllocationMap[PEPos] = [Thread object, Thread object, ...]
             #return [[[Injector(Flow = OutgoingFlow) for OutgoingFlow in Thread.OutgoingFlows] for Thread in ThreadSet] for ThreadSet in self.AllocationMap.values()]
-            return [[[Injector(Flow = OutgoingFlow) for OutgoingFlow in Thread.OutgoingFlows] for Thread in ThreadSet] if isinstance(ThreadSet, list) else [[Injector(Flow = OutgoingFlow) for OutgoingFlow in ThreadSet.OutgoingFlows]] if isinstance(ThreadSet, Thread) else [[None]] for ThreadSet in self.AllocationMap.values()]
+            return [[[Injector(Flow = OutgoingFlow) for OutgoingFlow in Thread.OutgoingFlows] for Thread in ThreadSet] if isinstance(ThreadSet, list) else [[Injector(Flow = OutgoingFlow) for OutgoingFlow in ThreadSet.OutgoingFlows]] if isinstance(ThreadSet, Thread) else [[None]] for ThreadSet in self.AllocationMap]
             
             injectors = []
             for ThreadSet in self.AllocationMap.values():
@@ -660,6 +663,8 @@ class Platform:
 
     # Sets allocation map (Maps AppID and ThreadID to an unique PE)
     def setAllocationMap(self, AllocationMap):
+
+        self.AllocationMap = [None] * self.AmountOfPEs
     
         # AllocationMap[PEPos] = Thread object, str (ThreadName), List or Dict of Thread objects
 
@@ -672,7 +677,7 @@ class Platform:
             
             if isinstance(ThreadInAllocMap, Thread):
 
-                # TODO: Find Thread in Workload wich is identical to thread in AllocMap dict and set its PEPos value
+                # TODO: Find Thread in Workload which is identical to thread in AllocMap dict and set its PEPos value
                 #ThreadInAllocMap.PEPos = PEPos
                 NotImplementedError
 
@@ -695,13 +700,24 @@ class Platform:
                     
                     # Allocated PE is in a Bus/Crossbar
                     try:
-                        for PE in self.BaseNoC[PEPos % self.SquareNoCBound][PEPos / self.SquareNoCBound].PEs:
+                        #for PE in self.BaseNoC[int(PEPos % self.SquareNoCBound)][int(PEPos / self.SquareNoCBound)].PEs:
+                        #for PE in self.BaseNoC[int(ThreadInWorkload.BaseNoCPos % self.SquareNoCBound)][int(ThreadInWorkload.BaseNoCPos / self.SquareNoCBound)].PEs:
+                        for PE in self.BaseNoC[int(ThreadInWorkload.BaseNoCPos % self.BaseNoCDimensions[0])][int(ThreadInWorkload.BaseNoCPos / self.BaseNoCDimensions[0])].PEs:
                             if PEPos == PE.PEPos:
                                 ThreadInWorkload.StructPos = PE.StructPos
+
+                    # Base NoC out of bounds
+                    except IndexError:
+                        print("BaseNoC oob @")
+                        print("X: " + str(int(ThreadInWorkload.BaseNoCPos % self.SquareNoCBound)))
+                        print("Y: " + str(int(ThreadInWorkload.BaseNoCPos / self.SquareNoCBound)))
+                        print("in setAllocationMap()")
+                        exit(1)
                             
                     # Allocated PE is in base NoC
                     except AttributeError:
-                        ThreadInWorkload.StructPos = self.BaseNoC[PEPos % self.SquareNoCBound][PEPos / self.SquareNoCBound].StructPos
+                        #ThreadInWorkload.StructPos = self.BaseNoC[int(PEPos % self.SquareNoCBound)][int(PEPos / self.SquareNoCBound)].StructPos
+                        ThreadInWorkload.StructPos = ThreadInWorkload.BaseNoCPos
                             
                     self.AllocationMap[PEPos] = ThreadInWorkload
                     
@@ -1177,8 +1193,10 @@ class Platform:
         #self.Injectors = dict()
         #self.PEs = dict()
         
-        self.AllocationMap = dict()
-        self.ClusterClocks = dict()
+        #self.AllocationMap = dict()
+        self.AllocationMap = None
+        #self.ClusterClocks = dict()
+        self.ClusterClocks = None
         self.Workload = None
         
         # Generate initial PE objects at every NoC address (to be replaced by a wrapper when a structure is added)

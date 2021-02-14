@@ -1,92 +1,116 @@
 {
-    "AppName": "PIP",
     "StartTime": 0,
-    "StopTime": -1,
     "InpMemA": {
         "Flows": [
             {
-                "SourceThread": "InpMemA",
-                "TargetThread": "HS",
-                "Bandwidth": 128,
                 "StartTime": 0,
-                "StopTime": -1
+                "Bandwidth": 128,
+                "SourceThread": "InpMemA",
+                "MSGAmount": 0,
+                "TargetThread": "HS",
+                "ControlFlowFlag": false,
+                "StopTime": -1,
+                "Periodic": false
             },
             {
+                "StartTime": 0,
+                "Bandwidth": 64,
                 "SourceThread": "InpMemA",
+                "MSGAmount": 0,
                 "TargetThread": "InpMemB",
-                "Bandwidth": 64,
-                "StartTime": 0,
-                "StopTime": -1
+                "ControlFlowFlag": false,
+                "StopTime": -1,
+                "Periodic": false
             }
         ]
     },
-    "HS": {
-        "Flows": [
-            {
-                "SourceThread": "HS",
-                "TargetThread": "VS",
-                "Bandwidth": 64,
-                "StartTime": 0,
-                "StopTime": -1
-            }
-        ]
+    "OpDisp": {
+        "Flows": []
     },
-    "VS": {
-        "Flows": [
-            {
-                "SourceThread": "VS",
-                "TargetThread": "JUG1",
-                "Bandwidth": 64,
-                "StartTime": 0,
-                "StopTime": -1
-            }
-        ]
-    },
+    "AppName": "PIP",
     "JUG1": {
         "Flows": [
             {
+                "StartTime": 0,
+                "Bandwidth": 64,
                 "SourceThread": "JUG1",
+                "MSGAmount": 0,
                 "TargetThread": "MEM",
-                "Bandwidth": 64,
-                "StartTime": 0,
-                "StopTime": -1
-            }
-        ]
-    },
-    "InpMemB": {
-        "Flows": [
-            {
-                "SourceThread": "InpMemB",
-                "TargetThread": "JUG2",
-                "Bandwidth": 64,
-                "StartTime": 0,
-                "StopTime": -1
+                "ControlFlowFlag": false,
+                "StopTime": -1,
+                "Periodic": false
             }
         ]
     },
     "JUG2": {
         "Flows": [
             {
-                "SourceThread": "JUG2",
-                "TargetThread": "MEM",
-                "Bandwidth": 64,
                 "StartTime": 0,
-                "StopTime": -1
+                "Bandwidth": 64,
+                "SourceThread": "JUG2",
+                "MSGAmount": 0,
+                "TargetThread": "MEM",
+                "ControlFlowFlag": false,
+                "StopTime": -1,
+                "Periodic": false
+            }
+        ]
+    },
+    "HS": {
+        "Flows": [
+            {
+                "StartTime": 0,
+                "Bandwidth": 64,
+                "SourceThread": "HS",
+                "MSGAmount": 0,
+                "TargetThread": "VS",
+                "ControlFlowFlag": false,
+                "StopTime": -1,
+                "Periodic": false
+            }
+        ]
+    },
+    "InpMemB": {
+        "Flows": [
+            {
+                "StartTime": 0,
+                "Bandwidth": 64,
+                "SourceThread": "InpMemB",
+                "MSGAmount": 0,
+                "TargetThread": "JUG2",
+                "ControlFlowFlag": false,
+                "StopTime": -1,
+                "Periodic": false
             }
         ]
     },
     "MEM": {
         "Flows": [
             {
-                "SourceThread": "MEM",
-                "TargetThread": "OpDisp",
-                "Bandwidth": 64,
                 "StartTime": 0,
-                "StopTime": -1
+                "Bandwidth": 64,
+                "SourceThread": "MEM",
+                "MSGAmount": 0,
+                "TargetThread": "OpDisp",
+                "ControlFlowFlag": false,
+                "StopTime": -1,
+                "Periodic": false
             }
         ]
     },
-    "OpDisp": {
-        "Flows": []
+    "StopTime": -1,
+    "VS": {
+        "Flows": [
+            {
+                "StartTime": 0,
+                "Bandwidth": 64,
+                "SourceThread": "VS",
+                "MSGAmount": 0,
+                "TargetThread": "JUG1",
+                "ControlFlowFlag": false,
+                "StopTime": -1,
+                "Periodic": false
+            }
+        ]
     }
 }

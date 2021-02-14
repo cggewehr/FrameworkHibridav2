@@ -191,10 +191,9 @@ begin
         if Reset = '1' then
 
             rxCounter <= (others => '0');
-			txCounter <= (others => '0');
+            sizeTemp <= (others => '0');
 
-			ACK <= 'Z';
-			Request <= '0';
+            SizesFIFOEnable <= '0';
 
 			rxState <= Sstandby;
 
@@ -270,6 +269,8 @@ begin
 
         if Reset = '1' then 
 
+            txCounter <= (others => '0');            
+
         	SizesFIFOCreditI <= '0';
 
         	Request <= '0';
@@ -319,9 +320,9 @@ begin
                     --if FIFOAVFlag = '1' then
                     if CreditI = '1' and txCounter = 1 then
                     	ACK <= '1';
-                        txState <= Stransmit;
-                    else    
                         txState <= Sstandby;
+                    else    
+                        txState <= Stransmit;
                     end if; 
 
             end case;

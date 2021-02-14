@@ -1,13 +1,24 @@
 {
-    "AmountOfPEs": 25,
-    "AmountOfWrappers": 3,
-    "BaseNoCDimensions": [
-        3,
-        3
+    "LargestBus": 6,
+    "AmountOfPEsInCrossbars": [
+        7
     ],
     "ReferenceClock": 100,
-    "MasterPEPos": 0,
-    "SquareNoCBound": 5,
+    "CrossbarWrapperIDs": [
+        2
+    ],
+    "CrossbarPEIDs": {
+        "Crossbar0": [
+            2,
+            23,
+            24,
+            19,
+            14,
+            9,
+            4
+        ]
+    },
+    "AmountOfCrossbars": 1,
     "WrapperAddresses": [
         0,
         1,
@@ -35,22 +46,50 @@
         2,
         2
     ],
+    "BusWrapperIDs": [
+        5,
+        8
+    ],
+    "MasterPEPos": 0,
+    "BusPEIDs": {
+        "Bus0": [
+            7,
+            15,
+            16,
+            17,
+            18,
+            13
+        ],
+        "Bus1": [
+            12,
+            8,
+            3,
+            20,
+            21,
+            22
+        ]
+    },
     "IsStandaloneBus": false,
-    "AmountOfBuses": 2,
+    "AmountOfWrappers": 3,
+    "AmountOfPEs": 25,
+    "SquareNoCBound": 5,
+    "BridgeBufferSize": 512,
     "AmountOfPEsInBuses": [
         6,
         6
+    ],
+    "LargestCrossbar": 7,
+    "BaseNoCDimensions": [
+        3,
+        3
+    ],
+    "CrossbarWrapperAddresses": [
+        2
     ],
     "BusWrapperAddresses": [
         5,
         8
     ],
-    "IsStandaloneCrossbar": false,
-    "AmountOfCrossbars": 1,
-    "AmountOfPEsInCrossbars": [
-        7
-    ],
-    "CrossbarWrapperAddresses": [
-        2
-    ]
+    "AmountOfBuses": 2,
+    "IsStandaloneCrossbar": false
 }
