@@ -35,9 +35,13 @@ entity HyHeMPS is
         AmountOfNoCNodes: integer
     );
     port (
+
         Clocks: in std_logic_vector(0 to AmountOfNoCNodes - 1);
         Reset: in std_logic;
-        PEInterfaces: inout PEInterface_vector(0 to AmountOfPEs - 1)
+
+        --PEInterfaces: inout PEInterface_vector(0 to AmountOfPEs - 1)
+        PEInputs: out PEInputs_vector(0 to AmountOfPEs - 1);
+        PEOutputs: in PEOutputs_vector(0 to AmountOfPEs - 1)
     );
 
 end entity HyHeMPS;
@@ -63,8 +67,14 @@ architecture RTL of HyHeMPS is
     constant IsStandaloneBus: boolean := jsonGetBoolean(PlatCFG, "IsStandaloneBus");
     
     subtype BusArrayOfInterfaces is PEInterface_vector(0 to SizeOfLargestBus);  -- PEs + wrapper
+    --subtype BusArrayOfInputInterfaces is PEInputs_vector(0 to SizeOfLargestBus);  -- PEs + wrapper
+    --subtype BusArrayOfOutputInterfaces is PEOutputs_vector(0 to SizeOfLargestBus);  -- PEs + wrapper
     type BusInterfaces_t is array(natural range <>) of BusArrayOfInterfaces;
+    --type BusInputInterfaces_t is array(natural range <>) of BusArrayOfInputInterfaces;
+    --type BusOutputInterfaces_t is array(natural range <>) of BusArrayOfOutputInterfaces;
     signal BusInterfaces: BusInterfaces_t(0 to AmountOfBuses - 1);
+    --signal BusInputInterfaces: BusInputInterfaces_t(0 to AmountOfBuses - 1);
+    --signal BusOutputInterfaces: BusOutputInterfaces_t(0 to AmountOfBuses - 1);
 
     -- Crossbars Parameters (from JSON config)
     constant AmountOfCrossbars: integer := jsonGetInteger(PlatCFG, "AmountOfCrossbars");
@@ -244,16 +254,16 @@ begin
         ConnectToNoC: if PEInfo(i).InterfacingStructure = "NOC" generate
             
             -- Input interface of local port of this PE's router
-            LocalPortInterfaces(PEInfo(i).PosInStruct).ClockRx <= PEInterfaces(i).ClockTx;
-            LocalPortInterfaces(PEInfo(i).PosInStruct).Rx <= PEInterfaces(i).Tx;
-            LocalPortInterfaces(PEInfo(i).PosInStruct).DataIn <= PEInterfaces(i).DataOut;
-            PEInterfaces(i).CreditI <= LocalPortInterfaces(PEInfo(i).PosInStruct).CreditO;
+            LocalPortInterfaces(PEInfo(i).PosInStruct).ClockRx <= PEOutputs(i).ClockTx;
+            LocalPortInterfaces(PEInfo(i).PosInStruct).Rx <= PEOutputs(i).Tx;
+            LocalPortInterfaces(PEInfo(i).PosInStruct).DataIn <= PEOutputs(i).DataOut;
+            PEInputs(i).CreditI <= LocalPortInterfaces(PEInfo(i).PosInStruct).CreditO;
             
             -- Output interface of local port of this PE's router
-            PEInterfaces(i).ClockRx <= LocalPortInterfaces(PEInfo(i).PosInStruct).ClockTx;
-            PEInterfaces(i).Rx <= LocalPortInterfaces(PEInfo(i).PosInStruct).Tx;
-            PEInterfaces(i).DataIn <= LocalPortInterfaces(PEInfo(i).PosInStruct).DataOut;
-            LocalPortInterfaces(PEInfo(i).PosInStruct).CreditI <= PEInterfaces(i).CreditO;
+            PEInputs(i).ClockRx <= LocalPortInterfaces(PEInfo(i).PosInStruct).ClockTx;
+            PEInputs(i).Rx <= LocalPortInterfaces(PEInfo(i).PosInStruct).Tx;
+            PEInputs(i).DataIn <= LocalPortInterfaces(PEInfo(i).PosInStruct).DataOut;
+            LocalPortInterfaces(PEInfo(i).PosInStruct).CreditI <= PEOutputs(i).CreditO;
 
             assert false report "PE ID " & integer'image(i) & " connected to local port of router " & integer'image(WrapperAddresses(i)) severity note;
         
@@ -262,16 +272,16 @@ begin
         ConnectToBus: if PEInfo(i).InterfacingStructure = "BUS" generate
         
             -- Input interface of local port of this PE's bus
-            BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).ClockTx <= PEInterfaces(i).ClockTx;
-            BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).Tx <= PEInterfaces(i).Tx;
-            BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).DataOut <= PEInterfaces(i).DataOut;
-            PEInterfaces(i).CreditI <= BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).CreditI;
+            BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).ClockTx <= PEOutputs(i).ClockTx;
+            BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).Tx <= PEOutputs(i).Tx;
+            BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).DataOut <= PEOutputs(i).DataOut;
+            PEInputs(i).CreditI <= BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).CreditI;
             
             -- Output interface of local port of this PE's bus
-            PEInterfaces(i).ClockRx <= BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).ClockRx;
-            PEInterfaces(i).Rx <= BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).Rx;
-            PEInterfaces(i).DataIn <= BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).DataIn;
-            BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).CreditO <= PEInterfaces(i).CreditO;
+            PEInputs(i).ClockRx <= BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).ClockRx;
+            PEInputs(i).Rx <= BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).Rx;
+            PEInputs(i).DataIn <= BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).DataIn;
+            BusInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).CreditO <= PEOutputs(i).CreditO;
             
             --assert false report "PE ID " & integer'image(i) & " connected to bus " & integer'image(busID(i)) & " at bus position " & integer'image(busPosition(i)) severity note;
         
@@ -279,20 +289,21 @@ begin
         
         ConnectToCrossbar: if PEInfo(i).InterfacingStructure = "XBR" generate
         
-            CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).ClockTx <= PEInterfaces(i).ClockTx;
-            CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).Tx <= PEInterfaces(i).Tx;
-            CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).DataOut <= PEInterfaces(i).DataOut;
-            PEInterfaces(i).CreditI <= CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).CreditI;
+            CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).ClockTx <= PEOutputs(i).ClockTx;
+            CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).Tx <= PEOutputs(i).Tx;
+            CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).DataOut <= PEOutputs(i).DataOut;
+            PEInputs(i).CreditI <= CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).CreditI;
             
-            PEInterfaces(i).ClockRx <= CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).ClockRx;
-            PEInterfaces(i).Rx <= CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).Rx;
-            PEInterfaces(i).DataIn <= CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).DataIn;
-            CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).CreditO <= PEInterfaces(i).CreditO;
+            PEInputs(i).ClockRx <= CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).ClockRx;
+            PEInputs(i).Rx <= CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).Rx;
+            PEInputs(i).DataIn <= CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).DataIn;
+            CrossbarInterfaces(PEInfo(i).StructID)(PEInfo(i).PosInStruct).CreditO <= PEOutputs(i).CreditO;
             
             --assert false report "PE ID " & integer'image(i) & " connected to crossbar " & integer'image(crossbarID(i)) & " at crossbar position " & integer'image(crossbarPosition(i)) severity note;
         
         end generate ConnectToCrossbar;
 
+        -- Makes sure PE InterfacingStructure value is coherent
         assert not (PEInfo(i).InterfacingStructure /= "NOC" and PEInfo(i).InterfacingStructure /= "BUS" and PEInfo(i).InterfacingStructure /= "XBR") report "PEInfo(" & integer'image(i) & ").InterfacingStructure value <" & PEInfo(i).InterfacingStructure & "> not recognized" severity failure;
 
     end generate PEConnectGen;

@@ -70,6 +70,34 @@ package HyHeMPS_PKG is
 
     type PEInterface_vector is array(natural range <>) of PEInterface;
 
+    type PEInputs is record
+
+        -- Input interface
+        ClockRx : std_logic;
+        Rx      : std_logic;
+        DataIn  : DataWidth_t;
+
+        -- Output interface
+        CreditI : std_logic;
+
+    end record;
+
+    type PEInputs_vector is array(natural range <>) of PEInputs;
+
+    type PEOutputs is record
+
+        -- Input interface
+        CreditO: std_logic;
+
+        -- Output interface
+        ClockTx : std_logic;
+        Tx      : std_logic;
+        DataOut : DataWidth_t;
+
+    end record;
+
+    type PEOutputs_vector is array(natural range <>) of PEOutputs;
+
     -- 
     type RouterInterface is record
     
