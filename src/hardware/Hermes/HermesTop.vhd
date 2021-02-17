@@ -37,7 +37,8 @@ entity Hermes is
 		Clocks: std_logic_vector;
 		Reset: std_logic;
 		--LocalPortInterfaces: inout RouterPort_vector
-		LocalPortInterfaces: inout PEInterface_vector
+		PEInputs: out PEInputs_vector;
+        PEOutputs: in PEOutputs_vector
 	);
 	
 end entity Hermes;
@@ -188,20 +189,32 @@ begin
     end generate NoCGen;
 
 
-    -- Generates entity interface (Local port of every router
+    -- Generates entity interface (Local port of every router)
     InterfaceGen: for i in 0 to AmountOfRouters - 1 generate
 
         -- Input interface
-        RouterInterfaces(i).ClockRx(Local) <= LocalPortInterfaces(i).ClockRx;
-        RouterInterfaces(i).Rx(Local) <= LocalPortInterfaces(i).Rx;
-        RouterInterfaces(i).DataIn(Local) <= LocalPortInterfaces(i).DataIn;
-        LocalPortInterfaces(i).CreditO <= RouterInterfaces(i).CreditO(Local);
+        --RouterInterfaces(i).ClockRx(Local) <= LocalPortInterfaces(i).ClockRx;
+        --RouterInterfaces(i).Rx(Local) <= LocalPortInterfaces(i).Rx;
+        --RouterInterfaces(i).DataIn(Local) <= LocalPortInterfaces(i).DataIn;
+        --LocalPortInterfaces(i).CreditO <= RouterInterfaces(i).CreditO(Local);
 
-        -- Output interface
-        LocalPortInterfaces(i).ClockTx <= RouterInterfaces(i).ClockTx(Local);
-        LocalPortInterfaces(i).Tx <= RouterInterfaces(i).Tx(Local);
-        LocalPortInterfaces(i).DataOut <= RouterInterfaces(i).DataOut(Local);
-        RouterInterfaces(i).CreditI(Local) <= LocalPortInterfaces(i).CreditI;
+        ---- Output interface
+        --LocalPortInterfaces(i).ClockTx <= RouterInterfaces(i).ClockTx(Local);
+        --LocalPortInterfaces(i).Tx <= RouterInterfaces(i).Tx(Local);
+        --LocalPortInterfaces(i).DataOut <= RouterInterfaces(i).DataOut(Local);
+        --RouterInterfaces(i).CreditI(Local) <= LocalPortInterfaces(i).CreditI;
+
+        -- Router local port input interface
+        RouterInterfaces(i).ClockRx(Local) <= PEOutputs(i).ClockTx;
+        RouterInterfaces(i).Rx(Local) <= PEOutputs(i).Tx;
+        RouterInterfaces(i).DataIn(Local) <= PEOutputs(i).DataOut;
+        PEInputs(i).CreditI <= RouterInterfaces(i).CreditO(Local);
+
+        -- Router local port output interface
+        PEInputs(i).ClockRx <= RouterInterfaces(i).ClockTx(Local);
+        PEInputs(i).Rx <= RouterInterfaces(i).Tx(Local);
+        PEInputs(i).DataIn <= RouterInterfaces(i).DataOut(Local);
+        RouterInterfaces(i).CreditI(Local) <= PEOutputs(i).CreditO;
 
     end generate InterfaceGen;
 	

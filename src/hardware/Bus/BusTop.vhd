@@ -35,7 +35,9 @@ entity HyBus is
 	port(
 		Clock: in std_logic;
 		Reset: in std_logic;
-		PEInterfaces: inout PEInterface_vector
+		--PEInterfaces: inout PEInterface_vector
+		PEInputs: out PEInputs_vector;
+		PEOutputs: in PEOutputs_vector
 	);
 
 end entity HyBus;
@@ -74,10 +76,10 @@ begin
 				Reset   => Reset,
 
 				-- PE interface (Bridge input)
-				ClockRx => PEInterfaces(i).ClockRx,
-				Rx      => PEInterfaces(i).Tx,
-				DataIn  => PEInterfaces(i).DataOut,
-				CreditO => PEInterfaces(i).CreditI,
+				ClockRx => PEOutputs(i).ClockTx,
+				Rx      => PEOutputs(i).Tx,
+				DataIn  => PEOutputs(i).DataOut,
+				CreditO => PEInputs(i).CreditI,
 
 				-- Bus interface (Bridge output)
 				ClockTx => open,
@@ -162,15 +164,15 @@ begin
 	PEConnectGen: for i in 0 to AmountOfPEs - 1 generate
 	
 		-- PE input interface
-		PEInterfaces(i).DataIn <= BusData;
-		PEInterfaces(i).ClockRx <= Clock;
-		PEInterfaces(i).Rx <= controlRx(i);
-		controlCredit(i) <= PEInterfaces(i).CreditO;
+		PEInputs(i).DataIn <= BusData;
+		PEInputs(i).ClockRx <= Clock;
+		PEInputs(i).Rx <= controlRx(i);
+		controlCredit(i) <= PEOutputs(i).CreditO;
 
 		-- PE output interface
-		busData <= PEInterfaces(i).DataOut;  -- Tristated @ bridge
-		busTx <= PEInterfaces(i).Tx;  -- Tristated @ bridge
-		PEInterfaces(i).CreditI <= busCredit;
+		busData <= PEOutputs(i).DataOut;  -- Tristated @ bridge
+		busTx <= PEOutputs(i).Tx;  -- Tristated @ bridge
+		PEInputs(i).CreditI <= busCredit;
 		
 	end generate PEConnectGen;
 

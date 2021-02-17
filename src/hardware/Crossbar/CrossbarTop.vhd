@@ -37,7 +37,9 @@ entity Crossbar is
 	port(
 		Clock: in std_logic;
 		Reset: in std_logic;
-		PEInterfaces: inout PEInterface_vector
+		--PEInterfaces: inout PEInterface_vector
+		PEInputs: out PEInputs_vector;
+		PEOutputs: in PEOutputs_vector
 	);
 	
 end entity Crossbar;
@@ -76,8 +78,8 @@ begin
 	-- Instantiates bridges
 	CrossbarBridgeGen: for i in 0 to AmountOfPEs - 1 generate
 
-        PEInterfaces(i).ClockTx <= Clock;
-        PEInterfaces(i).ClockRx <= Clock;
+        --PEInterfaces(i).ClockTx <= Clock;
+        PEInputs(i).ClockRx <= Clock;
 
 		CrossbarBridge: entity work.CrossbarBridge
 
@@ -95,10 +97,14 @@ begin
 				Reset => Reset,
 
 				-- PE interface (Bridge input)
-				ClockRx => PEInterfaces(i).ClockTx,
-				Rx      => PEInterfaces(i).Tx,
-				DataIn  => PEInterfaces(i).DataOut,
-				CreditO => PEInterfaces(i).CreditI,
+				--ClockRx => PEInterfaces(i).ClockTx,
+				--Rx      => PEInterfaces(i).Tx,
+				--DataIn  => PEInterfaces(i).DataOut,
+				--CreditO => PEInterfaces(i).CreditI,
+				ClockRx => PEOutputs(i).ClockTx,
+				Rx      => PEOutputs(i).Tx,
+				DataIn  => PEOutputs(i).DataOut,
+				CreditO => PEInputs(i).CreditI,
 
 				-- Crossbar interface (Bridge output)
 				ClockTx => open,
@@ -138,9 +144,13 @@ begin
 				CreditO   => controlCreditO(i),
 
 				-- Output interface (PE input)
-				PEDataIn  => PEInterfaces(i).DataIn,
-				PERx      => PEInterfaces(i).Rx,
-				PECreditO => PEInterfaces(i).CreditO,
+				--PEDataIn  => PEInterfaces(i).DataIn,
+				--PERx      => PEInterfaces(i).Rx,
+				--PECreditO => PEInterfaces(i).CreditO,
+				PEDataIn  => PEInputs(i).DataIn,
+				PERx      => PEInputs(i).Rx,
+				--PECreditO => PEInputs(i).CreditO,
+				PECreditO => PEOutputs(i).CreditO,
 				
 				-- Arbiter interface
 				NewGrant  => arbiterNewGrant(i),
