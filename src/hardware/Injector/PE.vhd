@@ -63,9 +63,10 @@ architecture Injector of PE is
 
     -- JSON config files
     constant PEJSONConfig: T_JSON := jsonLoad(PEConfigFile);
+    constant PlatCFG: T_JSON := jsonLoad(PlatformConfigFile);
 
     constant PEPos: integer := jsonGetInteger(PEJSONConfig, "PEPos");
-    constant SquareNoCBound: integer := jsonGetInteger(PEJSONConfig, "SquareNoCBound");
+    constant SquareNoCBound: integer := jsonGetInteger(PlatCFG, "SquareNoCBound");
     constant BusArbiter: string(1 to 2) := jsonGetString(PEJSONConfig, "BusArbiter");
     constant BusBridgeBufferSize: integer := jsonGetInteger(PEJSONConfig, "BridgeBufferSize");
 
