@@ -26,7 +26,8 @@ library std;
 entity Receiver is
 
 	generic(
-		InboundLogFilename : string
+		InboundLogFilename : string;
+		SquareNoCBound: integer
 	);
 
 	port (
@@ -82,7 +83,7 @@ begin
                 if flitCounter = 0 then
 
                     --latestMessageTimestamp <= std_logic_vector(to_unsigned(clockCounter, DataWidth));
-                    targetID <= to_integer(unsigned(DataIn));
+                    targetID <= PEPosFromXY(DataIn(DataWidth - 1 downto HalfDataWidth), SquareNoCBound);
                     --null;
 
                 -- Checks for a SIZE flit (Assumes header = [ADDR, SIZE])

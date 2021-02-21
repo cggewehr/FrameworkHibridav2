@@ -131,6 +131,10 @@ package HyHeMPS_PKG is
     -- Adapted functions from HeMPS_defaults
     function RouterAddress(GlobalAddress: integer; NUMBER_PROCESSORS_X: integer) return HalfDataWidth_t;
 
+    -- Coordinate transformations (XY <=> Sequential)
+    function PEPosToXY(PEPos: integer; XDim: integer) return HalfDataWidth_t;
+    function PEPosFromXY(XY: HalfDataWidth_t; XDim: integer) return integer;
+
     -- Function declarations for organizing data from JSON config file
     function GetPEInfo(PlatCFG: T_JSON) return PEInfo_vector;
     function GetPEAddresses(PlatCFG: T_JSON; PEInfo: PEInfo_vector; InterfacingStructure: string(1 to 3); StructID: integer) return HalfDataWidth_vector; 
@@ -160,6 +164,16 @@ package body HyHeMPS_PKG is
             return addr;
 
     end function RouterAddress;
+
+    -- Sequential PEPos to XY coords
+    function PEPosToXY(PEPos: integer; XDim: integer) return HalfDataWidth_t is begin
+        return RouterAddress(PEPos, XDim);
+    end function PEPosToXY;
+
+    -- XY coords to sequential PEPos
+    function PEPosFromXY(XY: HalfDataWidth_t; XDim: integer) return integer is begin
+        return to_integer((unsigned(XY(QuarterDataWidth - 1 downto 0)) * XDim) + unsigned(XY(HalfDataWidth - 1 downto QuarterDataWidth)));
+    end function PEPosFromXY;
 
     -- Returns array of PEInfo structs, containing information about PE relationships to struct
     function GetPEInfo(PlatCFG: T_JSON) return PEInfo_vector is

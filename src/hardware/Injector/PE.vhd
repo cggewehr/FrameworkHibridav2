@@ -65,6 +65,7 @@ architecture Injector of PE is
     constant PEJSONConfig: T_JSON := jsonLoad(PEConfigFile);
 
     constant PEPos: integer := jsonGetInteger(PEJSONConfig, "PEPos");
+    constant SquareNoCBound: integer := jsonGetInteger(PEJSONConfig, "SquareNoCBound");
     constant BusArbiter: string(1 to 2) := jsonGetString(PEJSONConfig, "BusArbiter");
     constant BusBridgeBufferSize: integer := jsonGetInteger(PEJSONConfig, "BridgeBufferSize");
 
@@ -303,7 +304,8 @@ begin
     Receiver: entity work.Receiver
 
       	generic map(
-      		InboundLogFilename => LogPath & "PE " & integer'image(PEPos) & "/InLog" & integer'image(PEPos) & ".txt"
+      		InboundLogFilename => LogPath & "PE " & integer'image(PEPos) & "/InLog" & integer'image(PEPos) & ".txt",
+      		SquareNoCBound => SquareNoCBound
       	)
       	port map(
 
