@@ -37,8 +37,8 @@ entity BusControl is
 		Reset      : in std_logic;
 
 		-- Bus interface
-		BusTx      : inout std_logic;
-		BusData    : inout DataWidth_t;
+		BusTx      : in std_logic;
+		BusData    : in DataWidth_t;
 		BusCredit  : inout std_logic;
 
 		-- PE interface
@@ -53,7 +53,7 @@ end entity BusControl;
 architecture RTL of BusControl is
 
 	-- FSM states
-	type state_t is (Sreset, Sstandby, Ssize, Spayload);
+	type state_t is (Sstandby, SwaitForCredit, Ssize, Spayload);
 	signal currentState: state_t;
 
 	-- Contains size of current msg's payload. Decremented by one every time a flit is sent across the bus, until msg has been fully sent
@@ -84,7 +84,7 @@ architecture RTL of BusControl is
 begin
 
 	-- Moore FSM, controls input interface of target PE as longs as the current message is being transmitted
-	process(Clock)  -- Synchronous reset
+	process(Clock, Reset)  -- Synchronous reset
 
 		--  1st flit of a message, to be translated into an index, through GetIndexOfAddr(). 
 		-- This index is then registered in register of bit width proportional to the amount of PEs in this bus
@@ -94,26 +94,20 @@ begin
 
 	begin
 
-		if rising_edge(Clock) then
+        -- Sets default values
+        if Reset = '1' then
 
-			if Reset = '1' then
+			busBeingUsed <= '0';
 
-				busBeingUsed <= '0';
+            targetIndex <= 0;
+			flitCounter <= 0;
 
-				currentState <= Sreset;
-
-			end if;
-
-			-- Sets default values
-			if currentState = Sreset then
-
-				targetIndex <= 0;
-				flitCounter <= 0;
-
-				currentState <= Sstandby;
-
+			currentState <= Sstandby;
+		
+        elsif rising_edge(Clock) then
+				
 			-- Checks for a new transmission. If so, determine targetIndex from 1st flit of msg and proceed, else, wait for transmission
-			elsif currentState = Sstandby then
+			if currentState = Sstandby then
 
 				if BusTx = '1' then
 
@@ -122,19 +116,32 @@ begin
 					targetIndex <= GetIndexOfAddr(PEAddresses, targetAddr);
 					busBeingUsed <= '1';
 
-					currentState <= Ssize;
+					currentState <= SwaitForCredit;
 				
 				else
 					currentState <= Sstandby;
 
 				end if;
+    
+            elsif currentState = SwaitForCredit then
+
+                if BusCredit = '1' and BusTx = '1' then
+                    currentState <= Ssize;
+                else
+                    currentState <= SwaitForCredit;
+                end if;
 
 			-- Initialize flitCounter from 2nd flit of msg (which contains payload size)
 			elsif currentState = Ssize then
 
-				flitCounter <= to_integer(unsigned(BusData));
+                if BusCredit = '1' and BusTx = '1' then
+				    flitCounter <= to_integer(unsigned(BusData));
 
-				currentState <= Spayload;
+				    currentState <= Spayload;
+                else 
+                    currentState <= Ssize;
+
+                end if;
 
 			-- Remains in this state until all payload flits have been transmitted
 			elsif currentState = Spayload then
@@ -170,7 +177,7 @@ begin
 	-- BusCredit gets Credit_o of msg target PE
 	--BusCredit <= PECredit(targetIndex) when busBeingUsed = '1' else '0';
 
-	process(busBeingUsed, targetIndex, PECredit) begin  -- (Describes same behaviour, but compatible with Cadence tools)
+	process(busBeingUsed, targetIndex, PECredit) begin  -- (Describes same behaviour as above, but compatible with Cadence tools)
 
 		PERx <= (others => '0');
 

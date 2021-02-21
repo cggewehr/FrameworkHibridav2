@@ -104,7 +104,7 @@ begin
     begin
 
         -- Determines if last event was a either a Read or a Write
-        --   (Necessary for when both pointer are equal, when so, amount of data
+        --   (Necessary for when both pointers are equal. When so, amount of data
         -- on buffer can be determined by what event was the latest: if it was a
         -- write, it means that writePointer catched up to readPointer, implying
         -- that the next write on the buffer would overwrite the oldest buffer 

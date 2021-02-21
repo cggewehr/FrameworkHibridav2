@@ -58,14 +58,15 @@ end BusBridge;
 
 architecture RTL of BusBridge is
 
-	type state_t is (Sreset, Sstandby, SwaitForGrant, Stransmit);
+	type state_t is (Sstandby, SwaitForGrant, Stransmit);
 	signal currentState: state_t;
 	
 	--signal flitCounter: integer;
 
-	signal dataTristate: DataWidth_t;
-
+	signal bufferDataOut: DataWidth_t;
+    signal bufferReadyFlag: std_logic;
 	signal bufferAVFlag: std_logic;
+    signal bufferReadConfirm: std_logic;
 
 begin
 
@@ -89,14 +90,16 @@ begin
 
 			-- Bus interface (Output)
 			ClockOut            => Clock,
-			DataOut             => dataTristate,
-			ReadConfirm         => CreditI,
+			DataOut             => bufferDataOut,
+			--ReadConfirm         => CreditI,
+            ReadConfirm         => bufferReadConfirm,
 			ReadACK             => open,
 			
 			-- Status flags
 			BufferEmptyFlag     => open,
 			BufferFullFlag      => open,
 			BufferReadyFlag     => CreditO,
+            --BufferReadyFlag     => bufferReadyFlag,
 			BufferAvailableFlag => bufferAVFlag
 
 		);
@@ -104,31 +107,37 @@ begin
 
 	-- Same as struct clock (clock domain crossing occurs at InjBuffer)
 	ClockTx <= ClockRx;
-
-
-	-- 
 	Tx <= bufferAVFlag when currentState = Stransmit else 'Z';
+	DataOut <= bufferDataOut when currentState = Stransmit else (others => 'Z');
+    --CreditO <= bufferReadyFlag when currentState = Stransmit else 'Z';
 
+    bufferReadConfirm <= CreditI when currentState = Stransmit else '0';
 
 	-- 
-	DataOut <= dataTristate when currentState = Stransmit else (others => 'Z');
+	ControlFSM: process(Reset, ClockRx) begin
 
+        if Reset = '1' then
 
-	-- 
-	ControlFSM: process(ClockRx) begin
+            ACK <= 'Z';
+			Request <= '0';
 
-		if rising_edge(ClockRx) then
+			currentState <= Sstandby;
+
+		elsif rising_edge(ClockRx) then
 
 			case currentState is
 
 				-- Sets default values
-				when Sreset => 
+				--when Sreset => 
 
-					ACK <= 'Z';
-					Request <= '0';
+					--ACK <= 'Z';
+					--Request <= '0';
 
 				-- Waits for a new message
 				when Sstandby => 
+                    
+                    ACK <= 'Z';
+			        Request <= '0';
 
 					if Rx = '1' then
 
@@ -181,11 +190,6 @@ begin
 					end if;
 
 			end case;
-
-			if Reset = '1' then
-				currentState <= Sreset;
-
-			end if;
 
 		end if;
 

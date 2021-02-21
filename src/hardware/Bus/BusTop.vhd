@@ -83,9 +83,9 @@ begin
 
 				-- Bus interface (Bridge output)
 				ClockTx => open,
-				Tx      => BusTx,
-				DataOut => BusData,
-				CreditI => BusCredit,
+				Tx      => busTx,
+				DataOut => busData,
+				CreditI => busCredit,
 
 				-- Arbiter interface
 				Ack     => arbiterACK,
@@ -160,19 +160,13 @@ begin
 	--end generate DaisyChainArbiterGen;
 
 
-	-- Connects PE interfaces to bus 
+	-- Connects PE input interfaces to bus 
 	PEConnectGen: for i in 0 to AmountOfPEs - 1 generate
 	
-		-- PE input interface
-		PEInputs(i).DataIn <= BusData;
+		PEInputs(i).DataIn <= busData;
 		PEInputs(i).ClockRx <= Clock;
 		PEInputs(i).Rx <= controlRx(i);
 		controlCredit(i) <= PEOutputs(i).CreditO;
-
-		-- PE output interface
-		busData <= PEOutputs(i).DataOut;  -- Tristated @ bridge
-		busTx <= PEOutputs(i).Tx;  -- Tristated @ bridge
-		PEInputs(i).CreditI <= busCredit;
 		
 	end generate PEConnectGen;
 

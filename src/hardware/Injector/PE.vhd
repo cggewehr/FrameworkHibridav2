@@ -218,6 +218,15 @@ begin
     
     --Tx <= '0' when txBuffer = 'U' or txBuffer = 'Z' else txBuffer;
 
+    -- Grounds outputs if no injectors are instantiated
+    GroundGen: if AmountOfFlows = 0 generate
+
+        ClockTx <= ClockRx;
+        DataOut <= (others => '0');
+        Tx <= '0';
+    
+    end generate GroundGen;
+
     -- Directly connects buffer to PE output interface (no PEBus is necessary)
     DirectConnectGen: if AmountOfFlows = 1 generate
 

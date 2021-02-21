@@ -1638,7 +1638,7 @@ package body JSON is
   -- NEW
 	function jsonGetInteger(JSONContext : T_JSON; Path : STRING) return integer is
 	begin
-		report Path severity warning;
+		--report Path severity warning;
 		return integer'value(jsonGetString(JSONContext, Path));
 	end function;
 
@@ -1663,7 +1663,8 @@ package body JSON is
 	-- function to get a integer_vector of a fixed length from the compressed content extracted from a JSON input
 	function jsonGetIntegerArray(JSONContext: T_JSON; Path: string; Len: positive) return integer_vector is
 	--function jsonGetIntegerArray(JSONContext : T_JSON; Path : string; Len : positive) return integerArray is
-	  variable return_value : integer_vector(Len-1 downto 0);
+	  --variable return_value : integer_vector(Len-1 downto 0);
+		variable return_value : integer_vector(0 to Len - 1);
 	  --variable return_value : integerArray(Len-1 downto 0);
 	begin
 	  for i in 0 to Len-1 loop
@@ -1686,7 +1687,8 @@ package body JSON is
 
 	-- function to get a real_vector of a fixed length from the compressed content extracted from a JSON input
 	function jsonGetRealArray(JSONContext: T_JSON; Path: string; Len: positive) return real_vector is
-	  variable return_value : real_vector(Len-1 downto 0);
+	  --variable return_value : real_vector(Len-1 downto 0);
+		variable return_value : real_vector(0 to Len - 1);
 	begin
 	  for i in 0 to Len-1 loop
 	    --return_value(i) := to_natural_dec(jsonGetString(JSONContext, Path & "/" & to_string(i)));

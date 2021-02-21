@@ -109,10 +109,10 @@ begin
 			BufferAvailableFlag => bufferAVFlag
 
 		);
-
+    
+    ClockTx <= Clock;
 
 	Tx <= bufferAVFlag when currentState = Stransmit else '0';
-
 
 	bufferReadConfirm <= CreditI(targetIndex) when currentState = Stransmit else '0';
 
