@@ -1,3 +1,19 @@
+--------------------------------------------------------------------------------
+-- Title       : Crossbar interface module for HyHeMPS
+-- Project     : HyHeMPS
+--------------------------------------------------------------------------------
+-- File        : CrossbarBridgev2.vhd
+-- Author      : Carlos Gewehr (carlos.gewehr@ecomp.ufsm.br)
+-- Company     : UFSM, GMICRO (Grupo de Microeletronica)
+-- Standard    : VHDL-1993
+--------------------------------------------------------------------------------
+-- Description : 
+--------------------------------------------------------------------------------
+-- Revisions   : v0.01 - Initial implementation
+--------------------------------------------------------------------------------
+-- TODO        :
+--------------------------------------------------------------------------------
+
 
 library ieee;
 	use ieee.std_logic_1164.all;
@@ -13,6 +29,7 @@ entity CrossbarBridge is
 		BufferSize : integer;
 		AmountOfPEs: integer;
 		PEAddresses: HalfDataWidth_vector;
+        SelfIndex: integer;
 		SelfAddress: HalfDataWidth_t
 	);
 	port(
@@ -36,7 +53,8 @@ entity CrossbarBridge is
 		-- Arbiters Interface
 		ACK      : out std_logic_vector;
 		Request  : out std_logic_vector;
-		Grant    : in std_logic_vector
+		--Grant    : in std_logic_vector
+		Grant    : in std_logic
 
 	);
 	
@@ -45,11 +63,12 @@ end entity CrossbarBridge;
 
 architecture RTL of CrossbarBridge is
 
-	type state_t is (Sreset, Sstandby, Srequest, SwaitForGrant, Stransmit);
+	--type state_t is (Sreset, Sstandby, Srequest, SwaitForGrant, Stransmit);
+    type state_t is (Sstandby, Srequest, SwaitForGrant, SwaitForControl, Stransmit);
 	signal currentState: state_t;
 
-    signal flitCounter: integer;
-	signal targetIndex: integer; 
+    --signal flitCounter: integer;
+	signal targetIndex: integer range 0 to PEAddresses'high; 
 
 	signal bufferAVFlag: std_logic;
 	signal bufferReadConfirm: std_logic;
@@ -70,11 +89,11 @@ architecture RTL of CrossbarBridge is
 
 		end loop;
 
-		return 0;  -- Return index of wrapper if given ADDR was not found in crossbar
+		return Addresses'high;  -- Return index of wrapper if given ADDR was not found in crossbar
 		
 	end function GetIndexOfAddr;
 
-	constant selfIndex: integer := GetIndexOfAddr(PEAddresses, SelfAddress, 0);
+	--constant selfIndex: integer := GetIndexOfAddr(PEAddresses, SelfAddress, 7);
 
 begin
 
@@ -111,100 +130,115 @@ begin
 		);
     
     ClockTx <= Clock;
-
 	Tx <= bufferAVFlag when currentState = Stransmit else '0';
-
 	bufferReadConfirm <= CreditI(targetIndex) when currentState = Stransmit else '0';
+    
+    ACK(SelfIndex) <= '0';
+    Request(SelfIndex) <= '0';
 
+	ControlFSM: process(Clock, Reset) begin
 
-	ControlFSM: process(Clock) begin
+        if Reset = '1' then
 
-		case currentState is
+            -- Set default values
+            ACK <= (others => '0');
+			Request <= (others => '0');
 
-			-- Set default values
-			when Sreset =>
+            currentState <= Sstandby;
 
-				ACK <= (others => '0');
-				Request <= (others => '0');
+        elsif rising_edge(Clock) then
 
-			-- Wait for a new message to be sent
-			when Sstandby =>
+		    case currentState is
 
-				if Rx = '1' then
+			    -- Set default values
+			    --when Sreset =>
 
-					targetIndex <= GetIndexOfAddr(PEAddresses, SelfAddress, selfIndex);
+				    --ACK <= (others => '0');
+				    --Request <= (others => '0');
 
-					currentState <= Srequest;
+			    -- Wait for a new message to be sent
+			    when Sstandby =>
 
-				else
+                    ACK <= (others => '0');
+                    Request <= (others => '0');
 
-					currentState <= Sstandby;
+				    if Rx = '1' then
 
-				end if;
+					    --targetIndex <= GetIndexOfAddr(PEAddresses, SelfAddress, SelfIndex);
+                        targetIndex <= GetIndexOfAddr(PEAddresses, DataIn(DataWidth - 1 downto HalfDataWidth), SelfIndex);
 
-			-- Requests to the right arbiter 
-			when Srequest => 
+				        --flitCounter <= to_integer(unsigned(DataIn)) + 2;
 
-				Request(targetIndex) <= '1';
-				flitCounter <= to_integer(unsigned(DataIn)) + 2;
+					    currentState <= Srequest;
 
-				currentState <= SwaitForGrant;
+				    else
+					    currentState <= Sstandby;
 
-			-- Waits for arbiter grant
-			when SwaitForGrant => 
+                    end if;
 
-				if Grant(targetIndex) = '1' then
+                -- Asserts "request" to arbiter defined by targetIndex
+                when Srequest =>
 
-					--ACK(targetIndex) <= '1';
-					Request(targetIndex) <= '0';
+                    Request(targetIndex) <= '1';
 
-					currentState <= Stransmit;
+                    currentState <= SwaitForGrant;
 
-				else
+			    -- Waits for arbiter grant
+			    when SwaitForGrant => 
 
-					currentState <= SwaitForGrant;
+                    -- TODO: Replace with orReduce on targetIndex
+				    --if Grant(targetIndex) = '1' then
+                    if Grant = '1' then
 
-				end if;
+					    Request(targetIndex) <= '0';
 
-			-- Sends message
-			when Stransmit => 
+					    currentState <= SwaitForControl;
 
-				--ACK(targetIndex) <= '0';
+				    else
+					    currentState <= SwaitForGrant;
 
-				if CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
-					flitCounter <= flitCounter - 1;
+				    end if;
 
-				end if;
+                -- Wait for CrossbarControl to recognize new Grant
+                when SwaitForControl =>
+                    
+                    currentState <= Stransmit;
 
-				if flitCounter = 1 and CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
-					Ack(targetIndex) <= '1';
-					currentState <= Sstandby;
+			    -- Sends message
+			    when Stransmit => 
 
-				else
-					currentState <= Stransmit;
+				    --ACK(targetIndex) <= '0';
 
-				end if;
+				    --if CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
+					--    flitCounter <= flitCounter - 1;
+				    --end if;
 
-			-- Defaults to Sreset;
-			when others => 
+				    --if flitCounter = 1 and CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
+                    if bufferAVFlag = '0' then
+					    Ack(targetIndex) <= '1';
+					    currentState <= Sstandby;
 
-				currentState <= Sreset;
+				    else
+					    currentState <= Stransmit;
 
-		end case;
+				    end if;
 
+			    -- Defaults to Sreset;
+			   -- when others => 
 
-		if Reset = '1' then
-			currentState <= Sreset;
+				    --currentState <= Sreset;
+
+		    end case;
 
 		end if;
 
 	end process ControlFSM;
 
 	-- Debug assertions
-	assert not (to_integer(unsigned(Grant)) > 0 and (currentState = SwaitForGrant or currentState = Stransmit)) 
-		report "Unexpected grant at bridge " & integer'image(selfIndex) severity ERROR;
+	--assert not (Grant = '1' and currentState = Sstandby)
+		--report "Unexpected grant at bridge " & integer'image(SelfIndex) severity ERROR;
 
-	assert not (currentState = Sstandby and bufferAVFlag = '0')
-		report "Buffer not empty at standby state in bridge " & integer'image(selfIndex) severity ERROR;
+	assert not (currentState = Sstandby and bufferAVFlag = '1')
+		report "Buffer not empty at standby state in bridge " & integer'image(SelfIndex) severity ERROR;
 	
 end architecture RTL;

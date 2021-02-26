@@ -28,6 +28,7 @@ entity CrossbarControl is
 	generic (
 		PEAddresses: HalfDataWidth_vector;
 		SelfAddress: HalfDataWidth_t;
+        SelfIndex: integer;
 		IsStandalone: boolean
 	);
 	port (
@@ -39,7 +40,8 @@ entity CrossbarControl is
 		-- Crossbar Interface
 		DataInMux: in DataWidth_vector;
 		RXMux: in std_logic_vector(PEAddresses'range);
-		CreditO: out std_logic_vector(PEAddresses'range);
+		--CreditO: out std_logic_vector(PEAddresses'range);
+		CreditO: out std_logic;
 
 		-- PE Interface
 		PEDataIn: out DataWidth_t;
@@ -110,29 +112,24 @@ architecture RTL of CrossbarControl is
 		
 	end function GetIndexOfAddr;
 
-	constant selfIndex: integer := GetIndexOfAddr(PEAddresses, SelfAddress, 0);
-	signal sourceIndex: integer := 0;
+	--constant selfIndex: integer := GetIndexOfAddr(PEAddresses, SelfAddress, 0);
+	--signal sourceIndex: integer := 0;
+    signal sourceIndex: integer range 0 to PEAddresses'high;
 
 begin
 
 	process(Clock, Reset) begin
 
-                if Reset = '1' then
-                        sourceIndex <= 0;
+        if Reset = '1' then
+            sourceIndex <= 0;
 
 		elsif rising_edge(Clock) then
 
-			if Reset = '1' then
-				sourceIndex <= 0;
+			--sourceIndex <= GetIndexOfActiveTx(RXMux);
 
-			else
-				--sourceIndex <= GetIndexOfActiveTx(RXMux);
-
-				-- Checks if arbiter has given out a new grant, signaling a new message is to be received. If so, determine
-				if NewGrant = '1' then
-					sourceIndex <= GetIndexOfActiveTx(Grant);
-
-				end if;
+			-- Checks if arbiter has given out a new grant, signaling a new message is to be received. If so, determine
+			if NewGrant = '1' then
+				sourceIndex <= GetIndexOfActiveTx(Grant);
 
 			end if;
 
@@ -145,14 +142,17 @@ begin
 
     -- Mutiplexes Rx based on "sourceIndex"
 	PERx <= OrReduce(RXMux);
+
+    CreditO <= PECreditO;
 	
 	-- Mutiplexes CreditI based on "sourceIndex"
 	--CreditO <= (sourceIndex => PECreditO, others => '0');
-	process(sourceIndex, PECreditO) begin  -- (Describes same behaviour, but compatible with Cadence tools)
+	--process(sourceIndex, PECreditO) begin  -- (Describes same behaviour, but compatible with Cadence tools)
 
-		CreditO <= (others => '0');
-		CreditO(sourceIndex) <= PECreditO;
+		--CreditO <= (others => '0');
+		--CreditO(sourceIndex) <= PECreditO;
+        --CreditO(SelfIndex) <= '0';
 
-	end process;
+	--end process;
 	
 end architecture RTL;

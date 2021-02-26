@@ -91,7 +91,7 @@ begin
             RouterInterfaces(i).DataIn(South) <= RouterInterfaces(i - NoCXSize).DataOut(North);
             RouterInterfaces(i).CreditI(South) <= RouterInterfaces(i - NoCXSize).CreditO(North);
 
-            assert false report "Mapped south port of router " & integer'image(i) & " to north port of router " & integer'image(i - NoCXSize) severity note;
+            assert false report "Mapped south port of router <" & integer'image(i) & "> to north port of router <" & integer'image(i - NoCXSize) & ">" severity note;
 
         end generate SouthMap;
 
@@ -104,7 +104,9 @@ begin
             RouterInterfaces(i).DataIn(South) <= (others=>'0');
             RouterInterfaces(i).CreditI(South) <= '0';
 
-            assert false report "Grounded south port of router " & integer'image(i) severity note;
+            assert false report "Grounded south port of router <" & integer'image(i) & ">" severity note;
+
+            assert not (RouterInterfaces(i).Tx(South) = '1') report "Router <" & integer'image(i) & "> transmitting into grounded south port" severity error;
 
         end generate SouthGround;
 
@@ -117,7 +119,7 @@ begin
             RouterInterfaces(i).DataIn(North) <= RouterInterfaces(i + NoCXSize).DataOut(South);
             RouterInterfaces(i).CreditI(North) <= RouterInterfaces(i + NoCXSize).CreditO(South);
 
-            assert false report "Mapped north port of router " & integer'image(i) & " to south port of router " & integer'image(i + NoCXSize) severity note;
+            assert false report "Mapped north port of router <" & integer'image(i) & "> to south port of router <" & integer'image(i + NoCXSize) & ">" severity note;
 
         end generate NorthMap;
 
@@ -130,7 +132,9 @@ begin
             RouterInterfaces(i).DataIn(North) <= (others=>'0');
             RouterInterfaces(i).CreditI(North) <= '0';
 
-            assert false report "Grounded north port of router " & integer'image(i) severity note;
+            assert false report "Grounded north port of router <" & integer'image(i) & ">" severity note;
+
+            assert not (RouterInterfaces(i).Tx(North) = '1') report "Router <" & integer'image(i) & "> transmitting into grounded north port" severity error;
 
         end generate NorthGround;
 
@@ -143,7 +147,7 @@ begin
             RouterInterfaces(i).DataIn(West) <= RouterInterfaces(i - 1).DataOut(East);
             RouterInterfaces(i).CreditI(West) <= RouterInterfaces(i - 1).CreditO(East);
 
-            assert false report "Mapped west port of router " & integer'image(i) & " to east port of router " & integer'image(i + 1) severity note;
+            assert false report "Mapped west port of router <" & integer'image(i) & "> to east port of router <" & integer'image(i + 1) & ">" severity note;
 
         end generate WestMap;
 
@@ -156,7 +160,9 @@ begin
             RouterInterfaces(i).DataIn(West) <= (others=>'0');
             RouterInterfaces(i).CreditI(West) <= '0';
 
-            assert false report "Grounded west port of router " & integer'image(i) severity note;
+            assert false report "Grounded west port of router <" & integer'image(i) & ">" severity note;
+
+            assert not (RouterInterfaces(i).Tx(West) = '1') report "Router <" & integer'image(i) & "> transmitting into grounded west port" severity error;
 
         end generate WestGround;
 
@@ -169,7 +175,7 @@ begin
             RouterInterfaces(i).DataIn(East) <= RouterInterfaces(i + 1).DataOut(West);
             RouterInterfaces(i).CreditI(East) <= RouterInterfaces(i + 1).CreditO(West);
 
-            assert false report "Mapped east port of router " & integer'image(i) & " to west port of router " & integer'image(i - 1) severity note;
+            assert false report "Mapped east port of router <" & integer'image(i) & "> to west port of router <" & integer'image(i - 1) & ">" severity note;
 
         end generate EastMap;
 
@@ -182,7 +188,9 @@ begin
             RouterInterfaces(i).DataIn(East) <= (others=>'0');
             RouterInterfaces(i).CreditI(East) <= '0';
 
-            assert false report "Grounded east port of router " & integer'image(i) severity note;
+            assert false report "Grounded east port of router <" & integer'image(i) & ">" severity note;
+
+            assert not (RouterInterfaces(i).Tx(East) = '1') report "Router <" & integer'image(i) & "> transmitting into grounded east port" severity error;
 
         end generate EastGround;
 

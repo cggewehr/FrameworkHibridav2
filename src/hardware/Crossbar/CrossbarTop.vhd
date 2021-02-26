@@ -47,16 +47,6 @@ end entity Crossbar;
 
 architecture RTL of Crossbar is
 
-	-- Bridge output interface
-	signal bridgeTx: std_logic_vector(0 to AmountOfPEs - 1);
-	signal bridgeDataOut: DataWidth_vector(0 to AmountOfPEs - 1);
-	signal bridgeCredit: std_logic_vector(0 to AmountOfPEs - 1);
-
-	-- Bridge to Arbiter interface
-	signal bridgeACK: std_logic_vector(0 to AmountOfPEs - 1);
-	signal bridgeRequest: std_logic_vector(0 to AmountOfPEs - 1);
-	signal bridgeGrant: std_logic_vector(0 to AmountOfPEs - 1);
-
 	-- CrossbarControl input interface
 	subtype CtrlDataIn_t is DataWidth_vector(0 to AmountOfPEs - 1);
 	type CtrlDataIn_vector is array(0 to AmountOfPEs - 1) of CtrlDataIn_t;
@@ -65,13 +55,39 @@ architecture RTL of Crossbar is
 	subtype slv_t is std_logic_vector(0 to AmountOfPEs - 1);
 	type slv_vector is array(0 to AmountOfPEs - 1) of slv_t;
 	signal controlRx: slv_vector;
-	signal controlCreditO: slv_vector;
+	--signal controlCreditO: slv_vector;
+	signal controlCreditO: std_logic_vector(0 to AmountOfPEs - 1);
 
 	-- Arbiter interface
 	signal arbiterRequest: slv_vector;
 	signal arbiterACK: slv_vector;
 	signal arbiterGrant: slv_vector;
 	signal arbiterNewGrant: std_logic_vector(0 to AmountOfPEs - 1);
+
+    -- Bridge output interface
+	signal bridgeTx: std_logic_vector(0 to AmountOfPEs - 1);
+	signal bridgeDataOut: DataWidth_vector(0 to AmountOfPEs - 1);
+	--signal bridgeCredit: slv_vector;
+
+	-- Bridge to Arbiter interface
+	signal bridgeACK: slv_vector;
+	signal bridgeRequest: slv_vector;
+	signal bridgeGrant: slv_vector;
+
+    -- Performs "or" operation between all elements of a given std_logic_vector
+	function OrReduce(inputArray: std_logic_vector) return std_logic is
+		variable orReduced: std_logic := '0';
+	begin
+
+		for i in inputArray'range loop 
+
+			orReduced := orReduced or inputArray(i);
+
+		end loop;
+
+		return orReduced;
+		
+	end function OrReduce;
 
 begin
 
@@ -87,6 +103,7 @@ begin
 				BufferSize  => BridgeBufferSize,
 				AmountOfPEs => AmountOfPEs,
 				PEAddresses => PEAddresses,
+                SelfIndex   => i,
 				SelfAddress => PEAddresses(i)
 			)
 
@@ -110,12 +127,16 @@ begin
 				ClockTx => open,
 				Tx      => bridgeTx(i),
 				DataOut => bridgeDataOut(i),
-				CreditI => bridgeCredit,
+				--CreditI => bridgeCredit(i),
+				CreditI => controlCreditO,
 
 				-- Arbiter interface
-				Ack     => bridgeACK,
-				Request => bridgeRequest,
-				Grant   => bridgeGrant
+				--ACK     => bridgeACK,
+				ACK     => bridgeACK(i),
+				--Request => bridgeRequest,
+				Request => bridgeRequest(i),
+				--Grant   => bridgeGrant
+				Grant   => orReduce(bridgeGrant(i))
 
 			);
 
@@ -130,6 +151,7 @@ begin
 			generic map(
 				PEAddresses => PEAddresses,
 				SelfAddress => PEAddresses(i),
+                SelfIndex => i,
 				IsStandalone => IsStandalone
 			)
 			port map(
@@ -164,7 +186,7 @@ begin
 
 					controlDataIn(i)(j) <= bridgeDataOut(j);
 					controlRx(i)(j) <= bridgeTx(j);
-					bridgeCredit(i) <= controlCreditO(i)(j);
+					--bridgeCredit(i) <= controlCreditO(i)(j);  -- MOVED TO CrossbarControl
 
 				end generate ControlMap;
 
@@ -172,7 +194,7 @@ begin
 
 					controlDataIn(i)(j) <= (others => '0');
 					controlRx(i)(j) <= '0';
-					bridgeCredit(i) <= '0';
+					--bridgeCredit(i) <= '0';  -- MOVED TO CrossbarControl
 
 				end generate ControlGround;
 
@@ -223,17 +245,25 @@ begin
 
 			ArbMap: if Bridge /= Arbiter generate
 
-				arbiterACK(Arbiter)(Bridge) <= bridgeACK(Bridge);
-				arbiterGrant(Arbiter)(Bridge) <= bridgeGrant(Bridge);
-				bridgeRequest(Bridge) <= arbiterRequest(Arbiter)(Bridge);
+				--arbiterACK(Arbiter)(Bridge) <= bridgeACK(Bridge);
+				arbiterACK(Arbiter)(Bridge) <= bridgeACK(Bridge)(Arbiter);
+				--arbiterGrant(Arbiter)(Bridge) <= bridgeGrant(Bridge);
+				bridgeGrant(Bridge)(Arbiter) <= arbiterGrant(Arbiter)(Bridge);
+				--bridgeRequest(Bridge) <= arbiterRequest(Arbiter)(Bridge);
+				arbiterRequest(Arbiter)(Bridge) <= bridgeRequest(Bridge)(Arbiter);
+
+                -- TODO: bridgeGrant(Bridge) <= orReduce(arbiterGrant(Bridge)(Arbiter));
+                -- TODO: do orReduce on ACKs here, instead of in arbiter
 
 			end generate ArbMap;
 
 			ArbGround: if Bridge = Arbiter generate
 
 				arbiterACK(Arbiter)(Bridge) <= '0';
-				arbiterGrant(Arbiter)(Bridge) <= '0';
-				bridgeRequest(Bridge) <= '0';
+				--arbiterGrant(Arbiter)(Bridge) <= '0';
+                bridgeGrant(Bridge)(Arbiter) <= '0';
+				--bridgeRequest(Bridge) <= '0';
+                arbiterRequest(Arbiter)(Bridge) <= '0';
 
 			end generate ArbGround;
 
