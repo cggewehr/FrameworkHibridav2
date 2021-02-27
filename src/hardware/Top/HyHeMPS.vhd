@@ -151,7 +151,8 @@ begin
 
                 generic map(
                     Arbiter          => "RR",
-                    AmountOfPEs      => (AmountOfPEsInBuses(i) + 1),  -- TODO: Not add +1 if standalone
+                    --AmountOfPEs      => (AmountOfPEsInBuses(i) + 1),  -- TODO: Not add +1 if standalone
+                    AmountOfPEs      => (AmountOfPEsInBuses(i) + boolToInt(IsStandaloneBus)),
                     PEAddresses      => BusPEAddresses(i),
                     BridgeBufferSize => BridgeBufferSize,
                     IsStandalone     => IsStandaloneBus
@@ -164,7 +165,7 @@ begin
                     PEOutputs => BusInputInterfaces(i)
                 );
 
-            assert false report "Instantiated Bus <" & integer'image(i) & "> with <" & integer'image(AmountOfPEsInBuses(i) + 1) & "> elements" severity note;
+            assert false report "Instantiated Bus <" & integer'image(i) & "> with <" & integer'image(AmountOfPEsInBuses(i) + boolToInt(IsStandaloneBus)) & "> elements" severity note;
 
             -- Connect Bus to base NoC. (Wrapper is at the highest index, obtained by AmountOfPEsInBuses(i))
             ConnectBusToBaseNoC: if not IsStandaloneBus generate
@@ -246,7 +247,8 @@ begin
 
                 generic map(
                     ArbiterType      => "RR",
-                    AmountOfPEs      => (AmountOfPEsInCrossbars(i) + 1),  -- TODO: Not add +1 if standalone
+                    --AmountOfPEs      => (AmountOfPEsInCrossbars(i) + 1),  -- TODO: Not add +1 if standalone
+                    AmountOfPEs      => (AmountOfPEsInCrossbars(i) + boolToInt(IsStandaloneCrossbar)),
                     PEAddresses      => CrossbarPEAddresses(i),
                     BridgeBufferSize => BridgeBufferSize,
                     IsStandalone     => IsStandaloneCrossbar
@@ -259,7 +261,7 @@ begin
                     PEOutputs => CrossbarInputInterfaces(i)
                 );
             
-            assert false report "Instantiated Crossbar <" & integer'image(i) & "> with <" & integer'image(AmountOfPEsInCrossbars(i) + 1) & "> elements" severity note;
+            assert false report "Instantiated Crossbar <" & integer'image(i) & "> with <" & integer'image(AmountOfPEsInCrossbars(i) + boolToInt(IsStandaloneCrossbar)) & "> elements" severity note;
 
             -- Connects Crossbar to base NoC. (Wrapper is at the highest index, obtained by AmountOfPEsInCrossbars(i))
             ConnectCrossbarToBaseNoC: if not IsStandaloneCrossbar generate

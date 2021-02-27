@@ -144,6 +144,7 @@ package HyHeMPS_PKG is
     function incr(value: integer; maxValue: in integer; minValue: in integer) return integer;
     function decr(value: integer; maxValue: in integer; minValue: in integer) return integer;
     function decode(decodeIn: std_logic_vector) return std_logic_vector;
+    function boolToInt(value: boolean) return integer;
 
 end package HyHeMPS_PKG;
 
@@ -396,5 +397,15 @@ package body HyHeMPS_PKG is
         return decodeOut;
         
     end function decode;
+
+    function boolToInt(value: boolean) return integer is begin
+
+        if value then
+            return 0;
+        else
+            return 1;
+        end if;
+        
+    end function boolToInt;
 
 end package body HyHeMPS_PKG;
