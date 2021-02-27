@@ -3,6 +3,8 @@ __pycache__
 _AppComposer.py
 *.pýc
 
+scripts/cadence/tech.tcl
+
 # Ignores data folder, where files used in flowgen are usually stored, but keeps example files referenced in manual
 /data  Uncomment when file gitkraken .gitignore parser decides to work again
 !/data/flowgen/allocationMaps/ExampleAllocMap.json
