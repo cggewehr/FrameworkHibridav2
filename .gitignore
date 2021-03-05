@@ -2,6 +2,7 @@
 __pycache__
 _AppComposer.py
 *.pýc
+*~
 
 scripts/cadence/tech.tcl
 
