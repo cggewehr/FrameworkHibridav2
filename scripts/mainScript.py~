@@ -68,7 +68,7 @@ parser_flowgen.set_defaults(func=Flowgen.flowgen)
 parser_flowgen.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, required = True, help = "Name of target project")
 
 # compile args
-parser_compile = subparsers.add_parser("compile", help = "Compiles HDL source files with a given tool")
+parser_compile = subparsers.add_parser("compile", help = "Compiles VHDL files with a given tool")
 parser_compile.set_defaults(func=Comp.comp)
 parser_compile.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be compiled", required = True)
 supportedTools = ["cadence", "vivado"]

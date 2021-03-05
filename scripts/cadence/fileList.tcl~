@@ -1,5 +1,3 @@
-# TODO: Set $SourcesDir from global config.json
-
 # Reads HDL source files into Genus.
 read_hdl "${SourcesDir}/top/MIPS_PKG.vhd"
 read_hdl "${SourcesDir}/stages/FetchStage.vhd"

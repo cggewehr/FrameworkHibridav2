@@ -1,6 +1,6 @@
 [
-    "DummyThreadA", 
-    "DummyThreadB", 
+    "DummyApp.DummyThreadA", 
+    "DummyApp.DummyThreadB", 
     null, 
     null, 
     null, 

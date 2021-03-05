@@ -232,7 +232,7 @@ class Platform:
                         #PEPos = self.BaseNoC[x][y].PEPos
                         #PEThread = self.AllocationMap[PEPos]  # TODO: Build such that AllocMap[PEPos] = (Thread object)
                         #self.BaseNoC[x][y] = PE(PEPos = PEPos, CommStructure = "NoC", Thread = PEThread, InjectorClockFrequency = self.ReferenceClock)
-                        #print(self.AllocationMap)
+                        print(self.AllocationMap)
                         PEinNoC.updateWorkloadInfo(ThreadSet = self.AllocationMap[PEinNoC.PEPos])
                     
                 elif isinstance(self.BaseNoC[x][y], Structure):

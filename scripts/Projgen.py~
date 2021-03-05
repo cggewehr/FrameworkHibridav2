@@ -100,7 +100,7 @@ def projgen(args):
             scriptsTargetPath = os.path.join(ProjectDir, "synthesis", "scripts")
             from shutil import copy
             copy(os.path.join(scriptsSourcePath, "Genus.tcl"), os.path.join(scriptsTargetPath, "Genus.tcl"))
-            copy(os.path.join(scriptsSourcePath, "default.sdc"), os.path.join(scriptsTargetPath, "constraints.sdc"))
+            copy(os.path.join(scriptsSourcePath, "default.sdc"), os.path.join(scriptsTargetPath, "Constraints.sdc"))
             copy(os.path.join(scriptsSourcePath, "fileList.tcl"), os.path.join(scriptsTargetPath, "fileList.tcl"))
             copy(os.path.join(scriptsSourcePath, "sources.tcl"), os.path.join(scriptsTargetPath, "sources.tcl"))
             # TODO: Copy UPF file

@@ -721,7 +721,7 @@ class Workload:
             try:
                 App, Thrd = ThreadName.split(".", 1)
             except ValueError:
-                print("Warning: No \".\" char found on given ThreadName string <" + str(ThreadName) + ">. Include Application name on AllocMap list.")
+                print("Warning: No \".\" char found on given ThreadName string <" + str(ThreadName) + ">. Include ThreadName on AllocMap list.")
                 exit(1)
 
             return self.getThread(AppName = App, ThreadName = Thrd)
@@ -742,7 +742,7 @@ class Workload:
             try:
                 App, Thrd = str(ThreadID).split(".", 1)
             except ValueError:
-                print("Warning: No \".\" char found on given ThreadID string <" + str(ThreadName) + ">. Include Application ID on AllocMap list.")
+                print("Warning: No \".\" char found on given ThreadID string <" + str(ThreadName) + ">. Include AppID on AllocMap list.")
                 exit(1)
 
             return self.getThread(AppID = App, ThreadID = Thrd)

@@ -364,7 +364,6 @@ def setConfig(args):
         print("Topology file: " + str(ConfigDict["Projects"][args.ProjectName]["TopologyFile"]))
         print("Workload file: " + str(ConfigDict["Projects"][args.ProjectName]["WorkloadFile"]) + "\n")
     
-    # TODO: Only print this if a file has been set
     print("Writing modifications to config file")
     ConfigFile.close()
     with open(os.getenv("HIBRIDA_CONFIG_FILE"), "w") as ConfigFile:

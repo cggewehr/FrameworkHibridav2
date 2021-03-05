@@ -1,0 +1,33 @@
+{
+    "DummyThreadA": {
+        "Flows": [
+            {
+                "TargetThread": "DummyThreadB", 
+                "MSGAmount": 0, 
+                "SourceThread": "DummyThreadA", 
+                "ControlFlowFlag": false, 
+                "Periodic": false, 
+                "Bandwidth": 0, 
+                "StopTime": -1, 
+                "StartTime": 0
+            }
+        ]
+    }, 
+    "DummyThreadB": {
+        "Flows": [
+            {
+                "TargetThread": "DummyThreadA", 
+                "MSGAmount": 0, 
+                "SourceThread": "DummyThreadB", 
+                "ControlFlowFlag": false, 
+                "Periodic": false, 
+                "Bandwidth": 0, 
+                "StopTime": -1, 
+                "StartTime": 0
+            }
+        ]
+    }, 
+    "StopTime": 0, 
+    "StartTime": 0, 
+    "AppName": "DummyApp"
+}

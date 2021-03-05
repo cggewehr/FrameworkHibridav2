@@ -119,7 +119,7 @@ begin
 			-- Crossbar interface (Output)
 			ClockOut            => Clock,
 			--DataOut             => DataOut,
-			DataOut             => bufferDataOut,
+			DataOut             => buferDataOut,
 			ReadConfirm         => bufferReadConfirm,
 			ReadACK             => open,
 			

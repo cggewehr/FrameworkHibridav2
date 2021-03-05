@@ -1,0 +1,36 @@
+{
+    "WorkloadName": "DummyWorkload", 
+    "DummyApp": {
+        "DummyThreadA": {
+            "Flows": [
+                {
+                    "TargetThread": "DummyThreadB", 
+                    "StartTime": 0, 
+                    "SourceThread": "DummyThreadA", 
+                    "ControlFlowFlag": false, 
+                    "StopTime": -1, 
+                    "Bandwidth": 0, 
+                    "Periodic": false, 
+                    "MSGAmount": 0
+                }
+            ]
+        }, 
+        "DummyThreadB": {
+            "Flows": [
+                {
+                    "TargetThread": "DummyThreadA", 
+                    "StartTime": 0, 
+                    "SourceThread": "DummyThreadB", 
+                    "ControlFlowFlag": false, 
+                    "StopTime": -1, 
+                    "Bandwidth": 0, 
+                    "Periodic": false, 
+                    "MSGAmount": 0
+                }
+            ]
+        }, 
+        "StopTime": 0, 
+        "StartTime": 0, 
+        "AppName": "DummyApp"
+    }
+}
