@@ -21,9 +21,13 @@ library ieee;
 	use ieee.std_logic_1164.all;
 	use ieee.numeric_std.all;
 
-library work;
-    use work.HyHeMPS_PKG.all;
-    use work.JSON.all;
+
+library HyHeMPS;
+    use HyHeMPS.HyHeMPS_PKG.all;
+
+--library work;
+    --use work.HyHeMPS_PKG.all;
+    --use work.JSON.all;
 
 
 entity Hermes is

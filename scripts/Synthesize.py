@@ -5,7 +5,7 @@ def synthesize(args):
 
     ConfigFile = open(os.environ["HIBRIDA_CONFIG_FILE"], "r")
     ConfigDict = json.loads(ConfigFile.read())
-    ProjectDir = ConfigFile["Projects"][args.ProjectName]["ProjectDir"]
+    ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
     
     # Check if given project path exists
     if not os.path.isdir(ProjectDir):
@@ -24,7 +24,8 @@ def synthesize(args):
         os.environ["SynthProcessCorner"] = args.Process
         
         # Call genus
-        os.system("genus -log " + str(ProjectDir) + "/log/cadence/genus.log -f " + str(ProjectDir) + "/synthesis/scripts/Genus.tcl")
+        #os.system("module add cdn/genus/genus181")
+        os.system("module add cdn/genus/genus181; genus -log " + str(ProjectDir) + "/log/cadence/genus.log -f " + str(ProjectDir) + "/synthesis/scripts/Genus.tcl")
         
     else:
     

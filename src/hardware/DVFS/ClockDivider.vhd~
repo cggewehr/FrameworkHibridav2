@@ -44,7 +44,7 @@ begin
 
 			-- Defaults to slowest possible clock
 			--NReg <= (0 => '1', others => '0');
-            NReg <= (others => '0');
+            NReg <= (others => '0')
             Nreg(0) <= '1';
 			MReg <= (others => '1');
 

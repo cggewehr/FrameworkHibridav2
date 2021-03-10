@@ -35,22 +35,21 @@
 -- limitations under the License.
 -- ============================================================================
 
-library Std;
-use			Std.TextIO.all;
+library std;
+use			std.textio.all;
 
 library	IEEE;
 use			IEEE.STD_LOGIC_1164.all;
 
-
 package JSON is
-
+	
 	constant C_JSON_VERBOSE		: BOOLEAN		:= FALSE;
 	constant C_JSON_NUL				: CHARACTER	:= NUL;
 
 	subtype T_UINT16 is NATURAL range 0 to 2**16-1;
 	type T_NATVEC is array(NATURAL range <>) of NATURAL;
 
-	-- integer_vector and real_vector as standard types are available only in VHDL-2008
+	-- integer_vector and real_vector as standard types are available only in VHDL-2008, uncomment if using VHDL-1993
     type integer_vector is array(natural range <>) of integer;
     type real_vector is array(natural range <>) of real;
 
@@ -318,7 +317,7 @@ package body JSON is
 				if not nullchar then z := z+1; end if;
 			end loop;
 		end loop;
-		file_close(FileHandle);
+		--file_close(FileHandle);  -- For some reason, Genus complains about this (illegal identifier)
 		return Stream(1 to z-1);
 	end function;
 
@@ -1645,6 +1644,7 @@ package body JSON is
   -- NEW
   function jsonGetReal(JSONContext : T_JSON; Path : STRING) return real is
 	begin
+		--report Path severity note;
 		return real'value(jsonGetString(JSONContext, Path));
 	end function;
 

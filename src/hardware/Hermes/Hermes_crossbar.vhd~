@@ -29,7 +29,6 @@ library IEEE;
 
 library Hermes;
     use Hermes.HeMPS_defaults.all;
-
 --use work.HeMPS_defaults.all;
 --use work.HemPS_PKG.all;
 

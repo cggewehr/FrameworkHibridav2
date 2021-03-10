@@ -45,13 +45,13 @@ architecture RTL of HyHeMPS_TB is
     constant NoCYSize: integer := jsonGetInteger(PlatCFG, "BaseNoCDimensions/1");
     constant AmountOfNoCNodes: integer := NoCXSize * NoCYSize;
 
-    signal PEInterfaces: PEInterface_vector(0 to AmountOfPEs - 1);
+    --signal PEInterfaces: PEInterface_vector(0 to AmountOfPEs - 1);
+    signal PEInputs: PEInputs_vector(0 to AmountOfPEs - 1);
+    signal PEOutputs: PEOutputs_vector(0 to AmountOfPEs - 1);
 
     signal Reset: std_logic := '1';
     signal Clocks: std_logic_vector(0 to AmountOfNoCNodes - 1);
     constant ClockPeriods: real_vector(0 to AmountOfNoCNodes - 1) := jsonGetRealArray(ClusterClocksCFG, "ClusterClockPeriods");
-
-    signal txBuffer: std_ulogic_vector(0 to AmountOfPEs - 1);
 
     procedure GenerateClock(constant ClockPeriod: in time; signal Clock: out std_logic) is begin
 
@@ -99,7 +99,9 @@ begin
         port map (
             Clocks => Clocks,
             Reset => Reset,
-            PEInterfaces => PEInterfaces
+            --PEInterfaces => PEInterfaces
+            PEInputs => PEInputs,
+            PEOutputs => PEOutputs
         );
 
 
@@ -119,18 +121,17 @@ begin
             )
             port map(
                 Reset   => Reset,
-                ClockTx => PEInterfaces(i).ClockTx,
-                --Tx      => PEInterfaces(i).Tx,
-                Tx      => txBuffer(i),
-                DataOut => PEInterfaces(i).DataOut,
-                CreditI => PEInterfaces(i).CreditI,
-                ClockRx => PEInterfaces(i).ClockRx,
-                Rx      => PEInterfaces(i).Rx,
-                DataIn  => PEInterfaces(i).DataIn,
-                CreditO => PEInterfaces(i).CreditO
+                ClockTx => PEOutputs(i).ClockTx,
+                Tx      => PEOutputs(i).Tx,
+                DataOut => PEOutputs(i).DataOut,
+                CreditI => PEInputs(i).CreditI,
+                ClockRx => PEInputs(i).ClockRx,
+                Rx      => PEInputs(i).Rx,
+                DataIn  => PEInputs(i).DataIn,
+                CreditO => PEOutputs(i).CreditO
             );
 
-            PEInterfaces(i).Tx <= txBuffer(i);
+            
 
     end generate PEsGEN;
 

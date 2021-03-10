@@ -21,9 +21,12 @@ library ieee;
 	use ieee.std_logic_1164.all;
 	use ieee.numeric_std.all;
 
-library work;
-    use work.HyHeMPS_PKG.all;
-    use work.JSON.all;
+
+library HyHeMPS;
+    use HyHeMPS.HyHeMPS_PKG.all;
+--library work;
+    --use work.HyHeMPS_PKG.all;
+    --use work.JSON.all;
 
 
 entity Hermes is
@@ -162,7 +165,7 @@ begin
 
             assert false report "Grounded west port of router <" & integer'image(i) & ">" severity note;
 
-            assert not (RouterInterfaces(i).Tx(West) = '1') report "Router <" & integer'image(i) & "> transmitting into grounded west port <" & std_logic'image(RouterInterfaces(i).Tx(West)) & ">"  severity error;
+            assert not (RouterInterfaces(i).Tx(West) = '1') report "Router <" & integer'image(i) & "> transmitting into grounded west port" severity error;
 
         end generate WestGround;
 

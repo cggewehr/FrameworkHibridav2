@@ -22,9 +22,15 @@ library ieee;
     use ieee.std_logic_1164.all;
     use ieee.numeric_std.all;
 
-library work;
-    use work.JSON.all;
-    use work.HyHeMPS_PKG.all;
+library JSON;
+    use JSON.JSON.all;
+
+library HyHeMPS;
+    use HyHeMPS.HyHeMPS_PKG.all;
+
+--library work;
+    --use work.JSON.all;
+    --use work.HyHeMPS_PKG.all;
 
 
 entity HyHeMPS is
@@ -51,6 +57,9 @@ architecture RTL of HyHeMPS is
 
     -- Reads platform JSON config file
     constant PlatCFG: T_JSON := jsonLoad(PlatformConfigFile);
+
+    -- Reads PE topology information
+    constant PEInfo: PEInfo_vector(0 to AmountOfPEs - 1) := GetPEInfo(PlatCFG);
     
     -- Base NoC parameters (from JSON config)
     constant NoCXSize: integer := jsonGetInteger(PlatCFG, "BaseNoCDimensions/0");
@@ -78,6 +87,23 @@ architecture RTL of HyHeMPS is
     signal BusInputInterfaces: BusOutputInterfaces_t(0 to AmountOfBuses - 1);
     signal BusOutputInterfaces: BusInputInterfaces_t(0 to AmountOfBuses - 1);
 
+    subtype BusPEAddresses_t is HalfDataWidth_vector(0 to SizeOfLargestBus);  -- PEs + wrapper
+    type BusPEAddresses_vector is array(natural range <>) of BusPEAddresses_t;
+    
+    function GetBusPEAddresses(PEInfo: PEInfo_vector) return BusPEAddresses_vector is
+        variable BusPEAddresses: BusPEAddresses_vector(0 to AmountOfBuses - 1);
+    begin
+    
+        for i in 0 to AmountOfBuses - 1 loop
+            BusPEAddresses(i) := GetPEAddresses(PlatCFG, PEInfo, "BUS", i);
+        end loop;
+        
+        return BusPEAddresses;
+    
+    end function GetBusPEAddresses;
+    
+    constant BusPEAddresses: BusPEAddresses_vector(0 to AmountOfBuses - 1) := GetBusPEAddresses(PEInfo);
+
     -- Crossbars Parameters (from JSON config)
     constant AmountOfCrossbars: integer := jsonGetInteger(PlatCFG, "AmountOfCrossbars");
     constant AmountOfPEsInCrossbars: integer_vector(0 to AmountOfCrossbars - 1) := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInCrossbars");
@@ -94,12 +120,29 @@ architecture RTL of HyHeMPS is
     --signal CrossbarInterfaces: CrossbarInterfaces_t(0 to AmountOfCrossbars - 1);
     signal CrossbarInputInterfaces: CrossbarOutputInterfaces_t(0 to AmountOfCrossbars - 1);
     signal CrossbarOutputInterfaces: CrossbarInputInterfaces_t(0 to AmountOfCrossbars - 1);
+
+    subtype CrossbarPEAddresses_t is HalfDataWidth_vector(0 to SizeOfLargestCrossbar);  -- PEs + wrapper
+    type CrossbarPEAddresses_vector is array(natural range <>) of CrossbarPEAddresses_t;
+    
+    function GetCrossbarPEAddresses(PEInfo: PEInfo_vector) return CrossbarPEAddresses_vector is
+        variable CrossbarPEAddresses: CrossbarPEAddresses_vector(0 to AmountOfCrossbars - 1);
+    begin
+    
+        for i in 0 to AmountOfCrossbars - 1 loop
+            CrossbarPEAddresses(i) := GetPEAddresses(PlatCFG, PEInfo, "XBR", i);
+        end loop;
+        
+        return CrossbarPEAddresses;
+    
+    end function GetCrossbarPEAddresses;
+    
+    constant CrossbarPEAddresses: CrossbarPEAddresses_vector(0 to AmountOfCrossbars - 1) := GetCrossbarPEAddresses(PEInfo);
     
     -- 
     constant BridgeBufferSize: integer := jsonGetInteger(PlatCFG, "BridgeBufferSize");
     
     -- Reads PE topology information
-    constant PEInfo: PEInfo_vector(0 to AmountOfPEs - 1) := GetPEInfo(PlatCFG);
+    --constant PEInfo: PEInfo_vector(0 to AmountOfPEs - 1) := GetPEInfo(PlatCFG);
 
 begin
 
@@ -128,22 +171,7 @@ begin
 
         BusesGen: for i in 0 to AmountOfBuses - 1 generate
             
-            subtype BusPEAddresses_t is HalfDataWidth_vector(0 to SizeOfLargestBus);  -- PEs + wrapper
-            type BusPEAddresses_vector is array(natural range <>) of BusPEAddresses_t;
             
-            function GetBusPEAddresses(PEInfo: PEInfo_vector) return BusPEAddresses_vector is
-                variable BusPEAddresses: BusPEAddresses_vector(0 to AmountOfBuses - 1);
-            begin
-            
-                for i in 0 to AmountOfBuses - 1 loop
-                    BusPEAddresses(i) := GetPEAddresses(PlatCFG, PEInfo, "BUS", i);
-                end loop;
-                
-                return BusPEAddresses;
-            
-            end function GetBusPEAddresses;
-            
-            constant BusPEAddresses: BusPEAddresses_vector(0 to AmountOfBuses - 1) := GetBusPEAddresses(PEInfo);
 
         begin
         
@@ -223,22 +251,7 @@ begin
 
         CrossbarsGen: for i in 0 to AmountOfCrossbars - 1 generate
         
-            subtype CrossbarPEAddresses_t is HalfDataWidth_vector(0 to SizeOfLargestCrossbar);  -- PEs + wrapper
-            type CrossbarPEAddresses_vector is array(natural range <>) of CrossbarPEAddresses_t;
             
-            function GetCrossbarPEAddresses(PEInfo: PEInfo_vector) return CrossbarPEAddresses_vector is
-                variable CrossbarPEAddresses: CrossbarPEAddresses_vector(0 to AmountOfCrossbars - 1);
-            begin
-            
-                for i in 0 to AmountOfCrossbars - 1 loop
-                    CrossbarPEAddresses(i) := GetPEAddresses(PlatCFG, PEInfo, "XBR", i);
-                end loop;
-                
-                return CrossbarPEAddresses;
-            
-            end function GetCrossbarPEAddresses;
-            
-            constant CrossbarPEAddresses: CrossbarPEAddresses_vector(0 to AmountOfCrossbars - 1) := GetCrossbarPEAddresses(PEInfo);
         
         begin
 

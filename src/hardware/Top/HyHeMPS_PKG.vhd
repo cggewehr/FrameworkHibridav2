@@ -14,13 +14,21 @@
 -- TODO        : 
 --------------------------------------------------------------------------------
 
+
 library IEEE;
     use IEEE.std_Logic_1164.all;
     use IEEE.numeric_std.all;
     
-library work;
-    use work.HeMPS_defaults.all;
-    use work.JSON.all;
+library JSON;
+    use JSON.JSON.all;
+
+library Hermes;
+    use Hermes.HeMPS_defaults.all;
+
+--library work;
+    --use work.HeMPS_defaults.all;
+    --use work.JSON.all;
+
 
 package HyHeMPS_PKG is
 
@@ -205,6 +213,7 @@ package body HyHeMPS_PKG is
             for PEInBus in 0 to AmountOfPEsInBuses(BusID) - 1 loop
             
                 PE := jsonGetInteger(PlatCFG, "BusPEIDs/" & "Bus" & integer'image(BusID) & "/" & integer'image(PEInBus));
+                --PE := jsonGetInteger(PlatCFG, "BusPEIDs/" & "Bus" & to_string(std_logic_vector(to_unsigned(BusID, 32))) & "/" & to_string(PEInBus));
                 
                 PEInfoArray(PE).InterfacingStructure := "BUS";
                 PEInfoArray(PE).StructID := BusID;

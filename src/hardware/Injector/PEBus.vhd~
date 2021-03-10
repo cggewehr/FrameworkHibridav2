@@ -29,7 +29,8 @@ entity PEBus is
 	generic(
 		Arbiter: string;
 		AmountOfInjectors: integer;
-		BridgeBufferSize: integer
+		BridgeBufferSize: integer;
+		PEPos: integer
 	);
 	port(
 
@@ -41,7 +42,7 @@ entity PEBus is
 		--InjectorInterfaces: inout InjectorInterface_vector;
         ClockRx: in std_logic_vector(0 to AmountOfInjectors - 1);
         Rx: in std_logic_vector(0 to AmountOfInjectors - 1);
-        DataInAV: in DataWidth_vector(0 to AmountOfInjectors - 1);
+        DataIn: in DataWidth_vector(0 to AmountOfInjectors - 1);
         CreditO: out std_logic_vector(0 to AmountOfInjectors - 1);
 
 		-- Output Interface (to comm structure)
@@ -79,7 +80,8 @@ begin
 		InjBuffer: entity work.InjBuffer
 
 			generic map(
-				BufferSize => BridgeBufferSize
+				BufferSize => BridgeBufferSize,
+				PEPos => PEPos
 			)
 			port map(
 

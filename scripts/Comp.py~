@@ -1,7 +1,7 @@
 import json
 import os
 
-def sim(args):
+def comp(args):
 
     ConfigFile = open(os.environ["HIBRIDA_CONFIG_FILE"], "r")
     ConfigDict = json.loads(ConfigFile.read())
@@ -21,13 +21,13 @@ def sim(args):
             print("Error: Makefile does not exist for project <" + args.ProjectName + ">")
             print("Did you run projgen for another tool? To compile/elab/sim with with Cadence tools you must run projgen with Tool set as \"cadence\".")
         
-        # Runs makefile with sim rule
-        os.system("make -f " + os.path.join(ProjectDir, "makefile") + " sim")
+        # Runs makefile with compile rule
+        os.system("make -f " + os.path.join(ProjectDir, args.ProjectName, "makefile") + " compile")
         
     elif args.Tool == "vivado":
         
-        # Runs vivado with sim script
-        TCLScript = os.path.join(ConfigDict["HibridaPath"], "scripts", "vivado", "sim.tcl")
+        # Runs vivado with compile script
+        TCLScript = os.path.join(ConfigDict["HibridaPath"], "scripts", "vivado", "compile.tcl")
         TCLArgs = args.ProjectName + " " + ProjectDir
         os.system("vivado -mode batch -source " + TCLScript + " -tclargs " + TCLArgs)
         
@@ -36,6 +36,6 @@ def sim(args):
         print("Error: Tool <" + args.Tool + "> is not recognized")
         exit(1)
     
-    print("sim ran successfully!")
+    print("compile ran successfully!")
     ConfigFile.close()
     

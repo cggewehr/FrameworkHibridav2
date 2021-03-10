@@ -66,7 +66,7 @@ architecture RTL of BusBridge is
 	signal bufferDataOut: DataWidth_t;
     signal bufferReadyFlag: std_logic;
 	signal bufferAVFlag: std_logic;
-    signal bufferREadConfirm: std_logic;
+    signal bufferReadConfirm: std_logic;
 
 begin
 

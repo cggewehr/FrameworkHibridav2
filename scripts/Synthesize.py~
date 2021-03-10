@@ -5,7 +5,7 @@ def synthesize(args):
 
     ConfigFile = open(os.environ["HIBRIDA_CONFIG_FILE"], "r")
     ConfigDict = json.loads(ConfigFile.read())
-    ProjectDir = ConfigFile["Projects"][args.ProjectName]["ProjectDir"]
+    ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
     
     # Check if given project path exists
     if not os.path.isdir(ProjectDir):
@@ -14,15 +14,6 @@ def synthesize(args):
         exit(1)
     
     if args.Tool == "Genus":
-        
-        # Check if makefile exists
-        if not os.path.isfile(os.path.join(ProjectDir, "makefile")):
-        
-            print("Error: Makefile does not exist for project <" + args.ProjectName + ">")
-            print("Did you run projgen for another tool? To compile/elab/sim with with Cadence tools you must run projgen with the Tool argument as \"cadence\".")
-        
-        # Runs makefile with sim rule
-        os.system("make -f " + os.path.join(ProjectDir, args.ProjectName) + " makefile 
 
         # Add genus module
         os.system("module add cdn/genus/genus181")
@@ -33,7 +24,8 @@ def synthesize(args):
         os.environ["SynthProcessCorner"] = args.Process
         
         # Call genus
-        os.system("genus -log " + str(ProjectDir) + "/log/cadence/genus.log -f " + str(ProjectDir) + "/synthesis/scripts/Genus.tcl")
+        os.system("module add cdn/genus/genus181")
+        os.system("module add cdn/genus/genus181; genus -log " + str(ProjectDir) + "/log/cadence/genus.log -f " + str(ProjectDir) + "/synthesis/scripts/Genus.tcl")
         
     else:
     

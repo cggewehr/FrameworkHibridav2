@@ -5,7 +5,7 @@ def elab(args):
 
     ConfigFile = open(os.environ["HIBRIDA_CONFIG_FILE"], "r")
     ConfigDict = json.loads(ConfigFile.read())
-    ProjectDir = ConfigFile["Projects"][args.ProjectName]["ProjectDir"]
+    ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
     
     # Check if given project path exists
     if not os.path.isdir(ProjectDir):
@@ -22,7 +22,7 @@ def elab(args):
             print("Did you run projgen for another tool? To compile/elab/sim with with Cadence tools you must run projgen with Tool set as \"cadence\".")
         
         # Runs makefile with elab rule
-        os.system("make -f " + os.path.join(ProjectDir, args.ProjectName) + " makefile elab")
+        os.system("make -f " + os.path.join(ProjectDir, "makefile") + " elab")
         
     elif args.Tool == "vivado":
         

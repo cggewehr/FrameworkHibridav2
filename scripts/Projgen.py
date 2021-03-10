@@ -90,6 +90,9 @@ def projgen(args):
 
             # Make subdirs
             os.makedirs(ProjectDir + "/INCA_libs/worklib", exist_ok = True)
+            os.makedirs(ProjectDir + "/INCA_libs/JSON", exist_ok = True)
+            os.makedirs(ProjectDir + "/INCA_libs/HyHeMPS", exist_ok = True)
+            os.makedirs(ProjectDir + "/INCA_libs/Hermes", exist_ok = True)
             os.makedirs(ProjectDir + "/log/cadence", exist_ok = True)
             os.makedirs(ProjectDir + "/synthesis/scripts", exist_ok = True)
             os.makedirs(ProjectDir + "/synthesis/deliverables", exist_ok = True)
@@ -103,15 +106,24 @@ def projgen(args):
             copy(os.path.join(scriptsSourcePath, "default.sdc"), os.path.join(scriptsTargetPath, "constraints.sdc"))
             copy(os.path.join(scriptsSourcePath, "fileList.tcl"), os.path.join(scriptsTargetPath, "fileList.tcl"))
             copy(os.path.join(scriptsSourcePath, "sources.tcl"), os.path.join(scriptsTargetPath, "sources.tcl"))
+            try:
+                copy(os.path.join(scriptsSourcePath, "tech.tcl"), os.path.join(scriptsTargetPath, "tech.tcl"))
+            except IOError:
+                print("Warning: tech.tcl file was not found")
+                pass
+
             # TODO: Copy UPF file
             
             # Create hdl.var file
             with open(ProjectDir + "/hdl.var", 'w') as hdl_var:
-                hdl_var.write("DEFINE WORK work\n")
+                hdl_var.write("DEFINE WORK worklib\n")
             
             # Create cds.lib file
             with open(ProjectDir + "/cds.lib", 'w') as cds_file:
-                cds_file.write("define worklib " + args.ProjectDirectory + "/" + args.ProjectName + "/INCA_libs/worklib\n")
+                cds_file.write("define worklib " + args.ProjectDirectory + "/INCA_libs/worklib\n")
+                cds_file.write("define json " + args.ProjectDirectory + "/INCA_libs/JSON\n")
+                cds_file.write("define hyhemps " + args.ProjectDirectory + "/INCA_libs/HyHeMPS\n")
+                cds_file.write("define hermes " + args.ProjectDirectory + "/INCA_libs/Hermes\n")
                 cds_file.write("include $CDS_INST_DIR/tools/inca/files/cds.lib\n")
 				
             # Create Makefile
@@ -126,8 +138,8 @@ def projgen(args):
                 make_file.write("\n")
                 make_file.write("########################## Command options #############################\n")
                 make_file.write("PROJECT_DIR=" + ProjectDir + "\n")
-                make_file.write("HIBRIDA_HARDWARE_PATH=$HIBRIDA_PATH/src/hardware\n")
-                make_file.write("VHDL_OPTS=-work worklib -cdslib cds.lib -logfile log/cadence/ncvhdl.log -errormax 15 -update -v93 -linedebug -status\n")
+                make_file.write("HIBRIDA_HARDWARE_PATH=$(HIBRIDA_PATH)/src/hardware\n")
+                make_file.write("VHDL_OPTS=-smartlib -cdslib cds.lib -logfile log/cadence/ncvhdl.log -errormax 15 -update -v93 -linedebug -status\n")
                 make_file.write("ELAB_OPTS=-work worklib -cdslib cds.lib -logfile log/cadence/ncelab.log -errormax 15 -update -status\n")
                 make_file.write("SIMH_OPTS=-cdslib cds.lib -logfile log/cadence/ncsim.log -errormax 15\n")
                 make_file.write("\n")
@@ -138,14 +150,14 @@ def projgen(args):
                 make_file.write('	@echo "############################################################"\n')
                 make_file.write('	@echo "################### Compile VHDL Files #####################"\n')
                 make_file.write('	@echo "############################################################"\n')
-                make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/JSON.vhd\n")
+                make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/JSON.vhd -work JSON\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Misc/BufferCircular.vhd\n")
-                make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/HeMPS_defaults.vhd\n")
+                make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/HeMPS_defaults.vhd -work Hermes\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/Hermes_crossbar.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/Hermes_buffer.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/Hermes_switchcontrol.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/RouterCC.vhd\n")
-                make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/HyHeMPS_PKG.vhd\n")
+                make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/HyHeMPS_PKG.vhd -work HyHeMPS\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/HermesTop.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Crossbar/CrossbarControl.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Crossbar/CrossbarRRArbiter.vhd\n")
@@ -155,15 +167,15 @@ def projgen(args):
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Bus/BusControl.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Bus/BusBridgev2.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Bus/BusTop.vhd\n")
-                make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Injector_PKG.vhd\n")
+                make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Injector_PKG.vhd -work HyHeMPS\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Injector.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Trigger.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Receiver.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/InjBuffer.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/PEBus.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/PE.vhd\n")
-                make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/DVFS/DVFSController.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/DVFS/ClockDivider.vhd\n")
+                make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/DVFS/DVFSController.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/HyHeMPS.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/HyHeMPS_TB.vhd\n")
                 make_file.write('	@echo "############### FINALIZE COMPILE VHDL Files ################"\n')
@@ -172,7 +184,7 @@ def projgen(args):
                 make_file.write('	@echo "############################################################"\n')
                 make_file.write('	@echo "################## Elaborate Top Level #####################"\n')
                 make_file.write('	@echo "############################################################"\n')
-                make_file.write("	ncelab $(ELAB_OPTS) worklib.hyhemps_tb -generic \":ProjectDir => \"$(ProjectDir)\"\" \n")
+                make_file.write("	ncelab $(ELAB_OPTS) worklib.hyhemps_tb -generic \":ProjectDir => \\\"$(PROJECT_DIR)\\\"\" \n")
                 make_file.write('	@echo "########### FINALIZE ELABORATION  HYBRID Files #############"\n')
                 make_file.write("\n")
                 make_file.write("sim:\n")
@@ -195,6 +207,15 @@ def projgen(args):
                 make_file.write("	make sim\n")
                 
                 # TODO: make clean
+                # waves.shm
+                # *.err
+                # *.diag
+                # *.log
+                # *.key
+                # logs/cadence/*
+                # INCA_libs/JSON/*
+                # INCA_libs/HyHeMPS/*
+                # INCA_libs/Hermes/*
                 
         elif args.Tool == "vivado":
         
