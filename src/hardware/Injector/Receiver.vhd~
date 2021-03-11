@@ -28,6 +28,8 @@ library HyHeMPS;
 
 --library work;
 	--use work.HyHeMPS_PKG.all;
+    --use work.Injector_PKG.all;
+    --use work.JSON.all;
 
 
 entity Receiver is

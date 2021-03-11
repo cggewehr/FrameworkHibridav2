@@ -116,7 +116,7 @@ begin
 					targetIndex <= GetIndexOfAddr(PEAddresses, targetAddr);
 					busBeingUsed <= '1';
 
-					currentState <= Ssize;
+					currentState <= SwaitForCredit;
 				
 				else
 					currentState <= Sstandby;

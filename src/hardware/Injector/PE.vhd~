@@ -63,6 +63,7 @@ architecture Injector of PE is
 
     -- JSON config files
     constant PEJSONConfig: T_JSON := jsonLoad(PEConfigFile);
+    constant PlatCFG: T_JSON := jsonLoad(PlatformConfigFile);
 
     constant PEPos: integer := jsonGetInteger(PEJSONConfig, "PEPos");
     constant SquareNoCBound: integer := jsonGetInteger(PlatCFG, "SquareNoCBound");

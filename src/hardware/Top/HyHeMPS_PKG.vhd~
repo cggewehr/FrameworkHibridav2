@@ -14,13 +14,21 @@
 -- TODO        : 
 --------------------------------------------------------------------------------
 
+
 library IEEE;
     use IEEE.std_Logic_1164.all;
     use IEEE.numeric_std.all;
     
-library work;
-    use work.HeMPS_defaults.all;
-    use work.JSON.all;
+library JSON;
+    use JSON.JSON.all;
+
+library Hermes;
+    use Hermes.HeMPS_defaults.all;
+
+--library work;
+    --use work.HeMPS_defaults.all;
+    --use work.JSON.all;
+
 
 package HyHeMPS_PKG is
 
@@ -61,7 +69,7 @@ package HyHeMPS_PKG is
         CreditO : std_logic;
 
         -- Output interface
-        ClockTx : std_ulogic;
+        ClockTx : std_logic;
         Tx      : std_logic;
         DataOut : DataWidth_t;
         CreditI : std_logic;
@@ -69,6 +77,34 @@ package HyHeMPS_PKG is
     end record PEInterface;
 
     type PEInterface_vector is array(natural range <>) of PEInterface;
+
+    type PEInputs is record
+
+        -- Input interface
+        ClockRx : std_logic;
+        Rx      : std_logic;
+        DataIn  : DataWidth_t;
+
+        -- Output interface
+        CreditI : std_logic;
+
+    end record;
+
+    type PEInputs_vector is array(natural range <>) of PEInputs;
+
+    type PEOutputs is record
+
+        -- Input interface
+        CreditO: std_logic;
+
+        -- Output interface
+        ClockTx : std_logic;
+        Tx      : std_logic;
+        DataOut : DataWidth_t;
+
+    end record;
+
+    type PEOutputs_vector is array(natural range <>) of PEOutputs;
 
     -- 
     type RouterInterface is record
@@ -103,6 +139,10 @@ package HyHeMPS_PKG is
     -- Adapted functions from HeMPS_defaults
     function RouterAddress(GlobalAddress: integer; NUMBER_PROCESSORS_X: integer) return HalfDataWidth_t;
 
+    -- Coordinate transformations (XY <=> Sequential)
+    function PEPosToXY(PEPos: integer; XDim: integer) return HalfDataWidth_t;
+    function PEPosFromXY(XY: HalfDataWidth_t; XDim: integer) return integer;
+
     -- Function declarations for organizing data from JSON config file
     function GetPEInfo(PlatCFG: T_JSON) return PEInfo_vector;
     function GetPEAddresses(PlatCFG: T_JSON; PEInfo: PEInfo_vector; InterfacingStructure: string(1 to 3); StructID: integer) return HalfDataWidth_vector; 
@@ -112,6 +152,7 @@ package HyHeMPS_PKG is
     function incr(value: integer; maxValue: in integer; minValue: in integer) return integer;
     function decr(value: integer; maxValue: in integer; minValue: in integer) return integer;
     function decode(decodeIn: std_logic_vector) return std_logic_vector;
+    function boolToInt(value: boolean) return integer;
 
 end package HyHeMPS_PKG;
 
@@ -132,6 +173,16 @@ package body HyHeMPS_PKG is
             return addr;
 
     end function RouterAddress;
+
+    -- Sequential PEPos to XY coords
+    function PEPosToXY(PEPos: integer; XDim: integer) return HalfDataWidth_t is begin
+        return RouterAddress(PEPos, XDim);
+    end function PEPosToXY;
+
+    -- XY coords to sequential PEPos
+    function PEPosFromXY(XY: HalfDataWidth_t; XDim: integer) return integer is begin
+        return to_integer((unsigned(XY(QuarterDataWidth - 1 downto 0)) * XDim) + unsigned(XY(HalfDataWidth - 1 downto QuarterDataWidth)));
+    end function PEPosFromXY;
 
     -- Returns array of PEInfo structs, containing information about PE relationships to struct
     function GetPEInfo(PlatCFG: T_JSON) return PEInfo_vector is
@@ -161,7 +212,8 @@ package body HyHeMPS_PKG is
             -- Loop through every PE in current bus
             for PEInBus in 0 to AmountOfPEsInBuses(BusID) - 1 loop
             
-                PE := jsonGetInteger(PlatCFG, "BusPEIDs/" & "Bus" & integer'image(BusID) & "/" & integer'image(PEInBus));
+                --PE := jsonGetInteger(PlatCFG, "BusPEIDs/" & "Bus" & integer'image(BusID) & "/" & integer'image(PEInBus));
+                PE := jsonGetInteger(PlatCFG, "BusPEIDs/" & "Bus" & to_string(std_logic_vector(to_unsigned(BusID, 32))) & "/" & to_string(PEInBus));
                 
                 PEInfoArray(PE).InterfacingStructure := "BUS";
                 PEInfoArray(PE).StructID := BusID;
@@ -354,5 +406,15 @@ package body HyHeMPS_PKG is
         return decodeOut;
         
     end function decode;
+
+    function boolToInt(value: boolean) return integer is begin
+
+        if value then
+            return 0;
+        else
+            return 1;
+        end if;
+        
+    end function boolToInt;
 
 end package body HyHeMPS_PKG;

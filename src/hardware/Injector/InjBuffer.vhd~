@@ -19,8 +19,11 @@ library ieee;
 	use ieee.std_logic_1164.all;
 	use ieee.numeric_std.all;
 
-library work;
-	use work.HyHeMPS_PKG.all;
+library HyHeMPS;
+    use HyHeMPS_PKG.all;
+
+--library work;
+	--use work.HyHeMPS_PKG.all;
 
 
 entity InjBuffer is
@@ -320,9 +323,9 @@ begin
                     --if FIFOAVFlag = '1' then
                     if CreditI = '1' and txCounter = 1 then
                     	ACK <= '1';
-                        txState <= Stransmit;
-                    else    
                         txState <= Sstandby;
+                    else    
+                        txState <= Stransmit;
                     end if; 
 
             end case;

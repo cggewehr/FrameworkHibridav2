@@ -213,9 +213,7 @@ def projgen(args):
                 # *.log
                 # *.key
                 # logs/cadence/*
-                # INCA_libs/JSON/*
-                # INCA_libs/HyHeMPS/*
-                # INCA_libs/Hermes/*
+                # INCA_libs
                 
         elif args.Tool == "vivado":
         

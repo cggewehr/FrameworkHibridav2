@@ -131,7 +131,6 @@ begin
 			if NewGrant = '1' then
 				sourceIndex <= GetIndexOfActiveTx(Grant);
 
-
 			end if;
 
 		end if;

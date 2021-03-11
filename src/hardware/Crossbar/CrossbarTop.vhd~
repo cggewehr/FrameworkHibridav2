@@ -205,8 +205,6 @@ begin
 
 	-- Instantiates arbiters as given by "Arbiter" generic
 	ArbiterGen: for Arbiter in 0 to AmountOfPEs - 1 generate
-        signal grantAux: slv_vector;
-    begin
 
 		RoundRobinArbiterGen: if ArbiterType = "RR" generate
 

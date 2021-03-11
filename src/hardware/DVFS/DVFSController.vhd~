@@ -123,7 +123,7 @@ begin
 
 				DividerWriteEnable <= '1';
 
-				SupplySwitchesEnable <= decode(SupplyVoltageSwitchToTurnONAsync);
+				SupplySwithesEnable <= decode(SupplyVoltageSwitchToTurnONAsync);
 
 				ControllerState <= SwaitUntilMSGFinished;
 

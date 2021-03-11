@@ -23,7 +23,7 @@ library JSON;
     use JSON.JSON.all;
 
 library HyHeMPS;
-    use HyHeMPS.HyHeMPS_PKG.all;
+    use HyHeMPS_PKG.all;
 
 --library work;
 	--use work.HyHeMPS_PKG.all;

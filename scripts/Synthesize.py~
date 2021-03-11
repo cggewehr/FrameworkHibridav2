@@ -24,7 +24,7 @@ def synthesize(args):
         os.environ["SynthProcessCorner"] = args.Process
         
         # Call genus
-        #os.system("module add cdn/genus/genus181")
+        os.system("module add cdn/genus/genus181")
         os.system("module add cdn/genus/genus181; genus -log " + str(ProjectDir) + "/log/cadence/genus.log -f " + str(ProjectDir) + "/synthesis/scripts/Genus.tcl")
         
     else:
