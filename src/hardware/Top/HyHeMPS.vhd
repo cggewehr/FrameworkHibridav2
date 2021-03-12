@@ -169,11 +169,7 @@ begin
     -- Instantiate buses, if any are to be instantiated
     BusesCond: if AmountOfBuses > 0 generate
 
-        BusesGen: for i in 0 to AmountOfBuses - 1 generate
-            
-            
-
-        begin
+        BusesGen: for i in 0 to AmountOfBuses - 1 generate 
         
             BusInstance: entity work.HyBus
 
@@ -197,30 +193,6 @@ begin
 
             -- Connect Bus to base NoC. (Wrapper is at the highest index, obtained by AmountOfPEsInBuses(i))
             ConnectBusToBaseNoC: if not IsStandaloneBus generate
-
-                ---- Input interface of wrapper
-                --LocalPortInterfaces(BusWrapperIDs(i)).ClockRx <= BusInterfaces(i)(AmountOfPEsInBuses(i)).ClockTx; 
-                --LocalPortInterfaces(BusWrapperIDs(i)).Rx <= BusInterfaces(i)(AmountOfPEsInBuses(i)).Tx; 
-                --LocalPortInterfaces(BusWrapperIDs(i)).DataIn <= BusInterfaces(i)(AmountOfPEsInBuses(i)).DataOut; 
-                --BusInterfaces(i)(AmountOfPEsInBuses(i)).CreditI <= LocalPortInterfaces(BusWrapperIDs(i)).CreditO; 
-
-                ---- Output interface of wrapper
-                --BusInterfaces(i)(AmountOfPEsInBuses(i)).ClockRx <= LocalPortInterfaces(BusWrapperIDs(i)).ClockTx;
-                --BusInterfaces(i)(AmountOfPEsInBuses(i)).Rx <= LocalPortInterfaces(BusWrapperIDs(i)).Tx;
-                --BusInterfaces(i)(AmountOfPEsInBuses(i)).DataIn <= LocalPortInterfaces(BusWrapperIDs(i)).DataOut;
-                --LocalPortInterfaces(BusWrapperIDs(i)).CreditI <= BusInterfaces(i)(AmountOfPEsInBuses(i)).CreditO;
-
-                -- Output interface of wrapper (Tx to Rx crossing happens inside work.Hermes)
-                --LocalPortInputs(BusWrapperIDs(i)).ClockTx <= BusInputInterfaces(i)(AmountOfPEsInBuses(i)).ClockTx; 
-                --LocalPortInputs(BusWrapperIDs(i)).Tx <= BusInputInterfaces(i)(AmountOfPEsInBuses(i)).Tx; 
-                --LocalPortInputs(BusWrapperIDs(i)).DataOut <= BusInputInterfaces(i)(AmountOfPEsInBuses(i)).DataOut; 
-                --BusOutputInterfaces(i)(AmountOfPEsInBuses(i)).CreditI <= LocalPortOutputs(BusWrapperIDs(i)).CreditI; 
-
-                -- Input interface of wrapper
-                --BusOutputInterfaces(i)(AmountOfPEsInBuses(i)).ClockRx <= LocalPortOutputs(BusWrapperIDs(i)).ClockRx;
-                --BusOutputInterfaces(i)(AmountOfPEsInBuses(i)).Rx <= LocalPortOutputs(BusWrapperIDs(i)).Rx;
-                --BusOutputInterfaces(i)(AmountOfPEsInBuses(i)).DataIn <= LocalPortOutputs(BusWrapperIDs(i)).DataIn;
-                --LocalPortInputs(BusWrapperIDs(i)).CreditO <= BusInputInterfaces(i)(AmountOfPEsInBuses(i)).CreditO;
 
                 -- CrossbarInputInterfaces(i) = PEInputs
                 -- LocalPortOutputs(i) = PEInputs
@@ -250,10 +222,6 @@ begin
     CrossbarCond: if AmountOfCrossbars > 0 generate
 
         CrossbarsGen: for i in 0 to AmountOfCrossbars - 1 generate
-        
-            
-        
-        begin
 
             -- Instantiate Crossbar
             CrossbarInstance: entity work.Crossbar
@@ -278,38 +246,6 @@ begin
 
             -- Connects Crossbar to base NoC. (Wrapper is at the highest index, obtained by AmountOfPEsInCrossbars(i))
             ConnectCrossbarToBaseNoC: if not IsStandaloneCrossbar generate
-
-                -- Input interface of wrapper
-                ----LocalPortInterfaces(CrossbarWrapperIDs(i)).ClockRx <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).ClockTx; 
-                --LocalPortInterfaces(CrossbarWrapperIDs(i)).ClockRx <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).ClockRx; 
-                ----LocalPortInterfaces(CrossbarWrapperIDs(i)).Rx <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).Tx; 
-                --LocalPortInterfaces(CrossbarWrapperIDs(i)).Rx <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).Rx; 
-                ----LocalPortInterfaces(CrossbarWrapperIDs(i)).DataIn <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).DataOut; 
-                --LocalPortInterfaces(CrossbarWrapperIDs(i)).DataIn <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).DataIn; 
-                ----CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).CreditI <= LocalPortInterfaces(CrossbarWrapperIDs(i)).CreditO; 
-                --CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).CreditO <= LocalPortInterfaces(CrossbarWrapperIDs(i)).CreditO;
-
-                ---- Output interface of wrapper
-                ----CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).ClockRx <= LocalPortInterfaces(CrossbarWrapperIDs(i)).ClockTx;
-                --CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).ClockTx <= LocalPortInterfaces(CrossbarWrapperIDs(i)).ClockTx;
-                ----CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).Rx <= LocalPortInterfaces(CrossbarWrapperIDs(i)).Tx;
-                --CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).Tx <= LocalPortInterfaces(CrossbarWrapperIDs(i)).Tx;
-                ----CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).DataIn <= LocalPortInterfaces(CrossbarWrapperIDs(i)).DataOut;
-                --CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).DataOut <= LocalPortInterfaces(CrossbarWrapperIDs(i)).DataOut;
-                ----LocalPortInterfaces(CrossbarWrapperIDs(i)).CreditI <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).CreditO;
-                --LocalPortInterfaces(CrossbarWrapperIDs(i)).CreditI <= CrossbarInterfaces(i)(AmountOfPEsInCrossbars(i)).CreditI;
-
-                -- Output interface of wrapper (Tx to Rx crossing happens inside work.Hermes)
-                --LocalPortInputs(CrossbarWrapperIDs(i)).ClockTx <= CrossbarInputInterfaces(i)(AmountOfPEsInCrossbars(i)).ClockTx; 
-                --LocalPortInputs(CrossbarWrapperIDs(i)).Tx <= CrossbarInputInterfaces(i)(AmountOfPEsInCrossbars(i)).Tx; 
-                --LocalPortInputs(CrossbarWrapperIDs(i)).DataOut <= CrossbarInputInterfaces(i)(AmountOfPEsInCrossbars(i)).DataOut; 
-                --CrossbarOutputInterfaces(i)(AmountOfPEsInCrossbars(i)).CreditI <= LocalPortOutputs(CrossbarWrapperIDs(i)).CreditI; 
-
-                -- Input interface of wrapper
-                --CrossbarOutputInterfaces(i)(AmountOfPEsInCrossbars(i)).ClockRx <= LocalPortOutputs(CrossbarWrapperIDs(i)).ClockRx;
-                --CrossbarOutputInterfaces(i)(AmountOfPEsInCrossbars(i)).Rx <= LocalPortOutputs(CrossbarWrapperIDs(i)).Rx;
-                --CrossbarOutputInterfaces(i)(AmountOfPEsInCrossbars(i)).DataIn <= LocalPortOutputs(CrossbarWrapperIDs(i)).DataIn;
-                --LocalPortInputs(CrossbarWrapperIDs(i)).CreditO <= CrossbarInputInterfaces(i)(AmountOfPEsInCrossbars(i)).CreditO;
 
                 -- CrossbarInputInterfaces(i) = PEInputs
                 -- LocalPortOutputs(i) = PEInputs
