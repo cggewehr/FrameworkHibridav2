@@ -76,6 +76,7 @@ architecture RTL of CrossbarBridge is
     signal bufferDataOut: DataWidth_t;
 	signal bufferAVFlag: std_logic;
 	signal bufferReadConfirm: std_logic;
+    signal bufferReadyFlag: std_logic;
 
 	-- Searches through a given list of addresses of PEs contained in this crossbar, and returns index of a given address in given list of addresses,
     -- which matches the MUX selector value which produces the data value associated with the given address
@@ -129,7 +130,8 @@ begin
 			-- Status flags
 			BufferEmptyFlag     => open,
 			BufferFullFlag      => open,
-			BufferReadyFlag     => CreditO,
+			--BufferReadyFlag     => CreditO,
+			BufferReadyFlag     => bufferReadyFlag,
 			BufferAvailableFlag => bufferAVFlag
 
 		);
@@ -138,6 +140,7 @@ begin
 	Tx <= bufferAVFlag when currentState = Stransmit else '0';
     DataOut <= bufferDataOut;
 	bufferReadConfirm <= CreditI(targetIndex) when currentState = Stransmit else '0';
+    CreditO <= bufferReadyFlag when currentState /= SwaitForControl else '0';
     
     ACK(SelfIndex) <= '0';
     Request(SelfIndex) <= '0';
@@ -213,7 +216,11 @@ begin
                 -- Wait for CrossbarControl to recognize new Grant
                 when SwaitForControl =>
                     
-                    currentState <= Stransmit;
+                    if CreditI(targetIndex) = '1' then
+                        currentState <= Stransmit;
+                    else
+                        currentState <= SwaitForControl;
+                    end if;
 
 			    -- Sends message
 			    when Stransmit => 
@@ -226,7 +233,7 @@ begin
 
 				    --if flitCounter = 1 and CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
                     if bufferAVFlag = '0' then
-					    Ack(targetIndex) <= '1';
+					    ACK(targetIndex) <= '1';
 					    currentState <= Sstandby;
 
 				    else

@@ -100,7 +100,7 @@ def flowgen(args):
     print("Done reading Cluster Clocks file")
     
     print("Building Platform object from <" + TopologyFileName + ">")
-    Platform = PlatformComposer.Platform(BaseNoCDimensions = (2,2), ReferenceClock = 10)  # Dummy constructor arguments, will be replaced by those in JSON file
+    Platform = PlatformComposer.Platform(BaseNoCDimensions = (2,2))  # Dummy constructor arguments, will be replaced by those in JSON file
     Platform.fromJSON(TopologyFile.read())
     print("Done building Platform object")
     

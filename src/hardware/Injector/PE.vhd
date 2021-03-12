@@ -242,7 +242,8 @@ begin
         InjBuffer: entity work.InjBuffer
 
             generic map(
-                BufferSize => BusBridgeBufferSize,
+                --BufferSize => BusBridgeBufferSize,
+                BufferSize => 256,
                 PEPos => PEPos
             )
             port map(
@@ -281,7 +282,8 @@ begin
             generic map(
                 Arbiter => BusArbiter,
                 AmountOfInjectors => AmountOfFlows,
-                BridgeBufferSize => BusBridgeBufferSize,
+                --BridgeBufferSize => BusBridgeBufferSize,
+                BridgeBufferSize => 256,
                 PEPos => PEPos
             ) 
             port map(

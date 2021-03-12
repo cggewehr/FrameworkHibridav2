@@ -120,10 +120,10 @@ def projgen(args):
             
             # Create cds.lib file
             with open(ProjectDir + "/cds.lib", 'w') as cds_file:
-                cds_file.write("define worklib " + args.ProjectDirectory + "/INCA_libs/worklib\n")
-                cds_file.write("define json " + args.ProjectDirectory + "/INCA_libs/JSON\n")
-                cds_file.write("define hyhemps " + args.ProjectDirectory + "/INCA_libs/HyHeMPS\n")
-                cds_file.write("define hermes " + args.ProjectDirectory + "/INCA_libs/Hermes\n")
+                cds_file.write("define worklib " + ProjectDir + "/INCA_libs/worklib\n")
+                cds_file.write("define json " + ProjectDir + "/INCA_libs/JSON\n")
+                cds_file.write("define hyhemps " + ProjectDir + "/INCA_libs/HyHeMPS\n")
+                cds_file.write("define hermes " + ProjectDir + "/INCA_libs/Hermes\n")
                 cds_file.write("include $CDS_INST_DIR/tools/inca/files/cds.lib\n")
 				
             # Create Makefile

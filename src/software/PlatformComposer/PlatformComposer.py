@@ -379,7 +379,7 @@ class Platform:
                 updateSquareXY()
         
         # DEBUG
-        print("PEs set")
+        #print("PEs set")
         
         return PEs
     
@@ -573,7 +573,7 @@ class Platform:
             PEinStruct.BaseNoCPos = (WrapperLocationInBaseNoC[1] * self.BaseNoCDimensions[0]) + WrapperLocationInBaseNoC[0]
 
         # Update PEPos values for every PE
-        self.updatePEAddresses()
+        #self.updatePEAddresses()
 
     # Removes a given Bus/Crossbar (either as a Structure object <StructToRemove> or XY coordinates in base NoC <WrapperLocationInBaseNoC>) from Platform
     def removeStructure(self, StructToRemove = None, WrapperLocationInBaseNoC = None):
@@ -1109,6 +1109,9 @@ class Platform:
 
 
     def toJSON(self, SaveToFile = False, FileName = None):
+
+        # Forces setting PEPos values
+        self.PEs
 
         # A "hand-built" dict is required because self.__dict__ doesnt have @property decorators keys (self.AmountOfPEs, etc)
         JSONDict = dict()

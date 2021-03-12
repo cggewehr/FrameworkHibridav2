@@ -5,7 +5,7 @@ import AppComposer
 PIP_WL = AppComposer.Workload(WorkloadName = "PIP_WL")
 
 # Opens PIP App json file
-with open(os.getenv(HIBRIDA_PATH) + "/data/flowgen/applications/PIP.json") as PIP_JSON:
+with open(os.getenv("HIBRIDA_PATH") + "/data/flowgen/applications/PIP.json") as PIP_JSON:
     
     # Builds 3 PIP Apps from JSON and adds them to PIP_WL Workload
     for i in range(3):

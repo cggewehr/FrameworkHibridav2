@@ -1,7 +1,7 @@
 import AppComposer
 
 # Make Application
-PIP = AppComposer.Application(AppName = "PIP", StartTime = 0, StopTime = -1)
+PIP = AppComposer.Application(AppName = "PIP", StartTime = 0, StopTime = 0)
 
 # Make Threads
 InpMemA = AppComposer.Thread(ThreadName = "InpMemA")

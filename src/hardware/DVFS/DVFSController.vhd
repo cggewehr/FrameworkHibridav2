@@ -4,9 +4,12 @@ library ieee;
 	use ieee.numeric_std.all;
 	use ieee.math_real.all;
 
-library work;
-	use work.JSON.all;
-	use work.HyHeMPS_PKG.all;
+library HyHeMPS;
+    use HyHeMPS.HyHeMPS_PKG.all;
+
+--library work;
+    --use work.JSON.all;
+	--use work.HyHeMPS_PKG.all;
 
 
 entity DVFSController is
