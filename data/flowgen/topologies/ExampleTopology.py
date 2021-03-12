@@ -1,8 +1,7 @@
-import sys
 import PlatformComposer
 
 # Creates base 3x3 NoC
-Setup = PlatformComposer.Platform(BaseNoCDimensions=(3, 3), ReferenceClock=100)
+Setup = PlatformComposer.Platform(BaseNoCDimensions=(3, 3))
 
 # Adds crossbar containing 7 PEs @ base NoC position (2, 0)
 CrossbarA = PlatformComposer.Crossbar(AmountOfPEs = 7)
@@ -16,9 +15,7 @@ Setup.addStructure(NewStructure=BusA, WrapperLocationInBaseNoC=(2, 1))
 BusB = PlatformComposer.Bus(AmountOfPEs = 6)
 Setup.addStructure(NewStructure=BusB, WrapperLocationInBaseNoC=(2, 2))
 
-Setup.updatePEAddresses()
-
-Setup.toJSON(SaveToFile = True, FileName = "TopologiaExemplo")
+Setup.toJSON(SaveToFile = True, FileName = "ExampleTopology")
 
 #print(str(BusA))
 #print(str(BusB))

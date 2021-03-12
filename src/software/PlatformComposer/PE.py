@@ -3,7 +3,7 @@ import AppComposer
 
 class PE:
 
-    def __init__(self, PEPos, BaseNoCPos, StructPos = None, ThreadSet = None, CommStructure = "NoC", DataWidth = 32, BridgeBufferSize = 256, BusArbiter = "RR"):
+    def __init__(self, PEPos, BaseNoCPos, StructPos = None, ThreadSet = None, CommStructure = "NoC", DataWidth = 32, BridgeBufferSize = 4, BusArbiter = "RR"):
 
         self.PEPos = PEPos
         #self.CommStructure = CommStructure

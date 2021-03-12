@@ -12,7 +12,7 @@ from Injector import Injector
 class Platform:
 
     # Constructor
-    def __init__(self, BaseNoCDimensions, ReferenceClock, StandaloneStruct = False, BridgeBufferSize = 512, MasterPEPos = 0, DVFSServiceID = "200"):
+    def __init__(self, BaseNoCDimensions, StandaloneStruct = False, BridgeBufferSize = 4, MasterPEPos = 0, DVFSServiceID = "200"):
 
         #self.BaseNoC = [[None for x in range(BaseNoCDimensions[0])] for y in range(BaseNoCDimensions[1])]
 
@@ -22,7 +22,7 @@ class Platform:
             self.BaseNoCDimensions = BaseNoCDimensions
             
         self.BaseNoC = [[None for y in range(BaseNoCDimensions[1])] for x in range(BaseNoCDimensions[0])]
-        self.ReferenceClock = ReferenceClock  # In MHz
+        #self.ReferenceClock = ReferenceClock  # In MHz
         self.StandaloneFlag = bool(StandaloneStruct)
 
         self.BridgeBufferSize = BridgeBufferSize
@@ -440,7 +440,7 @@ class Platform:
         return wrapperAddresses
         
     
-    # Forces setting of PEPos values in PE objects. Useful for when self.PEs getter method is never called, such as when generating Platform from JSON, but PE addresses still must be set.
+    # Forces setting of PEPos values in PE objects. Useful for when self.PEs getter method is never called, such as when exporting Platform to JSON with no Workload set.
     def updatePEAddresses(self):
 
         for PEinPlatform in self.PEs:
@@ -472,7 +472,8 @@ class Platform:
 
             for x in range(BaseNoCDimensions[0]):
 
-                newBaseNoC[x][y] = PE(PEPos=i, BaseNoCPos = i, AppID=None, ThreadID=None, InjectorClockFrequency=self.ReferenceClock)
+                #newBaseNoC[x][y] = PE(PEPos=i, BaseNoCPos = i, AppID=None, ThreadID=None, InjectorClockFrequency=self.ReferenceClock)
+                newBaseNoC[x][y] = PE(PEPos=i, BaseNoCPos = i, StructPos = i)
                 self.PEs[i] = newBaseNoC[x][y]
 
                 i += 1
@@ -571,6 +572,8 @@ class Platform:
         for PEinStruct in NewStructure.PEs:
             PEinStruct.BaseNoCPos = (WrapperLocationInBaseNoC[1] * self.BaseNoCDimensions[0]) + WrapperLocationInBaseNoC[0]
 
+        # Update PEPos values for every PE
+        self.updatePEAddresses()
 
     # Removes a given Bus/Crossbar (either as a Structure object <StructToRemove> or XY coordinates in base NoC <WrapperLocationInBaseNoC>) from Platform
     def removeStructure(self, StructToRemove = None, WrapperLocationInBaseNoC = None):
@@ -1114,7 +1117,7 @@ class Platform:
         JSONDict["AmountOfPEs"] = self.AmountOfPEs
         JSONDict["AmountOfWrappers"] = self.AmountOfWrappers
         JSONDict["BaseNoCDimensions"] = self.BaseNoCDimensions
-        JSONDict["ReferenceClock"] = self.ReferenceClock
+        #JSONDict["ReferenceClock"] = self.ReferenceClock
         JSONDict["SquareNoCBound"] = self.SquareNoCBound
         #JSONDict["StandaloneFlag"] = self.StandaloneFlag
         #JSONDict["WrapperAddresses"] = [self.WrapperAddresses[PEPos] for PEPos in self.WrapperAddresses.keys()]  #  Dict -> List
@@ -1191,7 +1194,7 @@ class Platform:
         self.BaseNoCDimensions = tuple(JSONDict["BaseNoCDimensions"])
         #self.BaseNoC = [[None for x in range(BaseNoCDimensions[0])] for y in range(BaseNoCDimensions[1])]
         self.BaseNoC = [[None for y in range(self.BaseNoCDimensions[1])] for x in range(self.BaseNoCDimensions[0])]
-        self.ReferenceClock = JSONDict["ReferenceClock"]  # In MHz
+        #self.ReferenceClock = JSONDict["ReferenceClock"]  # In MHz
         self.StandaloneFlag = True if JSONDict["IsStandaloneBus"] or JSONDict["IsStandaloneCrossbar"] else False
         #self.BridgeBufferSize = JSONDict["BridgeBufferSize"]        
         self.MasterPEPos = JSONDict["MasterPEPos"]        
@@ -1237,7 +1240,7 @@ class Platform:
         
         returnString += "Amount of PEs: " + str(self.AmountOfPEs) + "\n"
         returnString += "Base NoC Dimensions: " + str(self.BaseNoCDimensions) + "\n"
-        returnString += "ReferenceClock: " + str(self.ReferenceClock) + " MHz \n"
+        #returnString += "ReferenceClock: " + str(self.ReferenceClock) + " MHz \n"
         returnString += "SquareNoCBound: " + str(self.SquareNoCBound) + "\n\n"
         
         returnString += "Amount of Buses: " + str(self.AmountOfBuses) + "\n"
