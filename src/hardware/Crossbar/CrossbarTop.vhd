@@ -9,7 +9,7 @@
 --------------------------------------------------------------------------------
 -- Description : Implements a Crossbar interconnect, in which PEs have a direct
 --               connection to each another, but still must compete for access 
---               to targets input buffer.
+--               to target's input buffer.
 --------------------------------------------------------------------------------
 -- Revisions   : v0.01 - Initial implementation
 --------------------------------------------------------------------------------
@@ -31,9 +31,9 @@ library HyHeMPS;
 entity Crossbar is
 
 	generic(
-		ArbiterType: string;
+		ArbiterType: string := "RR";
 		AmountOfPEs: integer;
-		PEAddresses: HalfDataWidth_vector;  -- As XY coordinates
+		PEAddresses: HalfDataWidth_vector := HyHeMPS_PKG.GetDefaultPEAddresses(AmountOfPEs);  -- As XY coordinates
 		BridgeBufferSize: integer;
 		IsStandalone: boolean
 	);

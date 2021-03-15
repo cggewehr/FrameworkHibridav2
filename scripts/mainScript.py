@@ -29,7 +29,7 @@ parser = argparse.ArgumentParser(prog = os.getenv("HIBRIDA_NAME"))
 subparsers = parser.add_subparsers(title = "Hibrida subcommands")
 
 # addSearchPath args
-parser_addSearchPath = subparsers.add_parser("addSearchPath", help = "Adds a deirectory where files passed as arguments to setConfig command can be searched for")
+parser_addSearchPath = subparsers.add_parser("addSearchPath", help = "Adds a directory where files passed as arguments to setConfig command can be searched for")
 parser_addSearchPath.set_defaults(func=AddSearchPath.addSearchPath)
 parser_addSearchPath.add_argument("-alo", "--AllocationMapsPath", nargs = "+", help = "Adds a directory where Allocation Map JSON files will also be looked for in", type = str)
 parser_addSearchPath.add_argument("-app", "--ApplicationsPath", nargs = "+", help = "Adds a directory where Applications JSON files will also be looked for in", type = str)
@@ -46,8 +46,8 @@ parser_projgen.add_argument("-pn", "--ProjectName", "--projname", type = str, de
 parser_projgen.add_argument("-a", "--AppendName", "--appendname", help = "Appends ProjectName to ProjectDir path", action = "store_true", default = None)
 parser_projgen.add_argument("-hd", "--HardwareDirs", "--hardwaredirs", help = "Create directories and subdirectories for custom hardware", action = "store_true", default = False)
 #parser_projgen.add_argument("-m", "--Makefile", "--makefile", type = str, help = "Create makefile for compiling, elaborating and simulating project", default = "cadence")
-supportedTools = ["cadence", "vivado"]
-parser_projgen.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
+supportedTools = ["cadence", "vivado", "Genus", "RTLCompiler"]
+parser_projgen.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "RTLCompiler")
 
 # TODO: Create project from topology .json file
 #parser_projgen.add_argument("-f", "--TopologyFile", type = str, default = None)

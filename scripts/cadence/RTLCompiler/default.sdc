@@ -47,6 +47,9 @@ set_load -pin_load 0.05 [get_ports [all_outputs]]
 # Set transition times as 1% of clock period
 #set_input_transition -rise -min [expr $ClockPeriod * 0.01] [remove_from_collection [all_inputs] $ClockPorts]
 #set_input_transition -fall -min [expr $ClockPeriod * 0.01] [remove_from_collection [all_inputs] $ClockPorts]
-set_input_transition -rise -max [expr $ClockPeriod * 0.01] [remove_from_collection [all_inputs] $ClockPorts]
-set_input_transition -fall -max [expr $ClockPeriod * 0.01] [remove_from_collection [all_inputs] $ClockPorts]
+#set_input_transition -rise -max [expr $ClockPeriod * 0.01] [remove_from_collection [all_inputs] $ClockPorts]
+#set_input_transition -fall -max [expr $ClockPeriod * 0.01] [remove_from_collection [all_inputs] $ClockPorts]
+set_input_transition -rise -max [expr $ClockPeriod * 0.01] [all_inputs]
+set_input_transition -fall -max [expr $ClockPeriod * 0.01] [all_inputs]
+
 

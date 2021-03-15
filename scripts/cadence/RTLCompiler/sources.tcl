@@ -1,6 +1,6 @@
 
-set_db hdl_language vhdl
-set_db hdl_vhdl_read_version 1993
+#set_db hdl_language vhdl
+#set_db hdl_vhdl_read_version 1993
 
 set HibridaDir $env(HIBRIDA_PATH)
 set SourcesDir "${HibridaDir}/src/hardware"
@@ -22,12 +22,12 @@ read_hdl "${SourcesDir}/Bus/BusRRArbiter.vhd"
 read_hdl "${SourcesDir}/Bus/BusControl.vhd"
 read_hdl "${SourcesDir}/Bus/BusBridgev2.vhd"
 read_hdl "${SourcesDir}/Bus/BusTop.vhd"
-read_hdl "${SourcesDir}/Injector/Injector_PKG.vhd"
-read_hdl "${SourcesDir}/Injector/Injector.vhd"
-read_hdl "${SourcesDir}/Injector/Trigger.vhd"
-read_hdl "${SourcesDir}/Injector/Receiver.vhd"
-read_hdl "${SourcesDir}/Injector/InjBuffer.vhd"
-read_hdl "${SourcesDir}/Injector/PE.vhd"
-read_hdl "${SourcesDir}/Injector/PEBus.vhd"
+#read_hdl "${SourcesDir}/Injector/Injector_PKG.vhd"
+#read_hdl "${SourcesDir}/Injector/Injector.vhd"
+#read_hdl "${SourcesDir}/Injector/Trigger.vhd"
+#read_hdl "${SourcesDir}/Injector/Receiver.vhd"
+#read_hdl "${SourcesDir}/Injector/InjBuffer.vhd"
+#read_hdl "${SourcesDir}/Injector/PE.vhd"
+#read_hdl "${SourcesDir}/Injector/PEBus.vhd"
 read_hdl "${SourcesDir}/Top/HyHeMPS.vhd"
 read_hdl "${SourcesDir}/Top/HyHeMPS_TB.vhd"

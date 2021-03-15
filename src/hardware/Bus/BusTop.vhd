@@ -29,11 +29,11 @@ library HyHeMPS;
 entity HyBus is
 
 	generic(
-		Arbiter: string;
+		Arbiter: string := "RR";
 		AmountOfPEs: integer;
-		PEAddresses: HalfDataWidth_vector;  -- As XY coordinates
+		PEAddresses: HalfDataWidth_vector := HyHeMPS_PKG.GetDefaultPEAddresses(AmountOfPEs);  -- As XY coordinates
 		BridgeBufferSize: integer;
-		IsStandalone: boolean
+		IsStandalone: boolean := True
 	);
 	port(
 		Clock: in std_logic;

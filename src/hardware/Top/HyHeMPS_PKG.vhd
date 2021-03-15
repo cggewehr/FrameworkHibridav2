@@ -147,6 +147,9 @@ package HyHeMPS_PKG is
     function GetPEInfo(PlatCFG: T_JSON) return PEInfo_vector;
     function GetPEAddresses(PlatCFG: T_JSON; PEInfo: PEInfo_vector; InterfacingStructure: string(1 to 3); StructID: integer) return HalfDataWidth_vector; 
 
+    -- Default parameters for instantiating Bus/Crossbar outside HyHeMPS
+    function GetDefaultPEAddresses(AmountOfPEs: integer) return HalfDataWidth_vector;
+
     -- Misc functions
     procedure UNIFORM(SEED1, SEED2: inout POSITIVE; X: out REAL); -- Used for random number generation
     function incr(value: integer; maxValue: in integer; minValue: in integer) return integer;
@@ -319,6 +322,17 @@ package body HyHeMPS_PKG is
         return PEAddresses;
     
     end function GetPEAddresses;
+
+    --
+    function GetDefaultPEAddresses(AmountOfPEs: integer) return HalfDataWidth_vector is
+        variable PEAddresses: HalfDataWidth_vector(0 to AmountOfPEs - 1);
+    begin
+
+        for i in 0 to AmountOfPEs - 1 loop 
+            PEAddresses(i) := std_logic_vector(to_unsigned(i, HalfDataWidth));
+        end loop;
+
+    end function GetDefaultPEAddresses;
 
 
     -- Borrowed from GHDL ieee.math_real implementation (https://github.com/ghdl/ghdl/blob/master/libraries/openieee/math_real-body.vhdl)

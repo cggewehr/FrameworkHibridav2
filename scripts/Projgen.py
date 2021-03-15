@@ -86,7 +86,7 @@ def projgen(args):
 	    		
     if args.Tool is not None:
 		
-        if args.Tool=="cadence":
+        if args.Tool == "cadence" or args.Tool == "Genus" or args.Tool == "RTLCompiler":
 
             # Make subdirs
             os.makedirs(ProjectDir + "/INCA_libs/worklib", exist_ok = True)
@@ -97,20 +97,6 @@ def projgen(args):
             os.makedirs(ProjectDir + "/synthesis/scripts", exist_ok = True)
             os.makedirs(ProjectDir + "/synthesis/deliverables", exist_ok = True)
             os.makedirs(ProjectDir + "/synthesis/work", exist_ok = True)
-
-            # Copy synthesis scripts and default constraints
-            scriptsSourcePath = os.path.join(ConfigDict["HibridaPath"], "scripts", "cadence")
-            scriptsTargetPath = os.path.join(ProjectDir, "synthesis", "scripts")
-            from shutil import copy
-            copy(os.path.join(scriptsSourcePath, "Genus.tcl"), os.path.join(scriptsTargetPath, "Genus.tcl"))
-            copy(os.path.join(scriptsSourcePath, "default.sdc"), os.path.join(scriptsTargetPath, "constraints.sdc"))
-            copy(os.path.join(scriptsSourcePath, "fileList.tcl"), os.path.join(scriptsTargetPath, "fileList.tcl"))
-            copy(os.path.join(scriptsSourcePath, "sources.tcl"), os.path.join(scriptsTargetPath, "sources.tcl"))
-            try:
-                copy(os.path.join(scriptsSourcePath, "tech.tcl"), os.path.join(scriptsTargetPath, "tech.tcl"))
-            except IOError:
-                print("Warning: tech.tcl file was not found")
-                pass
 
             # TODO: Copy UPF file
             
@@ -138,7 +124,7 @@ def projgen(args):
                 make_file.write("\n")
                 make_file.write("########################## Command options #############################\n")
                 make_file.write("PROJECT_DIR=" + ProjectDir + "\n")
-                make_file.write("HIBRIDA_HARDWARE_PATH=$(HIBRIDA_PATH)/src/hardware\n")
+                make_file.write("HIBRIDA_HARDWARE_PATH=" + ProjectDict["HibridaPath"] + "/src/hardware\n")
                 make_file.write("VHDL_OPTS=-smartlib -cdslib cds.lib -logfile log/cadence/ncvhdl.log -errormax 15 -update -v93 -linedebug -status\n")
                 make_file.write("ELAB_OPTS=-work worklib -cdslib cds.lib -logfile log/cadence/ncelab.log -errormax 15 -update -status\n")
                 make_file.write("SIMH_OPTS=-cdslib cds.lib -logfile log/cadence/ncsim.log -errormax 15\n")
@@ -217,7 +203,27 @@ def projgen(args):
                 # INCA_libs/HyHeMPS/*
                 # INCA_libs/Hermes/*
                 
-        elif args.Tool == "vivado":
+            # Copy synthesis scripts and default constraints
+            if args.Tool == "Genus" or args.Tool == "RTLCompiler":
+            
+                if args.Tool == "Genus":
+                    scriptsSourcePath = os.path.join(ConfigDict["HibridaPath"], "scripts", "cadence", "Genus")
+                elif args.Tool == "RTLCompiler":
+                    scriptsSourcePath = os.path.join(ConfigDict["HibridaPath"], "scripts", "cadence", "RTLCompiler")
+                scriptsTargetPath = os.path.join(ProjectDir, "synthesis", "scripts")
+                
+                from shutil import copy
+                copy(os.path.join(scriptsSourcePath, "Genus.tcl"), os.path.join(scriptsTargetPath, "Genus.tcl"))
+                #copy(os.path.join(scriptsSourcePath, "fileList.tcl"), os.path.join(scriptsTargetPath, "fileList.tcl"))
+                copy(os.path.join(scriptsSourcePath, "sources.tcl"), os.path.join(scriptsTargetPath, "sources.tcl"))
+                copy(os.path.join(ConfigDict["HibridaPath"], "scripts", "cadence", "default.sdc"), os.path.join(scriptsTargetPath, "constraints.sdc"))
+                try:
+                    copy(os.path.join(scriptsSourcePath, "tech.tcl"), os.path.join(scriptsTargetPath, "tech.tcl"))
+                except IOError:
+                    print("Warning: tech.tcl file was not found")
+                    pass
+                                
+        elif args.Tool == "vivado" or args.Tool == "Vivado":
         
             # Runs vivado with create project script
             TCLScript = os.path.join(ConfigDict["HibridaPath"], "scripts", "vivado", "projgen.tcl")

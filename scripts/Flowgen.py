@@ -40,6 +40,7 @@ def flowgen(args):
         exit(1)
         
     # Opens Cluster Clocks JSON file
+    # TODO: Set up DVFS dummy ClusterClocks file
     ClusterClocksFileName = ConfigDict["Projects"][args.ProjectName]["ClusterClocksFile"]
         
     if ClusterClocksFileName is None:
