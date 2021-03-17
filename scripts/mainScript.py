@@ -77,7 +77,7 @@ parser_compile.add_argument("-t", "--Tool", "--tool", choices = supportedTools, 
 #parser_compile.add_argument("-f", "--file", help = "Custom script file to be executed")
 
 # elab args
-parser_elab = subparsers.add_parser("elab", help = "Elabs top level entity after compilation step")
+parser_elab = subparsers.add_parser("elab", help = "Elaborates top level entity after compilation step")
 parser_elab.set_defaults(func=Elab.elab)
 parser_elab.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be elaborated", required = True)
 supportedTools = ["cadence", "vivado"]

@@ -15,9 +15,6 @@ def synthesize(args):
     
     if args.Tool == "Genus":
 
-        # Add genus module
-        os.system("module add cdn/genus/genus181")
-
         # Set up environment vars
         os.environ["SynthProjectDir"] = ProjectDir
         os.environ["SynthVoltageLevel"] = args.Voltage
@@ -26,7 +23,18 @@ def synthesize(args):
         # Call genus
         #os.system("module add cdn/genus/genus181")
         os.system("module add cdn/genus/genus181; genus -log " + str(ProjectDir) + "/log/cadence/genus.log -f " + str(ProjectDir) + "/synthesis/scripts/Genus.tcl")
+    
+    if args.Tool == "RTLCompiler":
+
+        # Set up environment vars
+        os.environ["SynthProjectDir"] = ProjectDir
+        os.environ["SynthVoltageLevel"] = args.Voltage
+        os.environ["SynthProcessCorner"] = args.Process
         
+        # Call genus
+        #os.system("module add cdn/genus/genus181")
+        os.system("module add cdn/rc/rc142; rc -log " + str(ProjectDir) + "/log/cadence/RTLCompiler.log -files " + str(ProjectDir) + "/synthesis/scripts/RTLCompiler.tcl")
+    
     else:
     
         #print("Error: Tool <" + args.Tool + "> is not recognized")
