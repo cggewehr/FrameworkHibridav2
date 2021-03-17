@@ -332,6 +332,8 @@ package body HyHeMPS_PKG is
             PEAddresses(i) := std_logic_vector(to_unsigned(i, HalfDataWidth));
         end loop;
 
+        return PEAddresses;
+
     end function GetDefaultPEAddresses;
 
 

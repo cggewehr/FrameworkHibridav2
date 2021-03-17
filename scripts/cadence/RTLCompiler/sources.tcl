@@ -1,18 +1,18 @@
 
-#set_db hdl_language vhdl
-#set_db hdl_vhdl_read_version 1993
+set_attribute hdl_language vhdl
+set_attribute hdl_vhdl_read_version 1993
 
 set HibridaDir $env(HIBRIDA_PATH)
 set SourcesDir "${HibridaDir}/src/hardware"
 
-read_hdl "${SourcesDir}/Top/JSON.vhd"
+read_hdl "${SourcesDir}/Top/JSON.vhd" -library JSON
 read_hdl "${SourcesDir}/Misc/BufferCircular.vhd"
-read_hdl "${SourcesDir}/Hermes/HeMPS_defaults.vhd"
+read_hdl "${SourcesDir}/Hermes/HeMPS_defaults.vhd" -library Hermes
 read_hdl "${SourcesDir}/Hermes/Hermes_crossbar.vhd"
 read_hdl "${SourcesDir}/Hermes/Hermes_buffer.vhd"
 read_hdl "${SourcesDir}/Hermes/Hermes_switchcontrol.vhd"
 read_hdl "${SourcesDir}/Hermes/RouterCC.vhd"
-read_hdl "${SourcesDir}/Top/HyHeMPS_PKG.vhd"
+read_hdl "${SourcesDir}/Top/HyHeMPS_PKG.vhd" -library HyHeMPS
 read_hdl "${SourcesDir}/Hermes/HermesTop.vhd"
 read_hdl "${SourcesDir}/Crossbar/CrossbarControl.vhd"
 read_hdl "${SourcesDir}/Crossbar/CrossbarRRArbiter.vhd"
