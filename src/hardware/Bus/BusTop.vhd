@@ -32,7 +32,7 @@ entity HyBus is
 		Arbiter: string := "RR";
 		AmountOfPEs: integer;
 		PEAddressesFromTop: HalfDataWidth_vector;  -- := (others => (others => '0'));  -- As XY coordinates
-		UseDefaultPEAddresses: boolean := False;
+		UseDefaultPEAddresses: boolean := True;
 		BridgeBufferSize: integer;
 		IsStandalone: boolean := True
 	);

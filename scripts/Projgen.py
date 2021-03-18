@@ -214,9 +214,12 @@ def projgen(args):
                 
                 from shutil import copy
                 copy(os.path.join(scriptsSourcePath, "Genus.tcl"), os.path.join(scriptsTargetPath, "Genus.tcl"))
+                copy(os.path.join(scriptsSourcePath, "GenusBusStandalone.tcl"), os.path.join(scriptsTargetPath, "GenusBusStandalone.tcl"))
+                copy(os.path.join(scriptsSourcePath, "GenusCrossbarStandalone.tcl"), os.path.join(scriptsTargetPath, "GenusCrossbarStandalone.tcl"))
                 #copy(os.path.join(scriptsSourcePath, "fileList.tcl"), os.path.join(scriptsTargetPath, "fileList.tcl"))
                 copy(os.path.join(scriptsSourcePath, "sources.tcl"), os.path.join(scriptsTargetPath, "sources.tcl"))
                 copy(os.path.join(ConfigDict["HibridaPath"], "scripts", "cadence", "default.sdc"), os.path.join(scriptsTargetPath, "constraints.sdc"))
+                copy(os.path.join(ConfigDict["HibridaPath"], "scripts", "cadence", "standalone.sdc"), os.path.join(scriptsTargetPath, "standalone.sdc"))
                 try:
                     copy(os.path.join(scriptsSourcePath, "tech.tcl"), os.path.join(scriptsTargetPath, "tech.tcl"))
                 except IOError:
