@@ -33,7 +33,8 @@ entity Crossbar is
 	generic(
 		ArbiterType: string := "RR";
 		AmountOfPEs: integer;
-		PEAddresses: HalfDataWidth_vector := HyHeMPS_PKG.GetDefaultPEAddresses(AmountOfPEs);  -- As XY coordinates
+		PEAddressesFromTop: HalfDataWidth_vector; -- := HyHeMPS_PKG.GetDefaultPEAddresses(AmountOfPEs);  -- As XY coordinates
+		UseDefaultPEAddresses: boolean;
 		BridgeBufferSize: integer;
 		IsStandalone: boolean
 	);
@@ -49,6 +50,9 @@ end entity Crossbar;
 
 
 architecture RTL of Crossbar is
+
+	-- 
+	constant PEAddresses: HalfDataWidth_vector(0 to AmountOfPEs - 1) := SetPEAddresses(PEAddressesFromTop, UseDefaultPEAddresses, AmountOfPEs);
 
 	-- CrossbarControl input interface
 	subtype CtrlDataIn_t is DataWidth_vector(0 to AmountOfPEs - 1);

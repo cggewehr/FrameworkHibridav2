@@ -31,7 +31,8 @@ entity HyBus is
 	generic(
 		Arbiter: string := "RR";
 		AmountOfPEs: integer;
-		PEAddresses: HalfDataWidth_vector := HyHeMPS_PKG.GetDefaultPEAddresses(AmountOfPEs);  -- As XY coordinates
+		PEAddressesFromTop: HalfDataWidth_vector := (others => (others => '0'));  -- As XY coordinates
+		UseDefaultPEAddresses: boolean := False;
 		BridgeBufferSize: integer;
 		IsStandalone: boolean := True
 	);
@@ -47,6 +48,9 @@ end entity HyBus;
 
 
 architecture RTL of HyBus is
+
+	-- Set PEAddresses
+	constant PEAddresses: HalfDataWidth_vector := SetPEAddresses(PEAddressesFromTop, UseDefaultPEAddresses, AmountOfPEs);
 
 	-- Arbiter signals
 	signal arbiterACK: std_logic;

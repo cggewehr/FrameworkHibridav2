@@ -39,6 +39,7 @@ package HyHeMPS_PKG is
     constant SOUTH: integer := 3;
     constant LOCAL: integer := 4;
 
+    -- TODO: Use VHDL-2008 package generic feature to set DataWidth dinamically
     constant DataWidth: integer := 32; 
     constant HalfDataWidth: integer := DataWidth/2;
     constant QuarterDataWidth: integer := DataWidth/4;
@@ -146,9 +147,8 @@ package HyHeMPS_PKG is
     -- Function declarations for organizing data from JSON config file
     function GetPEInfo(PlatCFG: T_JSON) return PEInfo_vector;
     function GetPEAddresses(PlatCFG: T_JSON; PEInfo: PEInfo_vector; InterfacingStructure: string(1 to 3); StructID: integer) return HalfDataWidth_vector; 
-
-    -- Default parameters for instantiating Bus/Crossbar outside HyHeMPS
     function GetDefaultPEAddresses(AmountOfPEs: integer) return HalfDataWidth_vector;
+    function SetPEAddresses(PEAddressesFromTop: HalfDataWidth_vector; UseDefaultPEAddresses: boolean; AmountOfPEs: integer) return HalfDataWidth_vector;
 
     -- Misc functions
     procedure UNIFORM(SEED1, SEED2: inout POSITIVE; X: out REAL); -- Used for random number generation
@@ -323,18 +323,44 @@ package body HyHeMPS_PKG is
     
     end function GetPEAddresses;
 
-    --
+    -- Generates random default PE Addresses
     function GetDefaultPEAddresses(AmountOfPEs: integer) return HalfDataWidth_vector is
         variable PEAddresses: HalfDataWidth_vector(0 to AmountOfPEs - 1);
+        variable RNGSeed1: positive := 32;
+        variable RNGSeed2: positive := 9;
+        variable RandomNumber: real;
     begin
 
-        for i in 0 to AmountOfPEs - 1 loop 
-            PEAddresses(i) := std_logic_vector(to_unsigned(i, HalfDataWidth));
+        for PE in 0 to AmountOfPEs - 1 loop 
+            for i in 0 to HalfDataWidth - 1 loop
+
+                -- Sets 0 < RandomNumber < 1
+                UNIFORM(RNGSeed1, RNGSeed2, RandomNumber);
+
+                -- Sets bit based on generated random value
+                if RandomNumber > 0.5 then
+                    PEAddresses(PE)(i) := '1';
+                else
+                    PEAddresses(PE)(i) := '0';
+                end if;
+
+            end loop;
         end loop;
 
         return PEAddresses;
 
     end function GetDefaultPEAddresses;
+
+    -- Returns final PEAddresses array for a Bus/Crossbar, choosing between default randomly generated values or values passed through generic interface
+    function SetPEAddresses(PEAddressesFromTop: HalfDataWidth_vector; UseDefaultPEAddresses: boolean; AmountOfPEs: integer) return HalfDataWidth_vector is begin
+
+        if UseDefaultPEAddresses then
+            return GetDefaultPEAddresses(AmountOfPEs);
+        else
+            return PEAddressesFromTop;                                                                               
+        end if;
+
+    end function SetPEAddresses;
 
 
     -- Borrowed from GHDL ieee.math_real implementation (https://github.com/ghdl/ghdl/blob/master/libraries/openieee/math_real-body.vhdl)
