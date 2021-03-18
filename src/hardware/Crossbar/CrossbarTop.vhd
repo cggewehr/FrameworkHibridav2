@@ -34,7 +34,7 @@ entity Crossbar is
 		ArbiterType: string := "RR";
 		AmountOfPEs: integer;
 		PEAddressesFromTop: HalfDataWidth_vector; -- := HyHeMPS_PKG.GetDefaultPEAddresses(AmountOfPEs);  -- As XY coordinates
-		UseDefaultPEAddresses: boolean;
+		UseDefaultPEAddresses: boolean := False;
 		BridgeBufferSize: integer;
 		IsStandalone: boolean
 	);

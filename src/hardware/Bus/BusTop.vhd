@@ -31,7 +31,7 @@ entity HyBus is
 	generic(
 		Arbiter: string := "RR";
 		AmountOfPEs: integer;
-		PEAddressesFromTop: HalfDataWidth_vector := (others => (others => '0'));  -- As XY coordinates
+		PEAddressesFromTop: HalfDataWidth_vector;  -- := (others => (others => '0'));  -- As XY coordinates
 		UseDefaultPEAddresses: boolean := False;
 		BridgeBufferSize: integer;
 		IsStandalone: boolean := True
