@@ -47,7 +47,7 @@ parser_projgen.add_argument("-a", "--AppendName", "--appendname", help = "Append
 parser_projgen.add_argument("-hd", "--HardwareDirs", "--hardwaredirs", help = "Create directories and subdirectories for custom hardware", action = "store_true", default = False)
 #parser_projgen.add_argument("-m", "--Makefile", "--makefile", type = str, help = "Create makefile for compiling, elaborating and simulating project", default = "cadence")
 supportedTools = ["cadence", "vivado", "Genus", "RTLCompiler"]
-parser_projgen.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "RTLCompiler")
+parser_projgen.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "Genus")
 
 # TODO: Create project from topology .json file
 #parser_projgen.add_argument("-f", "--TopologyFile", type = str, default = None)

@@ -14,7 +14,7 @@ source "${ProjectDir}/synthesis/scripts/tech.tcl"
 # Read HDL sources
 #source "${ProjectDir}/synthesis/scripts/sources.tcl"
 set_db hdl_language vhdl
-set_db hdl_vhdl_read_version 1993
+set_db hdl_vhdl_read_version 2008
 set HibridaDir $env(HIBRIDA_PATH)
 set SourcesDir "${HibridaDir}/src/hardware"
 read_hdl "${SourcesDir}/Top/JSON.vhd" -library JSON
@@ -27,7 +27,7 @@ read_hdl "${SourcesDir}/Crossbar/CrossbarBridgev2.vhd"
 read_hdl "${SourcesDir}/Crossbar/CrossbarTop.vhd"
 
 # Elaborates top level entity
-elaborate -parameters {{AmountOfPEs $AmountOfPEs} {UseDefaultPEAddresses true}}
+elaborate Crossbar -parameters "{AmountOfPEs $AmountOfPEs} {UseDefaultPEAddresses true}"
 check_design -all
 
 # Read constraints

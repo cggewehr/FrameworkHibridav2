@@ -33,7 +33,7 @@ entity Crossbar is
 	generic(
 		ArbiterType: string := "RR";
 		AmountOfPEs: integer;
-		PEAddressesFromTop: HalfDataWidth_vector; -- := HyHeMPS_PKG.GetDefaultPEAddresses(AmountOfPEs);  -- As XY coordinates
+		PEAddressesFromTop: HalfDataWidth_vector := (0 to AmountOfPEs - 1 => (others => '0')); -- := HyHeMPS_PKG.GetDefaultPEAddresses(AmountOfPEs);  -- As XY coordinates
 		UseDefaultPEAddresses: boolean := True;
 		BridgeBufferSize: integer;
 		IsStandalone: boolean
@@ -42,8 +42,8 @@ entity Crossbar is
 		Clock: in std_logic;
 		Reset: in std_logic;
 		--PEInterfaces: inout PEInterface_vector
-		PEInputs: out PEInputs_vector;
-		PEOutputs: in PEOutputs_vector
+		PEInputs: out PEInputs_vector(0 to AmountOfPEs - 1);
+		PEOutputs: in PEOutputs_vector(0 to AmountOfPEs - 1)
 	);
 	
 end entity Crossbar;

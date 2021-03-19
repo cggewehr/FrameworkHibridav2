@@ -27,7 +27,7 @@ read_hdl "${SourcesDir}/Bus/BusBridgev2.vhd"
 read_hdl "${SourcesDir}/Bus/BusTop.vhd"
 
 # Elaborates top level entity
-elaborate -parameters {{AmountOfPEs $AmountOfPEs} {UseDefaultPEAddresses true}}
+elaborate -parameters "{AmountOfPEs $AmountOfPEs} {UseDefaultPEAddresses true}"
 check_design -all
 
 # Read constraints

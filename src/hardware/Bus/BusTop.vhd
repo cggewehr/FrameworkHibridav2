@@ -40,8 +40,8 @@ entity HyBus is
 		Clock: in std_logic;
 		Reset: in std_logic;
 		--PEInterfaces: inout PEInterface_vector
-		PEInputs: out PEInputs_vector;
-		PEOutputs: in PEOutputs_vector
+		PEInputs: out PEInputs_vector(0 to AmountOfPEs - 1);
+		PEOutputs: in PEOutputs_vector(0 to AmountOfPEs - 1)
 	);
 
 end entity HyBus;
