@@ -174,13 +174,12 @@ begin
             BusInstance: entity work.HyBus
 
                 generic map(
-                    Arbiter               => "RR",
+                    Arbiter          => "RR",
                     --AmountOfPEs           => (AmountOfPEsInBuses(i) + 1),  -- TODO: Not add +1 if standalone
-                    AmountOfPEs           => (AmountOfPEsInBuses(i) + boolToInt(IsStandaloneBus)),
-                    PEAddressesFromTop    => BusPEAddresses(i),
-                    UseDefaultPEAddresses => False,
-                    BridgeBufferSize      => BridgeBufferSize,
-                    IsStandalone          => IsStandaloneBus
+                    AmountOfPEs      => (AmountOfPEsInBuses(i) + boolToInt(IsStandaloneBus)),
+                    PEAddresses      => BusPEAddresses(i),
+                    BridgeBufferSize => BridgeBufferSize,
+                    IsStandalone     => IsStandaloneBus
                 )
                 port map(
                     Clock     => Clocks(BusWrapperIDs(i)),  -- Clock of its wrapper
@@ -228,20 +227,19 @@ begin
             CrossbarInstance: entity work.Crossbar
 
                 generic map(
-                    ArbiterType           => "RR",
+                    ArbiterType       => "RR",
                     --AmountOfPEs           => (AmountOfPEsInCrossbars(i) + 1),  -- TODO: Not add +1 if standalone
-                    AmountOfPEs           => (AmountOfPEsInCrossbars(i) + boolToInt(IsStandaloneCrossbar)),
-                    PEAddressesFromTop    => CrossbarPEAddresses(i),
-                    UseDefaultPEAddresses => False,
-                    BridgeBufferSize      => BridgeBufferSize,
-                    IsStandalone          => IsStandaloneCrossbar
+                    AmountOfPEs       => (AmountOfPEsInCrossbars(i) + boolToInt(IsStandaloneCrossbar)),
+                    PEAddresses       => CrossbarPEAddresses(i),
+                    BridgeBufferSize  => BridgeBufferSize,
+                    IsStandalone      => IsStandaloneCrossbar
                 )
                 port map(
-                    Clock        => Clocks(CrossbarWrapperIDs(i)),  -- Clock of its wrapper
-                    Reset        => Reset,  -- Global reset, from entity interface
+                    Clock     => Clocks(CrossbarWrapperIDs(i)),  -- Clock of its wrapper
+                    Reset     => Reset,  -- Global reset, from entity interface
                     --PEInterfaces => CrossbarInterfaces(i)
-                    PEInputs     => CrossbarOutputInterfaces(i),
-                    PEOutputs    => CrossbarInputInterfaces(i)
+                    PEInputs  => CrossbarOutputInterfaces(i),
+                    PEOutputs => CrossbarInputInterfaces(i)
                 );
             
             assert false report "Instantiated Crossbar <" & integer'image(i) & "> with <" & integer'image(AmountOfPEsInCrossbars(i) + boolToInt(IsStandaloneCrossbar)) & "> elements" severity note;

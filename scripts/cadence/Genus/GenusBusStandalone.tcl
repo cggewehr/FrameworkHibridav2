@@ -7,6 +7,7 @@ set VoltageLevel $env(SynthVoltageLevel)
 set ProcessCorner $env(SynthProcessCorner)
 set AmountOfPEs $env(SynthAmountOfPEs)
 set ClockPeriod $env(SynthClockPeriod)
+set BridgeBufferSize $env(SynthBridgeBufferSize)
 
 # Read cell lib info
 source "${ProjectDir}/synthesis/scripts/tech.tcl"
@@ -27,11 +28,11 @@ read_hdl "${SourcesDir}/Bus/BusBridgev2.vhd"
 read_hdl "${SourcesDir}/Bus/BusTop.vhd"
 
 # Elaborates top level entity
-elaborate -parameters "{AmountOfPEs $AmountOfPEs} {UseDefaultPEAddresses true}"
+elaborate BusStandaloneWrapper -parameters "{AmountOfPEs $AmountOfPEs} {BridgeBufferSize $BridgeBufferSize}"
 check_design -all
 
 # Read constraints
-read_sdc "${ProjectDir}/synthesis/scripts/constraints.sdc"
+read_sdc "${ProjectDir}/synthesis/scripts/standalone.sdc"
 check_timing_intent -verbose
 
 # Synthesize design
