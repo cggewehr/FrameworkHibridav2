@@ -49,7 +49,7 @@ end entity HyBus;
 architecture RTL of HyBus is
 
 	-- Set PEAddresses
-	constant PEAddresses: HalfDataWidth_vector := SetPEAddresses(PEAddressesFromTop, UseDefaultPEAddresses, AmountOfPEs);
+	--constant PEAddresses: HalfDataWidth_vector := SetPEAddresses(PEAddressesFromTop, UseDefaultPEAddresses, AmountOfPEs);
 
 	-- Arbiter signals
 	signal arbiterACK: std_logic;

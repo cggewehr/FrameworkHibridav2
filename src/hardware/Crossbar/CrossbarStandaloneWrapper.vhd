@@ -30,7 +30,7 @@ begin
 	StandaloneCrossbar: entity work.Crossbar
 
 		generic map(
-			Arbiter => "RR",
+			ArbiterType => "RR",
 			AmountOfPEs => AmountOfPEs,
 			PEAddresses => GetDefaultPEAddresses(AmountOfPEs),
 			BridgeBufferSize => BridgeBufferSize,

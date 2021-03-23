@@ -72,10 +72,13 @@ architecture RTL of CircularBuffer is
     signal initialized: std_logic;
 
     -- Flags last event read or write
-    --shared variable lastEventWasWrite: std_logic;
-    --signal lastEventWasWriteSignal: std_logic;
-    shared variable setBufferToFullFlag: std_logic;
-    --signal setBufferToEmptyFlag: std_logic;
+    signal setBufferToFullFlag: std_logic;
+
+    -- Flag registers
+	signal bufferEmptyFlagReg: std_logic;
+	signal bufferFullFlagReg: std_logic;
+	signal bufferReadyFlagReg: std_logic;
+	signal bufferAvailableFlagReg: std_logic;
 
 	-- Simple increment and wrap around
     --   (Used for resetting Read and Write pointers back to 0 (first buffer slot)
@@ -96,36 +99,24 @@ begin
 
 
     -- Update flags asynchronously, based on dataCount value
-	BufferEmptyFlag <= '1' when dataCount = 0 else '0';
-	BufferFullFlag <= '1' when dataCount = BufferSize - 1 else '0';
-	--BufferFullFlag <= setBufferToFullFlag;
-	BufferReadyFlag <= '1' when dataCount < BufferSize else '0';
-	BufferAvailableFlag <= '1' when dataCount > 0 else '0';
+	--BufferEmptyFlag <= '1' when dataCount = 0 else '0';
+	--BufferFullFlag <= '1' when dataCount = BufferSize - 1 else '0';
+	--BufferReadyFlag <= '1' when dataCount /= BufferSize - 1 else '0';
+	--BufferAvailableFlag <= '1' when dataCount > 0 else '0';
 
-    -- Flags last event as write
-    --WriteEvent: process(writePointer) begin
-    --    lastEventWasWrite := '1';
-    --end process WriteEvent;
-
-
-    -- Flags last event as read
-    --ReadEvent: process(readPointer) begin
-    --    lastEventWasWrite := '0';
-    --end process ReadEvent;
-
+    -- Sets flags in entity interface
+	BufferEmptyFlag <= bufferEmptyFlagReg;
+	BufferFullFlag <= bufferFullFlagReg;
+	BufferReadyFlag <= bufferReadyFlagReg;
+	BufferAvailableFlag <= bufferAvailableFlagReg;
 
     dataCount <= writePointer - readPointer when writePointer > readPointer else
                  (writePointer + BufferSize) - readPointer when writePointer < readPointer else
                  BufferSize when writePointer = readPointer and setBufferToFullFlag = '1' and initialized = '1' else
                  0;
 
-
-    --lastEventWasWriteSignal <= lastEventWasWrite;
-
     -- Update Data Count based on writePointer and readPointer values
-    --UpdateDataCount: process(writePointer, readPointer, setBufferToEmptyFlag, initialized) begin
-    --UpdateDataCount: process(Reset, writePointer, readPointer, lastEventWasWriteSignal) begin
-    --UpdateDataCount: process(all) begin
+    --UpdateDataCount: process(writePointer, readPointer) begin
 
         -- Determines if last event was a either a Read or a Write
         --   (Necessary for when both pointers are equal. When so, amount of data
@@ -150,12 +141,8 @@ begin
         --elsif writePointer < readPointer then
         --   dataCount <= (writePointer + BufferSize) - readPointer;
         --elsif writePointer = readPointer and lastEventWasWrite = '1' and initialized = '1' then
-        --elsif writePointer = readPointer and setBufferToFullFlag = '1' and initialized = '1' then
-        --elsif writePointer = readPointer and setBufferToEmptyFlag = '0' and initialized = '1' then
         --   dataCount <= BufferSize;
         --elsif writePointer = readPointer and lastEventWasWrite = '0' and initialized = '1' then
-        --elsif writePointer = readPointer and setBufferToFullFlag = '0' and initialized = '1' then
-        --elsif writePointer = readPointer and setBufferToEmptyFlag = '1' and initialized = '1' then
         --    dataCount <= 0;
         --else -- writePointer = readPointer and initialized = '0'
         --    dataCount <= 0;
@@ -174,32 +161,51 @@ begin
 			writePointer <= 0;
 			WriteACK <= '0';
             initialized <= '0';
-            setBufferToFullFlag := '0';
+            setBufferToFullFlag <= '0';
 
 		elsif rising_edge(ClockIn) then
 
-			-- WriteACK & serBufferToFullFlag are defaulted to '0'
+			-- WriteACK is defaulted to '0'
 			WriteACK <= '0';
-            --setBufferToFullFlag <= '0';
 
 			--   Checks for a write request. If there is valid data available and 
             -- free space on the buffer, write it and send ACK signal to producer entity
-			--if DataInAV = '1' and dataCount < bufferSize then
-			if DataInAV = '1' and dataCount /= BufferSize - 1 then
-			--if DataInAV = '1' and (readPointer /= BufferSize or setBufferToFullFlag = '0') then
-			--if DataInAV = '1' and setBufferToFullFlag = '0' then
+			--if DataInAV = '1' and dataCount /= BufferSize then
+			if DataInAV = '1' and bufferFullFlagReg = '0' then
 
                 --report integer'image(dataCount) & " /= " & integer'image(BufferSize) severity note;
                 --report "writePointer: " & integer'image(writePointer) & " " & "readPointer: " & integer'image(readPointer) severity note;
 				bufferArray(writePointer) <= DataIn;
-				WriteACK <= '1';
 				writePointer <= incr(writePointer, bufferSize - 1, 0);
+
+				WriteACK <= '1';
                 initialized <= '1';
-                --setBufferToFullFlag <= '0';
+                setBufferToFullFlag <= '0';
 
                 -- Buffer is about to be full, and writePointer == readPointer. This flag is needed so that dataCount is correctly set to bufferSize
-                if dataCount = bufferSize - 1 then
-                    setBufferToFullFlag := '1';
+                --if dataCount = bufferSize - 1 then
+                --    setBufferToFullFlag := '1';
+                --end if;
+
+                -- Set flags
+                if dataCount = BufferSize - 1 then
+                    setBufferToFullFlag <= '1';
+                    bufferFullFlagReg <= '1';
+                    bufferReadyFlagReg <= '0';
+                else
+                    bufferFullFlagReg <= '0';
+                    bufferReadyFlagReg <= '1';
+                end if;
+
+            else
+
+                -- Set flags
+                if dataCount = BufferSize then
+                    bufferFullFlagReg <= '1';
+                    bufferReadyFlagReg <= '0';
+                else
+                    bufferFullFlagReg <= '0';
+                    bufferReadyFlagReg <= '1';
                 end if;
 
 			end if;
@@ -221,24 +227,37 @@ begin
 
 			readPointer <= 0;
             ReadACK <= '0';
-            --setBufferToEmptyFlag <= '0';
 
 		elsif rising_edge(ClockOut) then
 
             ReadACK <= '0';
-            --setBufferToEmptyFlag <= '0';
 
 			-- Checks for a read event. If there is data on the buffer, pass in on to consumer entity
-			--if ReadConfirm = '1' and dataCount > 0 then
-			if ReadConfirm = '1' and dataCount /= 0 then
+			--if ReadConfirm = '1' and dataCount /= 0 then
+			if ReadConfirm = '1' and bufferEmptyFlagReg = '0' then
     
                 ReadACK <= '1';
 				readPointer <= incr(readPointer, BufferSize - 1, 0);
-                setBufferToFullFlag := '0';
 
-                --if dataCount = 1 then
-                --    setBufferToEmptyFlag <= '1';
-                --end if;
+                -- Sets flags, considering that readPointer will be decremented by one
+                if dataCount = 1 then
+                    bufferAvailableFlagReg <= '0';
+                    bufferEmptyFlagReg <= '1';
+                else
+                    bufferAvailableFlagReg <= '1';
+                    bufferEmptyFlagReg <= '0';
+                end if;
+                    
+            else
+                
+                -- Sets flags, considering that readPointer will have the same value in next cycle
+                if dataCount = 0 then
+                    bufferAvailableFlagReg <= '0';
+                    bufferEmptyFlagReg <= '1';
+                else
+                    bufferAvailableFlagReg <= '1';
+                    bufferEmptyFlagReg <= '0';
+                end if;
 
 			end if;
 

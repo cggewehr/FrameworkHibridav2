@@ -26,6 +26,7 @@ read_hdl "${SourcesDir}/Bus/BusRRArbiter.vhd"
 read_hdl "${SourcesDir}/Bus/BusControl.vhd"
 read_hdl "${SourcesDir}/Bus/BusBridgev2.vhd"
 read_hdl "${SourcesDir}/Bus/BusTop.vhd"
+read_hdl "${SourcesDir}/Bus/BusStandaloneWrapper.vhd"
 
 # Elaborates top level entity
 elaborate BusStandaloneWrapper -parameters "{AmountOfPEs $AmountOfPEs} {BridgeBufferSize $BridgeBufferSize}"
@@ -51,9 +52,9 @@ set ReportDir "${ProjectDir}/synthesis/deliverables"
 report_area > "${ReportDir}/area.rpt"
 report_design_rules > "${ReportDir}/design_rules.rpt"
 report_power > "${ReportDir}/power_beforeVCD.rpt"
-report_timing > "${ReportDir}/timing.rpt"
+report_timing -lint -verbose > "${ReportDir}/timing.rpt"
 write_hdl > "${ReportDir}/HyBus.v"
-report_summary
+#report_summary
 report_messages
 
 # TODO: Call NCSim.tcl to generate VCD file and re-evaluate power

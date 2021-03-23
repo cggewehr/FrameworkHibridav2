@@ -56,7 +56,7 @@ end entity BusControl;
 architecture RTL of BusControl is
 
 	-- FSM states
-	type state_t is (Sstandby, SwaitForCredit, Ssize, Spayload);
+	type state_t is (Sstandby, SwaitForCredit, Ssize, Spayload, SwaitForACK);
 	signal currentState: state_t;
 
 	-- Contains size of current msg's payload. Decremented by one every time a flit is sent across the bus, until msg has been fully sent
@@ -158,15 +158,24 @@ begin
 
 				-- Determines if this is the last flit of msg
 				--if flitCounter = 1 and PECredit(targetIndex) = '1' and BusTx = '1' then
-				if flitCounter = 1 and BusCredit = '1' and BusTx = '1' then
+				--if flitCounter = 1 and BusCredit = '1' and BusTx = '1' then
+				if flitCounter = 2 and BusCredit = '1' and BusTx = '1' then  -- accounts for first payload Flit not causing a decrement in counter
 
-					busBeingUsed <= '0';
-					currentState <= Sstandby;
+					--busBeingUsed <= '0';
+					--currentState <= Sstandby;
+					currentState <= SwaitForACK;
 
 				else
 					currentState <= Spayload;
 
 				end if;
+
+            -- Wait for ACK to be processed by the Arbiter
+            elsif currentState = SwaitForACK then
+
+                busBeingUsed <= '0';
+
+                currentState <= Sstandby;
 
 			end if;
 
@@ -180,7 +189,7 @@ begin
 	-- BusCredit gets Credit_o of msg target PE
 	--BusCredit <= PECredit(targetIndex) when busBeingUsed = '1' else '0';
 
-	process(busBeingUsed, targetIndex, PECredit) begin  -- (Describes same behaviour as above, but compatible with Cadence tools)
+	process(busBeingUsed, targetIndex, PECredit) begin
 
 		PERx <= (others => '0');
 

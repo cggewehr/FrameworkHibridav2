@@ -70,7 +70,7 @@ architecture RTL of CrossbarBridge is
     type state_t is (Sstandby, Srequest, SwaitForGrant, SwaitForControl, Stransmit);
 	signal currentState: state_t;
 
-    --signal flitCounter: integer;
+    signal flitCounter: unsigned(DataWidth - 1 downto 0);
 	signal targetIndex: integer range 0 to PEAddresses'high; 
 
     signal bufferDataOut: DataWidth_t;
@@ -153,6 +153,8 @@ begin
             ACK <= (others => '0');
 			Request <= (others => '0');
 
+            flitCounter <= to_unsigned(0, DataWidth);
+
             currentState <= Sstandby;
 
         elsif rising_edge(Clock) then
@@ -171,15 +173,14 @@ begin
                     ACK <= (others => '0');
                     Request <= (others => '0');
 
-				    --if Rx = '1' then
-				    if bufferAVFlag = '1' then
+				    if Rx = '1' then
+				    --if bufferAVFlag = '1' then
 
-					    --targetIndex <= GetIndexOfAddr(PEAddresses, SelfAddress, SelfIndex);
-                        assert false report "targetIndex = <" & integer'image(GetIndexOfAddr(PEAddresses, DataIn(DataWidth - 1 downto HalfDataWidth), SelfIndex)) & "> for PEPos <" & integer'image(PEPosFromXY(DataIn(DataWidth - 1 downto HalfDataWidth), 5)) & ">" severity note;
-                        --targetIndex <= GetIndexOfAddr(PEAddresses, DataIn(DataWidth - 1 downto HalfDataWidth), SelfIndex);
-                        targetIndex <= GetIndexOfAddr(PEAddresses, bufferDataOut(DataWidth - 1 downto HalfDataWidth), SelfIndex);
+                        --assert false report "targetIndex = <" & integer'image(GetIndexOfAddr(PEAddresses, DataIn(DataWidth - 1 downto HalfDataWidth), SelfIndex)) & "> for PEPos <" & integer'image(PEPosFromXY(DataIn(DataWidth - 1 downto HalfDataWidth), 5)) & ">" severity note;
+                        targetIndex <= GetIndexOfAddr(PEAddresses, DataIn(DataWidth - 1 downto HalfDataWidth), SelfIndex);
+                        --targetIndex <= GetIndexOfAddr(PEAddresses, bufferDataOut(DataWidth - 1 downto HalfDataWidth), SelfIndex);
                        
-				        --flitCounter <= to_integer(unsigned(DataIn)) + 2;
+				        --flitCounter <= unsigned(DataIn) + 2;
 
 					    currentState <= Srequest;
 
@@ -188,10 +189,11 @@ begin
 
                     end if;
 
-                -- Asserts "request" to arbiter defined by targetIndex
+                -- Asserts "Request" to arbiter defined by targetIndex
                 when Srequest =>
 
                     Request(targetIndex) <= '1';
+                    flitCounter <= unsigned(DataIn) + 2;
 
                     assert targetIndex /= selfIndex report "Crossbar bridge <" & integer'image(selfIndex) & "> trying to transmit to itself" severity error;
 
@@ -227,12 +229,12 @@ begin
 
 				    --ACK(targetIndex) <= '0';
 
-				    --if CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
-					--    flitCounter <= flitCounter - 1;
-				    --end if;
+				    if CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
+					    flitCounter <= flitCounter - 1;
+				    end if;
 
-				    --if flitCounter = 1 and CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
-                    if bufferAVFlag = '0' then
+				    if flitCounter = 1 and CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
+                    --if bufferAVFlag = '0' then
 					    ACK(targetIndex) <= '1';
 					    currentState <= Sstandby;
 

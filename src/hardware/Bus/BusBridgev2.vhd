@@ -64,7 +64,8 @@ architecture RTL of BusBridge is
 	type state_t is (Sstandby, SwaitForGrant, Stransmit);
 	signal currentState: state_t;
 	
-	--signal flitCounter: integer;
+	signal flitCounter: unsigned(DataWidth - 1 downto 0);
+    signal flitCounterFilled: std_logic;
 
 	signal bufferDataOut: DataWidth_t;
     signal bufferReadyFlag: std_logic;
@@ -124,6 +125,9 @@ begin
             ACK <= 'Z';
 			Request <= '0';
 
+            flitCounter <= to_unsigned(0, DataWidth);
+            flitCounterFilled <= '0';
+
 			currentState <= Sstandby;
 
 		elsif rising_edge(ClockRx) then
@@ -143,6 +147,7 @@ begin
 			        Request <= '0';
 
 					if Rx = '1' then
+					--if bufferAVFlag = '1' then
 
 						Request <= '1';
 
@@ -156,7 +161,10 @@ begin
 				-- Waits for arbiter grant signal
 				when SwaitForGrant => 
 
-					--flitCounter <= to_integer(unsigned(DataIn)) + 2;
+                    if flitCounterFilled = '0' then
+					    flitCounter <= unsigned(DataIn) + 2;
+                        flitCounterFilled <= '1';
+                    end if;
 
 					if Grant = '1' then
 
@@ -175,15 +183,16 @@ begin
 				when Stransmit => 
 
 					--ACK <= 'Z';
+                    flitCounterFilled <= '0';
 
-					--if CreditI = '1' then
-					--	flitCounter <= flitCounter - 1;
-
-					--end if;
+					if CreditI = '1' and bufferAVFlag = '1' then
+					    flitCounter <= flitCounter - 1;
+				    end if;
 
 					-- Determines if this is the last flit of msg
-					--if flitCounter = 1 and CreditI = '1' then
-					if bufferAVFlag = '0' then
+					if flitCounter = 0 then
+					--if flitCounter = 0 and CreditI = '1' and bufferAVFlag = '1' then
+					--if bufferAVFlag = '0' then
 						ACK <= '1';
 						currentState <= Sstandby;
 
