@@ -21,14 +21,14 @@ set TechDir "${DesignKitDir}/gsclib045_tech/"
 # Set cell lib characterizations
 if {$ProcessCorner == "Slow" || $ProcessCorner == "s"} {
 
-    if {$VoltageLevel == "1.1" || $VoltageLevel == "1.1V"} {
+    if {$VoltageLevel == "0.9" || $VoltageLevel == "0.9V"} {
 	    #read_libs /home/tools/design_kits/cadence_pdks/gpdk045_45nm_cmos_11m-2p/reference_libs/GPDK045/gsclib045_all_v4.4/gsclib045/timing/slow_vdd1v0_basicCells.lib
 	    read_libs "${CellLibDir}/timing/slow_vdd1v0_basicCells.lib ${CellLibDir}/timing/slow_vdd1v0_multibitsDFF.lib"
 	    #read_libs "${CellLibDir}/timing/slow_vdd1v0_multibitsDFF.lib"
-    } elseif {$VoltageLevel == "1.32" || $VoltageLevel == "1.32V"} {
+    } elseif {$VoltageLevel == "1.08" || $VoltageLevel == "1.08V"} {
 	    read_libs "${CellLibDir}/timing/slow_vdd1v2_basicCells.lib ${CellLibDir}/timing/slow_vdd1v2_multibitsDFF.lib"
     } else {
-	    puts "VoltageLevel value <${VoltageLevel}> not recognized. Supported values are \"1.1\", \"1.1V\", \"1.32\", \"1.32V\". For further information refer to cell lib README"
+	    puts "VoltageLevel value <${VoltageLevel}> not recognized. Supported values are \"1.08\", \"1.08V\", \"0.9\", \"0.9V\". For further information refer to cell lib README"
         exit
     }
 

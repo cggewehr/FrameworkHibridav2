@@ -49,11 +49,11 @@ syn_opt
 # Generate reports
 #write_snapshot -outdir "." -tag "after_opt"
 set ReportDir "${ProjectDir}/synthesis/deliverables"
-report_area > "${ReportDir}/area.rpt"
-report_design_rules > "${ReportDir}/design_rules.rpt"
-report_power > "${ReportDir}/power_beforeVCD.rpt"
-report_timing -lint -verbose > "${ReportDir}/timing.rpt"
-write_hdl > "${ReportDir}/HyBus.v"
+report_area > "${ReportDir}/area_${VoltageLevel}V.rpt"
+report_design_rules > "${ReportDir}/design_rules_${VoltageLevel}V.rpt"
+report_power > "${ReportDir}/power_${VoltageLevel}V.rpt"
+report_timing > "${ReportDir}/timing_${VoltageLevel}V.rpt"
+write_hdl > "${ReportDir}/HyBus_${VoltageLevel}V.v"
 #report_summary
 report_messages
 

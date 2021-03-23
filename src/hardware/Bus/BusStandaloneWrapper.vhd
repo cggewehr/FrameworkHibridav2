@@ -27,7 +27,7 @@ architecture RTL of BusStandaloneWrapper is
 
 begin
 
-	StandaloneCrossbar: entity work.HyBus
+	StandaloneBus: entity work.HyBus
 
 		generic map(
 			Arbiter => "RR",
