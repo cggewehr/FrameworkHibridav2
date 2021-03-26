@@ -38,11 +38,11 @@ entity Hermes is
 	);
     
 	port(
-		Clocks: std_logic_vector;
+		Clocks: std_logic_vector(0 to (NoCXSize * NoCYSize) - 1);
 		Reset: std_logic;
 		--LocalPortInterfaces: inout RouterPort_vector
-		PEInputs: out PEInputs_vector;
-        PEOutputs: in PEOutputs_vector
+		PEInputs: out PEInputs_vector(0 to (NoCXSize * NoCYSize) - 1);
+        PEOutputs: in PEOutputs_vector(0 to (NoCXSize * NoCYSize) - 1)
 	);
 	
 end entity Hermes;

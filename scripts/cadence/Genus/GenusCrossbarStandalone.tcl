@@ -58,5 +58,5 @@ write_hdl > "${ReportDir}/Crossbar_${VoltageLevel}V.v"
 report_messages
 
 # TODO: Call NCSim.tcl to generate VCD file and re-evaluate power
-#quit
+quit
 

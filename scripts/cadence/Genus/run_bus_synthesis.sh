@@ -10,7 +10,8 @@
 if [ ! $# -eq "6" ]; 
 then 
 	#echo "Usage: sh run_synthesis.sh <PROJECT_DIR> <CLOCK_PERIOD (in nanoseconds, number only)> <PROCESS_CORNER> <SUPPLY_VOLTAGE> <VCD_SIM_FLAG>"
-    echo "Usage: sh run_synthesis.sh <PROJECT_DIR> <SUPPLY_VOLTAGE> <PROCESS_CORNER> <CLOCK_PERIOD (in nanoseconds, number only)> <AMOUNT_OF_PES>"
+    echo "Usage: sh run_synthesis.sh <PROJECT_DIR> <SUPPLY_VOLTAGE> <PROCESS_CORNER> <CLOCK_PERIOD (in nanoseconds, number only)> <AMOUNT_OF_PES> <BRIDGE_BUFFER_SIZE>"
+    echo $#
 	exit 1
 fi
 
