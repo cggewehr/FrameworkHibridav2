@@ -28,7 +28,7 @@ if {$ProcessCorner == "Slow" || $ProcessCorner == "s"} {
     } elseif {$VoltageLevel == "1.08" || $VoltageLevel == "1.08V"} {
 	    read_libs "${CellLibDir}/timing/slow_vdd1v2_basicCells.lib ${CellLibDir}/timing/slow_vdd1v2_multibitsDFF.lib"
     } else {
-	    puts "VoltageLevel value <${VoltageLevel}> not recognized. Supported values are \"1.08\", \"1.08V\", \"0.9\", \"0.9V\". For further information refer to cell lib README"
+	    puts "VoltageLevel value <${VoltageLevel}> not recognized. Supported values are \"0.9\", \"0.9V\", \"1.08\", \"1.08V\". For further information refer to cell lib README"
         exit
     }
 
