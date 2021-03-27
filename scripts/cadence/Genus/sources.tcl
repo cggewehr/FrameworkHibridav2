@@ -1,9 +1,9 @@
 
-set_db hdl_language vhdl
-set_db hdl_vhdl_read_version 1993
+#set_db hdl_language vhdl
+#set_db hdl_vhdl_read_version 1993
 
-set HibridaDir $env(HIBRIDA_PATH)
-set SourcesDir "${HibridaDir}/src/hardware"
+#set HibridaDir $env(HIBRIDA_PATH)
+#set SourcesDir "${HibridaDir}/src/hardware"
 
 read_hdl "${SourcesDir}/Top/JSON.vhd" -library JSON
 read_hdl "${SourcesDir}/Misc/BufferCircular.vhd"

@@ -220,15 +220,30 @@ def projgen(args):
                 copy(os.path.join(scriptsSourcePath, "run_bus_synthesis.sh"), os.path.join(scriptsTargetPath, "run_bus_synthesis.sh"))
                 copy(os.path.join(scriptsSourcePath, "run_crossbar_synthesis.sh"), os.path.join(scriptsTargetPath, "run_crossbar_synthesis.sh"))
                 copy(os.path.join(scriptsSourcePath, "run_noc_synthesis.sh"), os.path.join(scriptsTargetPath, "run_noc_synthesis.sh"))
-                #copy(os.path.join(scriptsSourcePath, "fileList.tcl"), os.path.join(scriptsTargetPath, "fileList.tcl"))
                 copy(os.path.join(scriptsSourcePath, "sources.tcl"), os.path.join(scriptsTargetPath, "sources.tcl"))
+                copy(os.path.join(scriptsSourcePath, "setup.tcl"), os.path.join(scriptsTargetPath, "setup.tcl"))
                 copy(os.path.join(ConfigDict["HibridaPath"], "scripts", "cadence", "default.sdc"), os.path.join(scriptsTargetPath, "constraints.sdc"))
                 copy(os.path.join(ConfigDict["HibridaPath"], "scripts", "cadence", "standalone.sdc"), os.path.join(scriptsTargetPath, "standalone.sdc"))
+                
                 try:
                     copy(os.path.join(scriptsSourcePath, "tech.tcl"), os.path.join(scriptsTargetPath, "tech.tcl"))
                 except IOError:
                     print("Warning: tech.tcl file was not found")
                     pass
+                    
+                # Copy MMMC scripts
+                if args.Tool == "Genus":
+                
+                    scriptsSourcePath = os.path.join(scriptsSourcePath, "MMMC")
+                    
+                    copy(os.path.join(scriptsSourcePath, "GenusMMMC.tcl"), os.path.join(scriptsTargetPath, "GenusMMMC.tcl"))
+                    copy(os.path.join(scriptsSourcePath, "MMMC.tcl"), os.path.join(scriptsTargetPath, "MMMC.tcl"))
+                    copy(os.path.join(scriptsSourcePath, "GenusBusStandaloneMMMC.tcl"), os.path.join(scriptsTargetPath, "GenusBusStandaloneMMMC.tcl"))
+                    copy(os.path.join(scriptsSourcePath, "GenusCrossbarStandaloneMMMC.tcl"), os.path.join(scriptsTargetPath, "GenusCrossbarStandaloneMMMC.tcl"))
+                    copy(os.path.join(scriptsSourcePath, "GenusNoCStandaloneMMMC.tcl"), os.path.join(scriptsTargetPath, "GenusNoCStandaloneMMMC.tcl"))
+                    copy(os.path.join(scriptsSourcePath, "run_bus_synthesis_MMMC.sh"), os.path.join(scriptsTargetPath, "run_bus_synthesis_MMMC.sh"))
+                    copy(os.path.join(scriptsSourcePath, "run_crossbar_synthesis_MMMC.sh"), os.path.join(scriptsTargetPath, "run_crossbar_synthesis_MMMC.sh"))
+                    copy(os.path.join(scriptsSourcePath, "run_noc_synthesis_MMMC.sh"), os.path.join(scriptsTargetPath, "run_noc_synthesis_MMMC.sh"))
                                 
         elif args.Tool == "vivado" or args.Tool == "Vivado":
         
