@@ -38,6 +38,7 @@ package Injector_PKG is
 		--Reset: std_logic;
 
 		Enable: std_logic;
+		LastFlitFlag: std_logic;
 
 		DataOut : DataWidth_t;
 		DataOutAV : std_logic;

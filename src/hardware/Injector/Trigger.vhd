@@ -46,6 +46,9 @@ entity Trigger is
 		-- Input Interface (From Output Buffer)
 		OutputBufferAvailableFlag : in std_logic;
 
+		-- Input Interface (From Injector)
+		LastFlitFlag: in std_logic; 
+
         -- Output Interface (To Injector)
         Enable : out std_logic;
         InjectorClock : out std_logic
@@ -72,6 +75,7 @@ architecture RTL of Trigger is
     constant StartTime: time := jsonGetReal(InjectorJSONConfig, "StartTime") * 1 ns;
     constant StopTime: time := jsonGetReal(InjectorJSONConfig, "StopTime") * 1 ns;
     constant Periodic: boolean := jsonGetBoolean(InjectorJSONConfig, "Periodic");
+    constant MaxAmountOfMessages: boolean := jsonGetBoolean(InjectorJSONConfig, "MSGAmount");
 
 begin
 
@@ -99,6 +103,7 @@ begin
 
 		process
 			variable ResetFallingEdgeTime: time := 0 ns;
+			variable MessageCounter: integer := 0;
 		begin
 
 		  	while True loop
@@ -126,9 +131,22 @@ begin
 				else
 					ResetFallingEdgeTime := 0 ns;
 				end if;
+
+				-- Breaks loop if max amount of messages has been sent
+				if LastFlitFlag = '1' then
+
+					if MessageCounter = MaxAmountOfMessages - 1 then
+						exit;
+					else
+						MessageCounter := MessageCounter + 1;
+					end if;
+
+				end if;
 				
 			end loop;
 
+			-- Idles until simulation ends
+			Enable <= '0';
             wait;
 
 		end process;

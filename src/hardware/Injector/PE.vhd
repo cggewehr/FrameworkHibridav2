@@ -164,6 +164,7 @@ begin
                     Clock => InjectorInterfaces_2D(ThreadNum, FlowNum).Clock,
                     Reset => Reset,
                     Enable => InjectorInterfaces_2D(ThreadNum, FlowNum).Enable,
+                    LastFlitFlag => InjectorInterfaces_2D(ThreadNum, FlowNum).LastFlitFlag,
                     DataOut => InjectorInterfaces_2D(ThreadNum, FlowNum).DataOut,
                     DataOutAV => InjectorInterfaces_2D(ThreadNum, FlowNum).DataOutAV,
                     OutputBufferAvailableFlag => InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag
@@ -178,6 +179,7 @@ begin
                 port map(
                     Reset => Reset,
                     Enable => InjectorInterfaces_2D(ThreadNum, FlowNum).Enable,
+                    LastFlitFlag => InjectorInterfaces_2D(ThreadNum, FlowNum).LastFlitFlag,
                     InjectorClock => InjectorInterfaces_2D(ThreadNum, FlowNum).Clock,
                     OutputBufferAvailableFlag => InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag
                 ); 

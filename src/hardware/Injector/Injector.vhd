@@ -7,11 +7,12 @@
 -- Company     : UFSM, GMICRO (Grupo de Microeletronica)
 -- Standard    : VHDL-1993
 --------------------------------------------------------------------------------
--- Description : Injector message compiling functions
+-- Description : Parametric NoC packet injector
 --------------------------------------------------------------------------------
 -- Revisions   : v0.01 - Initial implementation
 --------------------------------------------------------------------------------
--- TODO        : Make real time randomization of flits possible
+-- TODO        : Implement real time randomization of flits
+--               Only check Enable when flitCounter = 0
 --------------------------------------------------------------------------------
 
 library ieee;
@@ -52,6 +53,9 @@ entity Injector is
 
         -- Input Interface (From Trigger)
         Enable: in std_logic;
+
+        -- Output Interface (To Trigger)
+        LastFlitFlag: out std_logic;
 
 		-- Output Interface (To Output Buffer)
 		DataOut: out DataWidth_t;
@@ -128,6 +132,7 @@ begin
 
             DataOut <= (others => '0');
             DataOutAV <= '0';
+            LastFlitFlag <= '0';
 
             currentFlit := (others => '0');
             flitCounter := 0;
@@ -158,7 +163,6 @@ begin
 
                     -- Determines current flit
                     currentFlit := MessageFlits(flitCounter);
-                    flitCounter := incr(flitCounter, MessageSize - 1, 0);
 
                     -- Replaces real time flags with actual values
                     if currentFlit = TimestampFlag then
@@ -173,12 +177,26 @@ begin
                     DataOut <= currentFlit;
                     DataOutAV <= '1';
 
+                    -- Sets LastFlitFlag
+                    if flitCounter = MessageSize - 1 then
+                        LastFlitFlag <= '1';
+                    else
+                        LastFlitFlag <= '0';
+                    end if;
+
+                    -- Updates counter
+                    flitCounter := incr(flitCounter, MessageSize - 1, 0);
+
                 else
 
                     report "No available slot on output buffer at PEPos <" & integer'image(SourcePEPos) & ">" severity warning;
 
                 end if;
 
+            else
+
+                DataOutAV <= '0';    
+                    
             end if;
 
         end if;
