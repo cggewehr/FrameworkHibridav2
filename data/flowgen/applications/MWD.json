@@ -1,0 +1,182 @@
+{
+    "StartTime": 0,
+    "Blend": {
+        "Flows": []
+    },
+    "JUG1": {
+        "Flows": [
+            {
+                "StartTime": 0,
+                "ControlFlowFlag": false,
+                "Periodic": false,
+                "TargetThread": "MEM3",
+                "Bandwidth": 96,
+                "SourceThread": "JUG1",
+                "MSGAmount": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "NR": {
+        "Flows": [
+            {
+                "StartTime": 0,
+                "ControlFlowFlag": false,
+                "Periodic": false,
+                "TargetThread": "MEM1",
+                "Bandwidth": 64,
+                "SourceThread": "NR",
+                "MSGAmount": 0,
+                "StopTime": -1
+            },
+            {
+                "StartTime": 0,
+                "ControlFlowFlag": false,
+                "Periodic": false,
+                "TargetThread": "MEM2",
+                "Bandwidth": 96,
+                "SourceThread": "NR",
+                "MSGAmount": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "MEM3": {
+        "Flows": [
+            {
+                "StartTime": 0,
+                "ControlFlowFlag": false,
+                "Periodic": false,
+                "TargetThread": "SE",
+                "Bandwidth": 64,
+                "SourceThread": "MEM3",
+                "MSGAmount": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "JUG2": {
+        "Flows": [
+            {
+                "StartTime": 0,
+                "ControlFlowFlag": false,
+                "Periodic": false,
+                "TargetThread": "MEM3",
+                "Bandwidth": 96,
+                "SourceThread": "JUG2",
+                "MSGAmount": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "HVS": {
+        "Flows": [
+            {
+                "StartTime": 0,
+                "ControlFlowFlag": false,
+                "Periodic": false,
+                "TargetThread": "JUG2",
+                "Bandwidth": 96,
+                "SourceThread": "HVS",
+                "MSGAmount": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "MEM2": {
+        "Flows": [
+            {
+                "StartTime": 0,
+                "ControlFlowFlag": false,
+                "Periodic": false,
+                "TargetThread": "HVS",
+                "Bandwidth": 96,
+                "SourceThread": "MEM2",
+                "MSGAmount": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "StopTime": 0,
+    "HS": {
+        "Flows": [
+            {
+                "StartTime": 0,
+                "ControlFlowFlag": false,
+                "Periodic": false,
+                "TargetThread": "VS",
+                "Bandwidth": 96,
+                "SourceThread": "HS",
+                "MSGAmount": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "VS": {
+        "Flows": [
+            {
+                "StartTime": 0,
+                "ControlFlowFlag": false,
+                "Periodic": false,
+                "TargetThread": "JUG1",
+                "Bandwidth": 96,
+                "SourceThread": "VS",
+                "MSGAmount": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "SE": {
+        "Flows": [
+            {
+                "StartTime": 0,
+                "ControlFlowFlag": false,
+                "Periodic": false,
+                "TargetThread": "Blend",
+                "Bandwidth": 64,
+                "SourceThread": "SE",
+                "MSGAmount": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "MEM1": {
+        "Flows": [
+            {
+                "StartTime": 0,
+                "ControlFlowFlag": false,
+                "Periodic": false,
+                "TargetThread": "NR",
+                "Bandwidth": 64,
+                "SourceThread": "MEM1",
+                "MSGAmount": 0,
+                "StopTime": -1
+            }
+        ]
+    },
+    "AppName": "MWD",
+    "IN": {
+        "Flows": [
+            {
+                "StartTime": 0,
+                "ControlFlowFlag": false,
+                "Periodic": false,
+                "TargetThread": "NR",
+                "Bandwidth": 64,
+                "SourceThread": "IN",
+                "MSGAmount": 0,
+                "StopTime": -1
+            },
+            {
+                "StartTime": 0,
+                "ControlFlowFlag": false,
+                "Periodic": false,
+                "TargetThread": "HS",
+                "Bandwidth": 128,
+                "SourceThread": "IN",
+                "MSGAmount": 0,
+                "StopTime": -1
+            }
+        ]
+    }
+}

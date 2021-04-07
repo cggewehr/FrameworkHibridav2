@@ -1,8 +1,11 @@
 
 # Set vars from environment variables
-set ProjectDir $env(SynthProjectDir)
-set VoltageLevel $env(SynthVoltageLevel)
-set ProcessCorner $env(SynthProcessCorner)
+#set ProjectDir $env(SynthProjectDir)
+#set VoltageLevel $env(SynthVoltageLevel)
+#set ProcessCorner $env(SynthProcessCorner)
+catch {set VoltageLevel $env(SynthVoltageLevel)}
+catch {set ProcessCorner $env(SynthProcessCorner)}
+catch {set Standalone $env(SynthStandalone)}
 
 set HibridaDir $env(HIBRIDA_PATH)
 

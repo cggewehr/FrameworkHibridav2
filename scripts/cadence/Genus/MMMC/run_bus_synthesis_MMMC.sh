@@ -20,6 +20,7 @@ export SynthProjectDir=$1
 export SynthClockPeriod=$2
 export SynthAmountOfPEs=$3
 export SynthBridgeBufferSize=$4
+export SynthStandalone=1
 
 # Prints out given arguments for debug
 #echo "RUNNING GENUS WITH ARGS:"

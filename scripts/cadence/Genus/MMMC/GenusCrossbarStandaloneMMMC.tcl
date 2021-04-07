@@ -1,9 +1,10 @@
 
 # Set up vars
-source "${ProjectDir}/synthesis/scripts/setup.tcl"
+set ProjectDir $env(SynthProjectDir)
 set AmountOfPEs $env(SynthAmountOfPEs)
 set ClockPeriod $env(SynthClockPeriod)
 set BridgeBufferSize $env(SynthBridgeBufferSize)
+source "${ProjectDir}/synthesis/scripts/setup.tcl"
 
 # Read MMMC info
 read_mmmc "$ScriptDir/MMMC.tcl"
@@ -24,7 +25,7 @@ read_hdl "${SourcesDir}/Crossbar/CrossbarTop.vhd"
 read_hdl "${SourcesDir}/Crossbar/CrossbarStandaloneWrapper.vhd"
 
 # Elaborates top level entity
-elaborate
+elaborate CrossbarStandaloneWrapper -parameters "{AmountOfPEs $AmountOfPEs} {BridgeBufferSize $BridgeBufferSize}"
 check_design -all
 
 # Apply constraits to design

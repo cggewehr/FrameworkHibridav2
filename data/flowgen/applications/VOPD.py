@@ -48,4 +48,4 @@ Pad.addFlow(AppComposer.Flow(TargetThread = VopMem, Bandwidth = 313))
 VopMem.addFlow(AppComposer.Flow(TargetThread = Pad, Bandwidth = 94))
 
 # Save App to JSON
-MPEG4.toJSON(SaveToFile = True, FileName = "MPEG4")
+VOPD.toJSON(SaveToFile = True, FileName = "VOPD")

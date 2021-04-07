@@ -1,0 +1,2605 @@
+{
+    "BB_H264_30": {
+        "MotionCompensation": {
+            "Flows": [
+                {
+                    "Bandwidth": 90,
+                    "StartTime": 0,
+                    "TargetThread": "DCT",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionCompensation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 90,
+                    "StartTime": 0,
+                    "TargetThread": "Predictor",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionCompensation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "MVPadding": {
+            "Flows": [
+                {
+                    "Bandwidth": 42.85,
+                    "StartTime": 0,
+                    "TargetThread": "MotionEstimation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MVPadding",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "SampleHold": {
+            "Flows": [
+                {
+                    "Bandwidth": 48.66,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SampleHold",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "DCT": {
+            "Flows": [
+                {
+                    "Bandwidth": 45,
+                    "StartTime": 0,
+                    "TargetThread": "Quantization",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "DCT",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "AppName": "BB_H264_30",
+        "EntropyEncoder": {
+            "Flows": [
+                {
+                    "Bandwidth": 12.86,
+                    "StartTime": 0,
+                    "TargetThread": "StreamOut",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "EntropyEncoder",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "YUVGenerator": {
+            "Flows": [
+                {
+                    "Bandwidth": 60,
+                    "StartTime": 0,
+                    "TargetThread": "MVPadding",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 60,
+                    "StartTime": 0,
+                    "TargetThread": "MotionEstimation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 60,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 120,
+                    "StartTime": 0,
+                    "TargetThread": "ChromaResampler",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StopTime": -1,
+        "IQ": {
+            "Flows": [
+                {
+                    "Bandwidth": 5.14,
+                    "StartTime": 0,
+                    "TargetThread": "IDCT",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "IQ",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "Quantization": {
+            "Flows": [
+                {
+                    "Bandwidth": 14.14,
+                    "StartTime": 0,
+                    "TargetThread": "EntropyEncoder",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "Quantization",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 14.14,
+                    "StartTime": 0,
+                    "TargetThread": "IQ",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "Quantization",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "Predictor": {
+            "Flows": [
+                {
+                    "Bandwidth": 47.36,
+                    "StartTime": 0,
+                    "TargetThread": "DeblockingFilter",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "Predictor",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "VideoIn": {
+            "Flows": [
+                {
+                    "Bandwidth": 180,
+                    "StartTime": 0,
+                    "TargetThread": "YUVGenerator",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "VideoIn",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "ChromaResampler": {
+            "Flows": [
+                {
+                    "Bandwidth": 30,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "ChromaResampler",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "MotionEstimation": {
+            "Flows": [
+                {
+                    "Bandwidth": 0.64,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionEstimation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 0.64,
+                    "StartTime": 0,
+                    "TargetThread": "EntropyEncoder",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionEstimation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StartTime": 0,
+        "DeblockingFilter": {
+            "Flows": [
+                {
+                    "Bandwidth": 48.66,
+                    "StartTime": 0,
+                    "TargetThread": "SampleHold",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "DeblockingFilter",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "IDCT": {
+            "Flows": [
+                {
+                    "Bandwidth": 5.14,
+                    "StartTime": 0,
+                    "TargetThread": "Predictor",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "IDCT",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StreamOut": {
+            "Flows": []
+        }
+    },
+    "WorkloadName": "SwitchingWorkload",
+    "AA_MPEG4_B": {
+        "SRAM2": {
+            "Flows": [
+                {
+                    "Bandwidth": 125,
+                    "StartTime": 0,
+                    "TargetThread": "IDCT",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 335,
+                    "StartTime": 0,
+                    "TargetThread": "UpSamp",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 86.5,
+                    "StartTime": 0,
+                    "TargetThread": "BAB",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 250,
+                    "StartTime": 0,
+                    "TargetThread": "RISC",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "IDCT": {
+            "Flows": [
+                {
+                    "Bandwidth": 125,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "IDCT",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "UpSamp": {
+            "Flows": [
+                {
+                    "Bandwidth": 455,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "UpSamp",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 335,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "UpSamp",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "MedCPU": {
+            "Flows": [
+                {
+                    "Bandwidth": 30,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MedCPU",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 20,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM1",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MedCPU",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "AppName": "AA_MPEG4_B",
+        "RISC": {
+            "Flows": [
+                {
+                    "Bandwidth": 250,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "RISC",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "RAST": {
+            "Flows": [
+                {
+                    "Bandwidth": 300,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "RAST",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 20,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM1",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "RAST",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StopTime": 0,
+        "StartTime": 0,
+        "AU": {
+            "Flows": [
+                {
+                    "Bandwidth": 0.25,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "AU",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "SDRAM": {
+            "Flows": [
+                {
+                    "Bandwidth": 95,
+                    "StartTime": 0,
+                    "TargetThread": "VU",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 0.25,
+                    "StartTime": 0,
+                    "TargetThread": "AU",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 30,
+                    "StartTime": 0,
+                    "TargetThread": "MedCPU",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 300,
+                    "StartTime": 0,
+                    "TargetThread": "RAST",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 0.25,
+                    "StartTime": 0,
+                    "TargetThread": "ADSP",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 455,
+                    "StartTime": 0,
+                    "TargetThread": "UpSamp",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 16,
+                    "StartTime": 0,
+                    "TargetThread": "BAB",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "ADSP": {
+            "Flows": [
+                {
+                    "Bandwidth": 0.25,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "ADSP",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "VU": {
+            "Flows": [
+                {
+                    "Bandwidth": 95,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "VU",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "SRAM1": {
+            "Flows": [
+                {
+                    "Bandwidth": 20,
+                    "StartTime": 0,
+                    "TargetThread": "MedCPU",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM1",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 20,
+                    "StartTime": 0,
+                    "TargetThread": "RAST",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM1",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "BAB": {
+            "Flows": [
+                {
+                    "Bandwidth": 16,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "BAB",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 86.5,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "BAB",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        }
+    },
+    "HH_MPEG4": {
+        "SRAM2": {
+            "Flows": [
+                {
+                    "Bandwidth": 125,
+                    "StartTime": 0,
+                    "TargetThread": "IDCT",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 335,
+                    "StartTime": 0,
+                    "TargetThread": "UpSamp",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 86.5,
+                    "StartTime": 0,
+                    "TargetThread": "BAB",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 250,
+                    "StartTime": 0,
+                    "TargetThread": "RISC",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "IDCT": {
+            "Flows": [
+                {
+                    "Bandwidth": 125,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "IDCT",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "UpSamp": {
+            "Flows": [
+                {
+                    "Bandwidth": 455,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "UpSamp",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 335,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "UpSamp",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "MedCPU": {
+            "Flows": [
+                {
+                    "Bandwidth": 30,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MedCPU",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 20,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM1",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MedCPU",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "AppName": "HH_MPEG4",
+        "RISC": {
+            "Flows": [
+                {
+                    "Bandwidth": 250,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "RISC",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "RAST": {
+            "Flows": [
+                {
+                    "Bandwidth": 300,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "RAST",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 20,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM1",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "RAST",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StopTime": 0,
+        "StartTime": 0,
+        "AU": {
+            "Flows": [
+                {
+                    "Bandwidth": 0.25,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "AU",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "SDRAM": {
+            "Flows": [
+                {
+                    "Bandwidth": 95,
+                    "StartTime": 0,
+                    "TargetThread": "VU",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 0.25,
+                    "StartTime": 0,
+                    "TargetThread": "AU",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 30,
+                    "StartTime": 0,
+                    "TargetThread": "MedCPU",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 300,
+                    "StartTime": 0,
+                    "TargetThread": "RAST",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 0.25,
+                    "StartTime": 0,
+                    "TargetThread": "ADSP",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 455,
+                    "StartTime": 0,
+                    "TargetThread": "UpSamp",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 16,
+                    "StartTime": 0,
+                    "TargetThread": "BAB",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "ADSP": {
+            "Flows": [
+                {
+                    "Bandwidth": 0.25,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "ADSP",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "VU": {
+            "Flows": [
+                {
+                    "Bandwidth": 95,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "VU",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "SRAM1": {
+            "Flows": [
+                {
+                    "Bandwidth": 20,
+                    "StartTime": 0,
+                    "TargetThread": "MedCPU",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM1",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 20,
+                    "StartTime": 0,
+                    "TargetThread": "RAST",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM1",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "BAB": {
+            "Flows": [
+                {
+                    "Bandwidth": 16,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "BAB",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 86.5,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "BAB",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        }
+    },
+    "HH_PIP": {
+        "JUG1": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "MEM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "JUG1",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "InpMemA": {
+            "Flows": [
+                {
+                    "Bandwidth": 128,
+                    "StartTime": 0,
+                    "TargetThread": "HS",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "InpMemA",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "InpMemB",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "InpMemA",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "MEM": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "OpDisp",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MEM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "JUG2": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "MEM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "JUG2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "VS": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "JUG1",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "VS",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StartTime": 0,
+        "AppName": "HH_PIP",
+        "StopTime": 0,
+        "HS": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "VS",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "HS",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "OpDisp": {
+            "Flows": []
+        },
+        "InpMemB": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "JUG2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "InpMemB",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        }
+    },
+    "AA_MPEG4_A": {
+        "SRAM2": {
+            "Flows": [
+                {
+                    "Bandwidth": 125,
+                    "StartTime": 0,
+                    "TargetThread": "IDCT",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 335,
+                    "StartTime": 0,
+                    "TargetThread": "UpSamp",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 86.5,
+                    "StartTime": 0,
+                    "TargetThread": "BAB",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 250,
+                    "StartTime": 0,
+                    "TargetThread": "RISC",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "IDCT": {
+            "Flows": [
+                {
+                    "Bandwidth": 125,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "IDCT",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "UpSamp": {
+            "Flows": [
+                {
+                    "Bandwidth": 455,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "UpSamp",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 335,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "UpSamp",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "MedCPU": {
+            "Flows": [
+                {
+                    "Bandwidth": 30,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MedCPU",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 20,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM1",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MedCPU",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "AppName": "AA_MPEG4_A",
+        "RISC": {
+            "Flows": [
+                {
+                    "Bandwidth": 250,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "RISC",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "RAST": {
+            "Flows": [
+                {
+                    "Bandwidth": 300,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "RAST",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 20,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM1",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "RAST",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StopTime": 0,
+        "StartTime": 0,
+        "AU": {
+            "Flows": [
+                {
+                    "Bandwidth": 0.25,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "AU",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "SDRAM": {
+            "Flows": [
+                {
+                    "Bandwidth": 95,
+                    "StartTime": 0,
+                    "TargetThread": "VU",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 0.25,
+                    "StartTime": 0,
+                    "TargetThread": "AU",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 30,
+                    "StartTime": 0,
+                    "TargetThread": "MedCPU",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 300,
+                    "StartTime": 0,
+                    "TargetThread": "RAST",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 0.25,
+                    "StartTime": 0,
+                    "TargetThread": "ADSP",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 455,
+                    "StartTime": 0,
+                    "TargetThread": "UpSamp",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 16,
+                    "StartTime": 0,
+                    "TargetThread": "BAB",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SDRAM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "ADSP": {
+            "Flows": [
+                {
+                    "Bandwidth": 0.25,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "ADSP",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "VU": {
+            "Flows": [
+                {
+                    "Bandwidth": 95,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "VU",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "SRAM1": {
+            "Flows": [
+                {
+                    "Bandwidth": 20,
+                    "StartTime": 0,
+                    "TargetThread": "MedCPU",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM1",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 20,
+                    "StartTime": 0,
+                    "TargetThread": "RAST",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SRAM1",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "BAB": {
+            "Flows": [
+                {
+                    "Bandwidth": 16,
+                    "StartTime": 0,
+                    "TargetThread": "SDRAM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "BAB",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 86.5,
+                    "StartTime": 0,
+                    "TargetThread": "SRAM2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "BAB",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        }
+    },
+    "AA_VOPD": {
+        "AcdcPred": {
+            "Flows": [
+                {
+                    "Bandwidth": 362,
+                    "StartTime": 0,
+                    "TargetThread": "IQuan",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "AcdcPred",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 49,
+                    "StartTime": 0,
+                    "TargetThread": "StripeMem",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "AcdcPred",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StopTime": 0,
+        "UpSamp": {
+            "Flows": [
+                {
+                    "Bandwidth": 300,
+                    "StartTime": 0,
+                    "TargetThread": "VopRec",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "UpSamp",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "RunLeDec": {
+            "Flows": [
+                {
+                    "Bandwidth": 362,
+                    "StartTime": 0,
+                    "TargetThread": "InvScan",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "RunLeDec",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "Pad": {
+            "Flows": [
+                {
+                    "Bandwidth": 313,
+                    "StartTime": 0,
+                    "TargetThread": "VopMem",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "Pad",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "VopRec": {
+            "Flows": [
+                {
+                    "Bandwidth": 313,
+                    "StartTime": 0,
+                    "TargetThread": "Pad",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "VopRec",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "AppName": "AA_VOPD",
+        "StripeMem": {
+            "Flows": [
+                {
+                    "Bandwidth": 27,
+                    "StartTime": 0,
+                    "TargetThread": "IQuan",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "StripeMem",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "ARM": {
+            "Flows": [
+                {
+                    "Bandwidth": 16,
+                    "StartTime": 0,
+                    "TargetThread": "IDCT",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "ARM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 16,
+                    "StartTime": 0,
+                    "TargetThread": "Pad",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "ARM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "VopMem": {
+            "Flows": [
+                {
+                    "Bandwidth": 94,
+                    "StartTime": 0,
+                    "TargetThread": "Pad",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "VopMem",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "IQuan": {
+            "Flows": [
+                {
+                    "Bandwidth": 357,
+                    "StartTime": 0,
+                    "TargetThread": "IDCT",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "IQuan",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "VLD": {
+            "Flows": [
+                {
+                    "Bandwidth": 70,
+                    "StartTime": 0,
+                    "TargetThread": "RunLeDec",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "VLD",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StartTime": 0,
+        "InvScan": {
+            "Flows": [
+                {
+                    "Bandwidth": 362,
+                    "StartTime": 0,
+                    "TargetThread": "AcdcPred",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "InvScan",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "IDCT": {
+            "Flows": [
+                {
+                    "Bandwidth": 353,
+                    "StartTime": 0,
+                    "TargetThread": "UpSamp",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "IDCT",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        }
+    },
+    "BB_PIP": {
+        "JUG1": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "MEM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "JUG1",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "InpMemA": {
+            "Flows": [
+                {
+                    "Bandwidth": 128,
+                    "StartTime": 0,
+                    "TargetThread": "HS",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "InpMemA",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "InpMemB",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "InpMemA",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "MEM": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "OpDisp",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MEM",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "JUG2": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "MEM",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "JUG2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "VS": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "JUG1",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "VS",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StartTime": 0,
+        "AppName": "BB_PIP",
+        "StopTime": 0,
+        "HS": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "VS",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "HS",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "OpDisp": {
+            "Flows": []
+        },
+        "InpMemB": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "JUG2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "InpMemB",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        }
+    },
+    "MM_H264_60_B": {
+        "MotionCompensation": {
+            "Flows": [
+                {
+                    "Bandwidth": 90,
+                    "StartTime": 0,
+                    "TargetThread": "DCT",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionCompensation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 90,
+                    "StartTime": 0,
+                    "TargetThread": "Predictor",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionCompensation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "MVPadding": {
+            "Flows": [
+                {
+                    "Bandwidth": 42.85,
+                    "StartTime": 0,
+                    "TargetThread": "MotionEstimation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MVPadding",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "SampleHold": {
+            "Flows": [
+                {
+                    "Bandwidth": 48.66,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SampleHold",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "DCT": {
+            "Flows": [
+                {
+                    "Bandwidth": 45,
+                    "StartTime": 0,
+                    "TargetThread": "Quantization",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "DCT",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "AppName": "MM_H264_60_B",
+        "EntropyEncoder": {
+            "Flows": [
+                {
+                    "Bandwidth": 12.86,
+                    "StartTime": 0,
+                    "TargetThread": "StreamOut",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "EntropyEncoder",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "YUVGenerator": {
+            "Flows": [
+                {
+                    "Bandwidth": 60,
+                    "StartTime": 0,
+                    "TargetThread": "MVPadding",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 60,
+                    "StartTime": 0,
+                    "TargetThread": "MotionEstimation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 60,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 120,
+                    "StartTime": 0,
+                    "TargetThread": "ChromaResampler",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StopTime": -1,
+        "IQ": {
+            "Flows": [
+                {
+                    "Bandwidth": 5.14,
+                    "StartTime": 0,
+                    "TargetThread": "IDCT",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "IQ",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "Quantization": {
+            "Flows": [
+                {
+                    "Bandwidth": 14.14,
+                    "StartTime": 0,
+                    "TargetThread": "EntropyEncoder",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "Quantization",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 14.14,
+                    "StartTime": 0,
+                    "TargetThread": "IQ",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "Quantization",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "Predictor": {
+            "Flows": [
+                {
+                    "Bandwidth": 47.36,
+                    "StartTime": 0,
+                    "TargetThread": "DeblockingFilter",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "Predictor",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "VideoIn": {
+            "Flows": [
+                {
+                    "Bandwidth": 180,
+                    "StartTime": 0,
+                    "TargetThread": "YUVGenerator",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "VideoIn",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "ChromaResampler": {
+            "Flows": [
+                {
+                    "Bandwidth": 30,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "ChromaResampler",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "MotionEstimation": {
+            "Flows": [
+                {
+                    "Bandwidth": 0.64,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionEstimation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 0.64,
+                    "StartTime": 0,
+                    "TargetThread": "EntropyEncoder",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionEstimation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StartTime": 0,
+        "DeblockingFilter": {
+            "Flows": [
+                {
+                    "Bandwidth": 48.66,
+                    "StartTime": 0,
+                    "TargetThread": "SampleHold",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "DeblockingFilter",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "IDCT": {
+            "Flows": [
+                {
+                    "Bandwidth": 5.14,
+                    "StartTime": 0,
+                    "TargetThread": "Predictor",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "IDCT",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StreamOut": {
+            "Flows": []
+        }
+    },
+    "MM_H264_60_A": {
+        "MotionCompensation": {
+            "Flows": [
+                {
+                    "Bandwidth": 90,
+                    "StartTime": 0,
+                    "TargetThread": "DCT",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionCompensation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 90,
+                    "StartTime": 0,
+                    "TargetThread": "Predictor",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionCompensation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "MVPadding": {
+            "Flows": [
+                {
+                    "Bandwidth": 42.85,
+                    "StartTime": 0,
+                    "TargetThread": "MotionEstimation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MVPadding",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "SampleHold": {
+            "Flows": [
+                {
+                    "Bandwidth": 48.66,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SampleHold",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "DCT": {
+            "Flows": [
+                {
+                    "Bandwidth": 45,
+                    "StartTime": 0,
+                    "TargetThread": "Quantization",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "DCT",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "AppName": "MM_H264_60_A",
+        "EntropyEncoder": {
+            "Flows": [
+                {
+                    "Bandwidth": 12.86,
+                    "StartTime": 0,
+                    "TargetThread": "StreamOut",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "EntropyEncoder",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "YUVGenerator": {
+            "Flows": [
+                {
+                    "Bandwidth": 60,
+                    "StartTime": 0,
+                    "TargetThread": "MVPadding",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 60,
+                    "StartTime": 0,
+                    "TargetThread": "MotionEstimation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 60,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 120,
+                    "StartTime": 0,
+                    "TargetThread": "ChromaResampler",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StopTime": -1,
+        "IQ": {
+            "Flows": [
+                {
+                    "Bandwidth": 5.14,
+                    "StartTime": 0,
+                    "TargetThread": "IDCT",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "IQ",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "Quantization": {
+            "Flows": [
+                {
+                    "Bandwidth": 14.14,
+                    "StartTime": 0,
+                    "TargetThread": "EntropyEncoder",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "Quantization",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 14.14,
+                    "StartTime": 0,
+                    "TargetThread": "IQ",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "Quantization",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "Predictor": {
+            "Flows": [
+                {
+                    "Bandwidth": 47.36,
+                    "StartTime": 0,
+                    "TargetThread": "DeblockingFilter",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "Predictor",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "VideoIn": {
+            "Flows": [
+                {
+                    "Bandwidth": 180,
+                    "StartTime": 0,
+                    "TargetThread": "YUVGenerator",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "VideoIn",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "ChromaResampler": {
+            "Flows": [
+                {
+                    "Bandwidth": 30,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "ChromaResampler",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "MotionEstimation": {
+            "Flows": [
+                {
+                    "Bandwidth": 0.64,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionEstimation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 0.64,
+                    "StartTime": 0,
+                    "TargetThread": "EntropyEncoder",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionEstimation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StartTime": 0,
+        "DeblockingFilter": {
+            "Flows": [
+                {
+                    "Bandwidth": 48.66,
+                    "StartTime": 0,
+                    "TargetThread": "SampleHold",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "DeblockingFilter",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "IDCT": {
+            "Flows": [
+                {
+                    "Bandwidth": 5.14,
+                    "StartTime": 0,
+                    "TargetThread": "Predictor",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "IDCT",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StreamOut": {
+            "Flows": []
+        }
+    },
+    "HH_H264_60": {
+        "MotionCompensation": {
+            "Flows": [
+                {
+                    "Bandwidth": 180,
+                    "StartTime": 0,
+                    "TargetThread": "DCT",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionCompensation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 180,
+                    "StartTime": 0,
+                    "TargetThread": "Predictor",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionCompensation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "IDCT": {
+            "Flows": [
+                {
+                    "Bandwidth": 10.28,
+                    "StartTime": 0,
+                    "TargetThread": "Predictor",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "IDCT",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "SampleHold": {
+            "Flows": [
+                {
+                    "Bandwidth": 97.71,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SampleHold",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "DCT": {
+            "Flows": [
+                {
+                    "Bandwidth": 90,
+                    "StartTime": 0,
+                    "TargetThread": "Quantization",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "DCT",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "AppName": "HH_H264_60",
+        "EntropyEncoder": {
+            "Flows": [
+                {
+                    "Bandwidth": 25.72,
+                    "StartTime": 0,
+                    "TargetThread": "StreamOut",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "EntropyEncoder",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "YUVGenerator": {
+            "Flows": [
+                {
+                    "Bandwidth": 120,
+                    "StartTime": 0,
+                    "TargetThread": "MVPadding",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 120,
+                    "StartTime": 0,
+                    "TargetThread": "MotionEstimation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 120,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 240,
+                    "StartTime": 0,
+                    "TargetThread": "ChromaResampler",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "YUVGenerator",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StopTime": -1,
+        "DeblockingFilter": {
+            "Flows": [
+                {
+                    "Bandwidth": 97.71,
+                    "StartTime": 0,
+                    "TargetThread": "SampleHold",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "DeblockingFilter",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "IQ": {
+            "Flows": [
+                {
+                    "Bandwidth": 10.28,
+                    "StartTime": 0,
+                    "TargetThread": "IDCT",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "IQ",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "Predictor": {
+            "Flows": [
+                {
+                    "Bandwidth": 94.71,
+                    "StartTime": 0,
+                    "TargetThread": "DeblockingFilter",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "Predictor",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "VideoIn": {
+            "Flows": [
+                {
+                    "Bandwidth": 360,
+                    "StartTime": 0,
+                    "TargetThread": "YUVGenerator",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "VideoIn",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "ChromaResampler": {
+            "Flows": [
+                {
+                    "Bandwidth": 60,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "ChromaResampler",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "MotionEstimation": {
+            "Flows": [
+                {
+                    "Bandwidth": 1.28,
+                    "StartTime": 0,
+                    "TargetThread": "MotionCompensation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionEstimation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 1.28,
+                    "StartTime": 0,
+                    "TargetThread": "EntropyEncoder",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MotionEstimation",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StartTime": 0,
+        "Quantization": {
+            "Flows": [
+                {
+                    "Bandwidth": 28.28,
+                    "StartTime": 0,
+                    "TargetThread": "EntropyEncoder",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "Quantization",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 28.28,
+                    "StartTime": 0,
+                    "TargetThread": "IQ",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "Quantization",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "MVPadding": {
+            "Flows": [
+                {
+                    "Bandwidth": 85.71,
+                    "StartTime": 0,
+                    "TargetThread": "MotionEstimation",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MVPadding",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StreamOut": {
+            "Flows": []
+        }
+    },
+    "BB_MWD": {
+        "MEM2": {
+            "Flows": [
+                {
+                    "Bandwidth": 96,
+                    "StartTime": 0,
+                    "TargetThread": "HVS",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MEM2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "HS": {
+            "Flows": [
+                {
+                    "Bandwidth": 96,
+                    "StartTime": 0,
+                    "TargetThread": "VS",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "HS",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StartTime": 0,
+        "NR": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "MEM1",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "NR",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 96,
+                    "StartTime": 0,
+                    "TargetThread": "MEM2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "NR",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "HVS": {
+            "Flows": [
+                {
+                    "Bandwidth": 96,
+                    "StartTime": 0,
+                    "TargetThread": "JUG2",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "HVS",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "MEM1": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "NR",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MEM1",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "SE": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "Blend",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "SE",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "StopTime": 0,
+        "JUG1": {
+            "Flows": [
+                {
+                    "Bandwidth": 96,
+                    "StartTime": 0,
+                    "TargetThread": "MEM3",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "JUG1",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "JUG2": {
+            "Flows": [
+                {
+                    "Bandwidth": 96,
+                    "StartTime": 0,
+                    "TargetThread": "MEM3",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "JUG2",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "VS": {
+            "Flows": [
+                {
+                    "Bandwidth": 96,
+                    "StartTime": 0,
+                    "TargetThread": "JUG1",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "VS",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "Blend": {
+            "Flows": []
+        },
+        "MEM3": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "SE",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "MEM3",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        },
+        "AppName": "BB_MWD",
+        "IN": {
+            "Flows": [
+                {
+                    "Bandwidth": 64,
+                    "StartTime": 0,
+                    "TargetThread": "NR",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "IN",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                },
+                {
+                    "Bandwidth": 128,
+                    "StartTime": 0,
+                    "TargetThread": "HS",
+                    "Periodic": false,
+                    "ControlFlowFlag": false,
+                    "SourceThread": "IN",
+                    "MSGAmount": 0,
+                    "StopTime": -1
+                }
+            ]
+        }
+    }
+}

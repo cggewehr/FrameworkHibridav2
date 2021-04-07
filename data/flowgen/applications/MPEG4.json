@@ -1,0 +1,313 @@
+{
+    "AU": {
+        "Flows": [
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 0.25,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "AU",
+                "TargetThread": "SDRAM"
+            }
+        ]
+    },
+    "BAB": {
+        "Flows": [
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 16,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "BAB",
+                "TargetThread": "SDRAM"
+            },
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 86.5,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "BAB",
+                "TargetThread": "SRAM2"
+            }
+        ]
+    },
+    "SRAM2": {
+        "Flows": [
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 125,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "SRAM2",
+                "TargetThread": "IDCT"
+            },
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 335,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "SRAM2",
+                "TargetThread": "UpSamp"
+            },
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 86.5,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "SRAM2",
+                "TargetThread": "BAB"
+            },
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 250,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "SRAM2",
+                "TargetThread": "RISC"
+            }
+        ]
+    },
+    "AppName": "MPEG4",
+    "UpSamp": {
+        "Flows": [
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 455,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "UpSamp",
+                "TargetThread": "SDRAM"
+            },
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 335,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "UpSamp",
+                "TargetThread": "SRAM2"
+            }
+        ]
+    },
+    "RAST": {
+        "Flows": [
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 300,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "RAST",
+                "TargetThread": "SDRAM"
+            },
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 20,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "RAST",
+                "TargetThread": "SRAM1"
+            }
+        ]
+    },
+    "MedCPU": {
+        "Flows": [
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 30,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "MedCPU",
+                "TargetThread": "SDRAM"
+            },
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 20,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "MedCPU",
+                "TargetThread": "SRAM1"
+            }
+        ]
+    },
+    "ADSP": {
+        "Flows": [
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 0.25,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "ADSP",
+                "TargetThread": "SDRAM"
+            }
+        ]
+    },
+    "SDRAM": {
+        "Flows": [
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 95,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "SDRAM",
+                "TargetThread": "VU"
+            },
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 0.25,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "SDRAM",
+                "TargetThread": "AU"
+            },
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 30,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "SDRAM",
+                "TargetThread": "MedCPU"
+            },
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 300,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "SDRAM",
+                "TargetThread": "RAST"
+            },
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 0.25,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "SDRAM",
+                "TargetThread": "ADSP"
+            },
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 455,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "SDRAM",
+                "TargetThread": "UpSamp"
+            },
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 16,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "SDRAM",
+                "TargetThread": "BAB"
+            }
+        ]
+    },
+    "StopTime": 0,
+    "VU": {
+        "Flows": [
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 95,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "VU",
+                "TargetThread": "SDRAM"
+            }
+        ]
+    },
+    "IDCT": {
+        "Flows": [
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 125,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "IDCT",
+                "TargetThread": "SRAM2"
+            }
+        ]
+    },
+    "RISC": {
+        "Flows": [
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 250,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "RISC",
+                "TargetThread": "SRAM2"
+            }
+        ]
+    },
+    "StartTime": 0,
+    "SRAM1": {
+        "Flows": [
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 20,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "SRAM1",
+                "TargetThread": "MedCPU"
+            },
+            {
+                "Periodic": false,
+                "StopTime": -1,
+                "MSGAmount": 0,
+                "Bandwidth": 20,
+                "ControlFlowFlag": false,
+                "StartTime": 0,
+                "SourceThread": "SRAM1",
+                "TargetThread": "RAST"
+            }
+        ]
+    }
+}

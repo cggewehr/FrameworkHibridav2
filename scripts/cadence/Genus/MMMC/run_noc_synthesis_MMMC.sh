@@ -20,6 +20,7 @@ export SynthProjectDir=$1
 export SynthClockPeriod=$2
 export SynthXSize=$3
 export SynthYSize=$4
+export SynthStandalone=1
 #export SynthBridgeBufferSize=$7
 
 # Prints out given arguments for debug

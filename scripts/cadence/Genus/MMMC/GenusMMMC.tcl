@@ -1,5 +1,6 @@
 
 # Set up vars
+set ProjectDir $env(SynthProjectDir)
 source "${ProjectDir}/synthesis/scripts/setup.tcl"
 
 # Read MMMC info

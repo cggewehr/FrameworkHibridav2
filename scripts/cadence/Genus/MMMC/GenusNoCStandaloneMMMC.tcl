@@ -1,9 +1,10 @@
 
 # Set up vars
-source "${ProjectDir}/synthesis/scripts/setup.tcl"
+set ProjectDir $env(SynthProjectDir)
 set XSize $env(SynthXSize)
 set YSize $env(SynthYSize)
 set ClockPeriod $env(SynthClockPeriod)
+source "${ProjectDir}/synthesis/scripts/setup.tcl"
 
 # Read MMMC info
 read_mmmc "$ScriptDir/MMMC.tcl"
@@ -23,7 +24,7 @@ read_hdl "${SourcesDir}/Hermes/RouterCC.vhd"
 read_hdl "${SourcesDir}/Hermes/HermesTop.vhd"
 
 # Elaborates top level entity
-elaborate
+elaborate Hermes -parameters "{NoCXSize $XSize} {NoCYSize $YSize}"
 check_design -all
 
 # Apply constraits to design
