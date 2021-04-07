@@ -224,6 +224,7 @@ def projgen(args):
                 copy(os.path.join(scriptsSourcePath, "setup.tcl"), os.path.join(scriptsTargetPath, "setup.tcl"))
                 copy(os.path.join(ConfigDict["HibridaPath"], "scripts", "cadence", "default.sdc"), os.path.join(scriptsTargetPath, "constraints.sdc"))
                 copy(os.path.join(ConfigDict["HibridaPath"], "scripts", "cadence", "standalone.sdc"), os.path.join(scriptsTargetPath, "standalone.sdc"))
+                copy(os.path.join(ConfigDict["HibridaPath"], "scripts", "cadence", "standaloneDiv2.sdc"), os.path.join(scriptsTargetPath, "standaloneDiv2.sdc"))
                 
                 try:
                     copy(os.path.join(scriptsSourcePath, "tech.tcl"), os.path.join(scriptsTargetPath, "tech.tcl"))

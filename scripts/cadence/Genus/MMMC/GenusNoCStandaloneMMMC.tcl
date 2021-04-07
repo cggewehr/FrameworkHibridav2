@@ -4,6 +4,7 @@ set ProjectDir $env(SynthProjectDir)
 set XSize $env(SynthXSize)
 set YSize $env(SynthYSize)
 set ClockPeriod $env(SynthClockPeriod)
+set ClockPeriodMult2 [expr $ClockPeriod * 2]
 source "${ProjectDir}/synthesis/scripts/setup.tcl"
 
 # Read MMMC info

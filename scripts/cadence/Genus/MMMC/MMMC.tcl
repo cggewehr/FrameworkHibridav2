@@ -16,12 +16,20 @@ create_delay_corner -name DELAY_CORNER_1V08 -early_timing_condition TIMINGCOND_1
 					-early_rc_corner RC_CORNER -late_rc_corner RC_CORNER
 
 if {$Standalone == 1} {
-    create_constraint_mode -name DEFAULT_CONSTRAINTS -sdc_files "${ScriptDir}/standalone.sdc"
-} else {
-    create_constraint_mode -name DEFAULT_CONSTRAINTS -sdc_files "${ScriptDir}/constraints.sdc"
-}
 
-create_analysis_view -name VIEW_0V9 -delay_corner DELAY_CORNER_0V9 -constraint_mode DEFAULT_CONSTRAINTS
-create_analysis_view -name VIEW_1V08 -delay_corner DELAY_CORNER_1V08 -constraint_mode DEFAULT_CONSTRAINTS
+    create_constraint_mode -name DEFAULT_CONSTRAINTS -sdc_files "${ScriptDir}/standalone.sdc"
+    create_constraint_mode -name DEFAULT_CONSTRAINTS_DIV_2 -sdc_files "${ScriptDir}/standaloneDiv2.sdc"
+
+	create_analysis_view -name VIEW_0V9 -delay_corner DELAY_CORNER_0V9 -constraint_mode DEFAULT_CONSTRAINTS_DIV_2
+	create_analysis_view -name VIEW_1V08 -delay_corner DELAY_CORNER_1V08 -constraint_mode DEFAULT_CONSTRAINTS
+
+} else {
+
+    create_constraint_mode -name DEFAULT_CONSTRAINTS -sdc_files "${ScriptDir}/constraints.sdc"
+
+	create_analysis_view -name VIEW_0V9 -delay_corner DELAY_CORNER_0V9 -constraint_mode DEFAULT_CONSTRAINTS
+	create_analysis_view -name VIEW_1V08 -delay_corner DELAY_CORNER_1V08 -constraint_mode DEFAULT_CONSTRAINTS
+
+}
 
 set_analysis_view -setup {VIEW_0V9 VIEW_1V08}

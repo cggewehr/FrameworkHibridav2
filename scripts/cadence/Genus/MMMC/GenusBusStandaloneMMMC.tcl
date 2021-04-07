@@ -2,6 +2,7 @@
 # Set up vars
 set AmountOfPEs $env(SynthAmountOfPEs)
 set ClockPeriod $env(SynthClockPeriod)
+set ClockPeriodMult2 [expr $ClockPeriod * 2]
 set BridgeBufferSize $env(SynthBridgeBufferSize)
 set ProjectDir $env(SynthProjectDir)
 source "${ProjectDir}/synthesis/scripts/setup.tcl"
