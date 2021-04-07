@@ -8,7 +8,10 @@ import json as JSON
 
 class Flow:
 
-    def __init__(self, Bandwidth, TargetThread, SourceThread = None, FlowType = "CBR", StartTime = 0, StopTime = -1, Periodic = False, MSGAmount = 0, ControlFlowFlag = False):
+    FlowParameters = ["StartTime", "StopTime", "Periodic", "MSGAmount", "ControlFlowFlag"]
+
+    #def __init__(self, Bandwidth, TargetThread, SourceThread = None, FlowType = "CBR", StartTime = 0, StopTime = -1, Periodic = False, MSGAmount = 0, ControlFlowFlag = False):
+    def __init__(self, Bandwidth, TargetThread, SourceThread = None, FlowType = "CBR", StartTime = 0, StopTime = 0, Periodic = False, MSGAmount = 0, ControlFlowFlag = False):
 
         # SourceThread must be a Thread object
         if isinstance(SourceThread, Thread) or SourceThread is None:
@@ -139,6 +142,7 @@ class Thread:
             print("Flow: " + str(Flow))
             exit(1)
         
+        # WIP: Set new Flow's start & stop times based on Thread's default values
         if autoSetStartStop:
             
             if Flow.StartTime != self.StartTime or Flow.StopTime != self.StopTime:
@@ -187,10 +191,22 @@ class Thread:
                 if OutgoingFlow.SourceThread is SourceThread and OutgoingFlow.TargetThread is TargetThread:
                     return OutgoingFlow
             
-            print("Warning : Flow with SourceThread <" + str(SourceThread.ThreadName) + "> and TargetThread <" + str(TargetThread.ThreadName) + "> doesnt exist in Thread <" + str(self.ThreadName) + ">")
+            print("Warning: Flow with SourceThread <" + str(SourceThread.ThreadName) + "> and TargetThread <" + str(TargetThread.ThreadName) + "> doesnt exist in Thread <" + str(self.ThreadName) + ">")
             return None  # Returns None as default
             
-            
+    
+    # Sets a common value for a parameter in all outgoing Flows (this Thread as SourceThread)
+    def setFlowParameter(self, Parameter, Value):
+    
+        if Parameter in Flow.FlowParameters:
+            for OutgoingFlow in OutgoingFlows:
+                setattr(OutgoingFlow, Parameter, Value)
+                
+        else:
+            print("Error: Flow parameter <" + str(Parameter) + "> not recognized. Possible parameters: " + str(Flow.FlowParameters))
+            exit(1)
+    
+    
     def renameThread(self, ThreadName):
         
         try:
@@ -273,7 +289,7 @@ class Thread:
     
 class Application:
 
-    def __init__(self, AppName = "DefaultAppName", StartTime = 0, StopTime = -1):
+    def __init__(self, AppName = "DefaultAppName", StartTime = 0, StopTime = 0):
     
         self.AppName = str(AppName)
         
@@ -320,6 +336,7 @@ class Application:
     
         ThreadsByID = [None] * len(self.Threads)
         
+        #for ThreadInApp in self.Threads:
         for ThreadInApp in enumerate(self.Threads):
             ThreadsByID[ThreadInApp.ThreadID] = ThreadInApp
             
@@ -402,12 +419,19 @@ class Application:
                 
         except NameError:
         
-            if isinstance(ThreadName, basestring):
+            if isinstance(AppName, basestring):
                 self.AppName = AppName
             else:
                 print("New given Application name is not a string, maintaining old Application name")
                 
+                
+    # Sets a common value for a parameter in all outgoing Flows in all Threads
+    def setFlowParameter(self, Parameter, Value):
     
+        for ThreadInApp in self.Threads:
+            ThreadInApp.setFlowParameter(Parameter, Value)
+            
+            
     # Returns a Thread object associated with a given ThreadName or ThreadID. If there is no ThreadName or ThreadID associated, returns None
     def getThread(self, ThreadName = None, ThreadID = None):  # TODO: Check if ThreadName is a string and throw error if not so
     
