@@ -12,7 +12,7 @@ from Injector import Injector
 class Platform:
 
     # Constructor
-    def __init__(self, BaseNoCDimensions, StandaloneStruct = False, BridgeBufferSize = 4, MasterPEPos = 0, DVFSServiceID = "200"):
+    def __init__(self, BaseNoCDimensions, StandaloneStruct = False, BridgeBufferSize = 4, MasterPEPos = 0, DataWidth = 32, DVFSEnable = False, DVFSServiceID = "0000FFFF", DVFSAmountOfVoltageLevels = 2, DVFSCounterResolution = 15):
 
         #self.BaseNoC = [[None for x in range(BaseNoCDimensions[0])] for y in range(BaseNoCDimensions[1])]
 
@@ -25,6 +25,7 @@ class Platform:
         #self.ReferenceClock = ReferenceClock  # In MHz
         self.StandaloneFlag = bool(StandaloneStruct)
 
+        self.DataWidth = DataWidth
         self.BridgeBufferSize = BridgeBufferSize
         
         # WARNING: Any value other than 0 for master PE location will not reflect on any actual changes as of yet, since in computeClusterClocks() a 0 value for PEPos is assumed
@@ -44,6 +45,12 @@ class Platform:
         #self.ClusterClocks = dict()
         self.ClusterClocks = None
         self.Workload = None
+        
+        # DVFS Params
+        self.DVFSEnable = DVFSEnable
+        self.DVFSServiceID = DVFSServiceID
+        self.DVFSAmountOfVoltageLevels = DVFSAmountOfVoltageLevels
+        self.DVFSCounterResolution = DVFSCounterResolution
         
         # Generate initial PE objects at every NoC address (to be replaced by a Bus/Crossbar when addStructure() is called)
         i = 0
@@ -389,36 +396,38 @@ class Platform:
     def Injectors(self):
         
         if self.AllocationMap is None:
-            print("Warning: No allocation map has been set, so no Injectors can be instantiated.")
+            print("Warning: No Allocation Map has been set, so no Injectors can be instantiated.")
             return [None] * self.AmountOfPEs
             
         else:
+        
             # AllocationMap[PEPos] = [Thread object, Thread object, ...]
             #return [[[Injector(Flow = OutgoingFlow) for OutgoingFlow in Thread.OutgoingFlows] for Thread in ThreadSet] for ThreadSet in self.AllocationMap.values()]
-            return [[[Injector(Flow = OutgoingFlow) for OutgoingFlow in Thread.OutgoingFlows] for Thread in ThreadSet] if isinstance(ThreadSet, list) else [[Injector(Flow = OutgoingFlow) for OutgoingFlow in ThreadSet.OutgoingFlows]] if isinstance(ThreadSet, Thread) else [[None]] for ThreadSet in self.AllocationMap]
+            return [[[Injector(Flow = OutgoingFlow, DataWidth = self.DataWidth) for OutgoingFlow in Thread.OutgoingFlows] for Thread in ThreadSet] if isinstance(ThreadSet, list) else [[Injector(Flow = OutgoingFlow, DataWidth = self.DataWidth) for OutgoingFlow in ThreadSet.OutgoingFlows]] if isinstance(ThreadSet, Thread) else [[None]] for ThreadSet in self.AllocationMap]
             
-            injectors = []
-            for ThreadSet in self.AllocationMap.values():
+            # injectors = []
+            # for ThreadSet in self.AllocationMap.values():
             
-                if isinstance(ThreadSet, Thread):
+                # if isinstance(ThreadSet, Thread):
                 
-                    ThreadInSetList = [[Injector(Flow = OutgoingFlow) for OutgoingFlow in ThreadInSet.OutgoingFlows]]
-                    injectors.append(ThreadInSetList)
+                    # ThreadInSetList = [[Injector(Flow = OutgoingFlow) for OutgoingFlow in ThreadInSet.OutgoingFlows]]
+                    # injectors.append(ThreadInSetList)
                     
-                elif isinstance(ThreadSet, list):
+                # elif isinstance(ThreadSet, list):
                 
-                    ThreadInSetList = [[Injector(Flow = OutgoingFlow) for OutgoingFlow in ThreadInSet.OutgoingFlows] for ThreadInSet in ThreadSet]
+                    # ThreadInSetList = [[Injector(Flow = OutgoingFlow) for OutgoingFlow in ThreadInSet.OutgoingFlows] for ThreadInSet in ThreadSet]
 
-                    for ThreadInSet in ThreadSet:
+                    # for ThreadInSet in ThreadSet:
                     
-                        InjList = [Injector(Flow = OutgoingFlow) for OutgoingFlow in ThreadInSet.OutgoingFlows]
+                        # InjList = [Injector(Flow = OutgoingFlow) for OutgoingFlow in ThreadInSet.OutgoingFlows]
                         
-                        for OutgoingFlow in ThreadInSet.OutgoingFlows:
-                            InjList.append(Injector(Flow = OutgoingFlow))
+                        # for OutgoingFlow in ThreadInSet.OutgoingFlows:
+                            # InjList.append(Injector(Flow = OutgoingFlow))
                             
-                        ThreadInSetList.append(InjList)
+                        # ThreadInSetList.append(InjList)
                         
-                    injectors.append(ThreadInSetList)
+                    # injectors.append(ThreadInSetList)
+                    
     
     @property
     def WrapperAddresses(self):
@@ -1127,6 +1136,13 @@ class Platform:
         JSONDict["WrapperAddresses"] = self.WrapperAddresses
         JSONDict["BridgeBufferSize"] = self.BridgeBufferSize
         JSONDict["MasterPEPos"] = self.MasterPEPos
+        JSONDict["DataWidth"] = self.DataWidth
+        
+        # DVFS params
+        JSONDict["DVFSEnable"] = self.DVFSEnable
+        JSONDict["DVFSServiceID"] = self.DVFSServiceID
+        JSONDict["DVFSAmountOfVoltageLevels"] = self.DVFSAmountOfVoltageLevels
+        JSONDict["DVFSCounterResolution"] = self.DVFSCounterResolution
 
         # Bus info
         JSONDict["IsStandaloneBus"] = self.IsStandaloneBus
@@ -1201,6 +1217,7 @@ class Platform:
         self.StandaloneFlag = True if JSONDict["IsStandaloneBus"] or JSONDict["IsStandaloneCrossbar"] else False
         #self.BridgeBufferSize = JSONDict["BridgeBufferSize"]        
         self.MasterPEPos = JSONDict["MasterPEPos"]        
+        self.DataWidth = JSONDict["DataWidth"]        
         
         self.Buses = []
         self.Crossbars = []
@@ -1213,6 +1230,12 @@ class Platform:
         #self.ClusterClocks = dict()
         self.ClusterClocks = None
         self.Workload = None
+        
+        # DVFS params
+        self.DVFSEnable = JSONDict["DVFSEnable"]
+        self.DVFSServiceID = JSONDict["DVFSServiceID"]
+        self.DVFSAmountOfVoltageLevels = JSONDict["DVFSAmountOfVoltageLevels"]
+        self.DVFSCounterResolution = JSONDict["DVFSCounterResolution"]
         
         # Generate initial PE objects at every NoC address (to be replaced by a wrapper when a structure is added)
         i = 0

@@ -60,23 +60,30 @@ architecture RTL of HyHeMPS is
 
     -- Reads PE topology information
     constant PEInfo: PEInfo_vector(0 to AmountOfPEs - 1) := GetPEInfo(PlatCFG);
+
+    -- Buffer size for Bus/Crossbar bridges (NoC buffer size is defined statically as 4 in HeMPS_defaults)
+    constant BridgeBufferSize: integer := jsonGetInteger(PlatCFG, "BridgeBufferSize");
     
     -- Base NoC parameters (from JSON config)
     constant NoCXSize: integer := jsonGetInteger(PlatCFG, "BaseNoCDimensions/0");
     constant NoCYSize: integer := jsonGetInteger(PlatCFG, "BaseNoCDimensions/1");
     constant SquareNoCBound: integer := jsonGetInteger(PlatCFG, "SquareNoCBound");
-    --signal LocalPortInterfaces: PEInterface_vector(0 to AmountOfNoCNodes - 1);
-    signal LocalPortInputs: PEOutputs_vector(0 to AmountOfNoCNodes - 1);
-    signal LocalPortOutputs: PEInputs_vector(0 to AmountOfNoCNodes - 1);
     constant WrapperAddresses: integer_vector(0 to AmountOfPEs - 1) := jsonGetIntegerArray(PlatCFG, "WrapperAddresses");
 
-    -- Buses Parameters (from JSON config)
+    -- Base NoC interface
+    signal RouterClocks: std_logic_vector(0 to AmountOfNoCNodes - 1);
+    signal LocalPortInputs: PEOutputs_vector(0 to AmountOfNoCNodes - 1);
+    signal LocalPortOutputs: PEInputs_vector(0 to AmountOfNoCNodes - 1);
+
+    -- Bus Parameters (from JSON config)
     constant AmountOfBuses: integer := jsonGetInteger(PlatCFG, "AmountOfBuses");
     constant AmountOfPEsInBuses: integer_vector(0 to AmountOfBuses - 1) := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInBuses");
     constant SizeOfLargestBus: integer := jsonGetInteger(PlatCFG, "LargestBus");
     constant BusWrapperIDs: integer_vector(0 to AmountOfBuses - 1) := jsonGetIntegerArray(PlatCFG, "BusWrapperIDs");
     constant IsStandaloneBus: boolean := jsonGetBoolean(PlatCFG, "IsStandaloneBus");
     
+    -- Bus interfaces
+    signal BusClocks: std_logic_vector(0 to AmountOfBuses - 1);
     --subtype BusArrayOfInterfaces is PEInterface_vector(0 to SizeOfLargestBus);  -- PEs + wrapper
     subtype BusArrayOfInputInterfaces is PEInputs_vector(0 to SizeOfLargestBus);  -- PEs + wrapper
     subtype BusArrayOfOutputInterfaces is PEOutputs_vector(0 to SizeOfLargestBus);  -- PEs + wrapper
@@ -111,6 +118,8 @@ architecture RTL of HyHeMPS is
     constant CrossbarWrapperIDs: integer_vector(0 to AmountOfCrossbars - 1) := jsonGetIntegerArray(PlatCFG, "CrossbarWrapperIDs");
     constant IsStandaloneCrossbar: boolean := jsonGetBoolean(PlatCFG, "IsStandaloneCrossbar");
     
+    -- Crossbar interfaces
+    signal CrossbarClocks: std_logic_vector(0 to AmountOfCrossbars - 1);
     --subtype CrossbarArrayOfInterfaces is PEInterface_vector(0 to SizeOfLargestCrossbar);  -- PEs + wrapper
     subtype CrossbarArrayOfInputInterfaces is PEInputs_vector(0 to SizeOfLargestCrossbar);  -- PEs + wrapper
     subtype CrossbarArrayOfOutputInterfaces is PEOutputs_vector(0 to SizeOfLargestCrossbar);  -- PEs + wrapper
@@ -137,14 +146,138 @@ architecture RTL of HyHeMPS is
     end function GetCrossbarPEAddresses;
     
     constant CrossbarPEAddresses: CrossbarPEAddresses_vector(0 to AmountOfCrossbars - 1) := GetCrossbarPEAddresses(PEInfo);
-    
-    -- 
-    constant BridgeBufferSize: integer := jsonGetInteger(PlatCFG, "BridgeBufferSize");
-    
-    -- Reads PE topology information
-    --constant PEInfo: PEInfo_vector(0 to AmountOfPEs - 1) := GetPEInfo(PlatCFG);
+
+    -- DVFS parameters
+    constant DVFSEnable: boolean := jsonGetBoolean(PlatCFG, "DVFSEnable");
+    -- TODO: Convert from Hex string to slv
+    constant DVFSServiceID: DataWidth_t := std_logic_vector(to_unsigned(jsonGetInteger, DataWidth));
+    constant DVFSAmountOfVoltageLevels: integer := jsonGetInteger(PlatCFG, "DVFSAmountOfVoltageLevels");
+    constant DVFSCounterResolution: integer := jsonGetInteger(PlatCFG, "DVFSCounterResolution");
+
+    -- DVFS interfaces
+    subtype DVFSSwitchEnables_t is std_logic_vector(0 to DVFSAmountOfVoltageLevels - 1);
+    type DVFSSwitchEnables_vector is array(natural range <>) of DVFSSwitchEnables_t;
+    signal DVFSRouterSwitchEnables: DVFSSwitchEnables_t(0 to AmountOfNoCNodes - 1);
+    signal DVFSBusSwitchEnables: DVFSSwitchEnables_t(0 to AmountOfBuses - 1);
+    signal DVFSCrossbarSwitchEnables: DVFSSwitchEnables_t(0 to AmountOfCrossbars - 1);
 
 begin
+
+    -- Generates DVFS controllers for every Router, Bus & Crossbar 
+    DVFSClocks: if DVFSEnable generate
+
+        NoCDVFSControllers: for i in 0 to AmountOfNoCNodes - 1 generate
+
+            DVFSController: entity work.DVFSController
+
+                generic map(
+                    DVFSServiceCode => DVFSServiceID,
+                    AmountOfVoltageLevels => DVFSAmountOfVoltageLevels,
+                    CounterBitWidth => DVFSCounterResolution,
+                    BaseNoCPos => RouterAddress(i, NoCXSize),
+                    IsNoC => True
+                )
+
+                port map(
+
+                    Clock => Clocks(i),
+                    Reset => Reset,
+
+                    ClockToCommStruct => RouterClocks(i),
+
+                    SupplySwitchesEnable => DVFSRouterSwitchEnables(i),
+
+                    LocalPortData => LocalPortInputs(i).DataOut,
+                    LocalPortTX => LocalPortInputs(i).Tx,
+                    LocalPortCreditI => LocalPortOutputs(i).CreditI,
+                    LocalPortClockTX => LocalPortInputs(i).ClockTX
+
+                );
+
+        end generate DVFSControllers;
+
+
+        BusDVFSControllers: for i in 0 to AmountOfBuses - 1 generate
+
+            DVFSController: entity work.DVFSController
+
+                generic map(
+                    DVFSServiceCode => DVFSServiceID,
+                    AmountOfVoltageLevels => DVFSAmountOfVoltageLevels,
+                    CounterBitWidth => DVFSCounterResolution,
+                    BaseNoCPos => RouterAddress(BusWrapperIDs(i), NoCXSize),
+                    IsNoC => False
+                )
+
+                port map(
+
+                    Clock => Clocks(BusWrapperIDs(i)),
+                    Reset => Reset,
+
+                    ClockToCommStruct => BusClocks(i),
+
+                    SupplySwitchesEnable => DVFSBusSwitchEnables(i),
+
+                    LocalPortData => LocalPortInputs(BusWrapperIDs(i)).DataOut,
+                    LocalPortTX => LocalPortInputs(BusWrapperIDs(i)).Tx,
+                    LocalPortCreditI => LocalPortOutputs(BusWrapperIDs(i)).CreditI,
+                    LocalPortClockTX => LocalPortInputs(BusWrapperIDs(i)).ClockTX
+
+                );
+
+        end generate BusDVFSControllers;
+
+
+        CrossbarDVFSControllers: for i in 0 to AmountOfCrossbars - 1 generate
+
+            DVFSController: entity work.DVFSController
+
+                generic map(
+                    DVFSServiceCode => DVFSServiceID,
+                    AmountOfVoltageLevels => DVFSAmountOfVoltageLevels,
+                    CounterBitWidth => DVFSCounterResolution,
+                    BaseNoCPos => RouterAddress(CrossbarWrapperIDs(i), NoCXSize),
+                    IsNoC => False
+                )
+
+                port map(
+
+                    Clock => Clocks(CrossbarWrapperIDs(i)),
+                    Reset => Reset,
+
+                    ClockToCommStruct => CrossbarClocks(i),
+
+                    SupplySwitchesEnable => DVFSCrossbarSwitchEnables(i),
+
+                    LocalPortData => LocalPortInputs(CrossbarWrapperIDs(i)).DataOut,
+                    LocalPortTX => LocalPortInputs(CrossbarWrapperIDs(i)).Tx,
+                    LocalPortCreditI => LocalPortOutputs(CrossbarWrapperIDs(i)).CreditI,
+                    LocalPortClockTX => LocalPortInputs(CrossbarWrapperIDs(i)).ClockTX
+
+                );
+
+        end generate CrossbarDVFSControllers;
+
+    end generate DVFSClocks;
+
+
+    -- Sets static clock signals for all elements
+    NoDVFSClocks: if not DVFSEnable generate
+
+        SetRouterClocks: for i in 0 to AmountOfNoCNodes - 1 generate
+            RouterClocks(i) <= Clocks(i);
+        end generate NoCClocks;
+
+        SetBusClocks: for i in 0 to AmountOfNoCNodes - 1 generate
+            BusClocks(i) <= Clocks(BusWrapperIDs(i));
+        end generate SetBusClocks;
+
+        SetCrossbarClocks: for i in 0 to AmountOfNoCNodes - 1 generate
+            BusClocks(i) <= Clocks(CrossbarWrapperIDs(i));
+        end generate SetCrossbarClocks;
+
+    end generate NoDVFSClocks;
+
 
     -- Instantiates Hermes NoC, if no standalone structure is to be instantiated
     NoCCond: if (not IsStandaloneBus) and (not IsStandaloneCrossbar) generate
@@ -156,7 +289,8 @@ begin
                 NoCYSize => NoCYSize
             )
             port map(
-                Clocks => Clocks,
+                --Clocks => Clocks,
+                Clocks => RouterClocks,
                 Reset => Reset,
                 --LocalPortInterfaces => LocalPortInterfaces
                 PEInputs => LocalPortOutputs,
@@ -176,20 +310,21 @@ begin
                 generic map(
                     Arbiter          => "RR",
                     --AmountOfPEs           => (AmountOfPEsInBuses(i) + 1),  -- TODO: Not add +1 if standalone
-                    AmountOfPEs      => (AmountOfPEsInBuses(i) + boolToInt(IsStandaloneBus)),
+                    AmountOfPEs      => (AmountOfPEsInBuses(i) + CONV_INTEGER(IsStandaloneBus)),
                     PEAddresses      => BusPEAddresses(i),
                     BridgeBufferSize => BridgeBufferSize,
                     IsStandalone     => IsStandaloneBus
                 )
                 port map(
-                    Clock     => Clocks(BusWrapperIDs(i)),  -- Clock of its wrapper
+                    --Clock     => Clocks(BusWrapperIDs(i)),  -- Clock of its wrapper
+                    Clock     => BusClocks(i),
                     Reset     => Reset,  -- Global reset, from entity interface
                     --PEInterfaces => BusInterfaces(i)
                     PEInputs  => BusOutputInterfaces(i),
                     PEOutputs => BusInputInterfaces(i)
                 );
 
-            assert false report "Instantiated Bus <" & integer'image(i) & "> with <" & integer'image(AmountOfPEsInBuses(i) + boolToInt(IsStandaloneBus)) & "> elements" severity note;
+            assert false report "Instantiated Bus <" & integer'image(i) & "> with <" & integer'image(AmountOfPEsInBuses(i) + CONV_INTEGER(IsStandaloneBus)) & "> elements" severity note;
 
             -- Connect Bus to base NoC. (Wrapper is at the highest index, obtained by AmountOfPEsInBuses(i))
             ConnectBusToBaseNoC: if not IsStandaloneBus generate
@@ -229,20 +364,21 @@ begin
                 generic map(
                     ArbiterType       => "RR",
                     --AmountOfPEs           => (AmountOfPEsInCrossbars(i) + 1),  -- TODO: Not add +1 if standalone
-                    AmountOfPEs       => (AmountOfPEsInCrossbars(i) + boolToInt(IsStandaloneCrossbar)),
+                    AmountOfPEs       => (AmountOfPEsInCrossbars(i) + CONV_INTEGER(IsStandaloneCrossbar)),
                     PEAddresses       => CrossbarPEAddresses(i),
                     BridgeBufferSize  => BridgeBufferSize,
                     IsStandalone      => IsStandaloneCrossbar
                 )
                 port map(
-                    Clock     => Clocks(CrossbarWrapperIDs(i)),  -- Clock of its wrapper
+                    --Clock     => Clocks(CrossbarWrapperIDs(i)),  -- Clock of its wrapper
+                    Clock     => CrossbarClocks(i),
                     Reset     => Reset,  -- Global reset, from entity interface
                     --PEInterfaces => CrossbarInterfaces(i)
                     PEInputs  => CrossbarOutputInterfaces(i),
                     PEOutputs => CrossbarInputInterfaces(i)
                 );
             
-            assert false report "Instantiated Crossbar <" & integer'image(i) & "> with <" & integer'image(AmountOfPEsInCrossbars(i) + boolToInt(IsStandaloneCrossbar)) & "> elements" severity note;
+            assert false report "Instantiated Crossbar <" & integer'image(i) & "> with <" & integer'image(AmountOfPEsInCrossbars(i) + CONV_INTEGER(IsStandaloneCrossbar)) & "> elements" severity note;
 
             -- Connects Crossbar to base NoC. (Wrapper is at the highest index, obtained by AmountOfPEsInCrossbars(i))
             ConnectCrossbarToBaseNoC: if not IsStandaloneCrossbar generate

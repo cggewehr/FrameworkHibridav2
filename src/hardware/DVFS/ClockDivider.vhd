@@ -34,19 +34,21 @@ end entity ClockDivider;
 
 architecture RTL of ClockDivider is
 
-	signal NReg, MReg, MResetValue: unsigned(CounterBitWidth - 1 downto 0);
+	signal NReg, MReg, CounterReg: unsigned(CounterBitWidth - 1 downto 0);
+	signal ComparatorReg: std_logic;
 
 begin
 
-	ClockGated <= Clock when NReg <= MReg else '0';
+	-- Propagates clock when N < M
+	GatedClock: ClockGated <= Clock when ComparatorReg = '1' else '0';
 
-	-- Decreases M by 1 and compares to N, reset M to its max value when it reaches 0
+
+	-- Control writing to N and M registers
 	process(Clock, Reset) begin
 
 		if Reset = '1' then
 
 			-- Defaults to slowest possible clock
-			--NReg <= (0 => '1', others => '0');
             NReg <= (others => '0');
             Nreg(0) <= '1';
 			MReg <= (others => '1');
@@ -57,20 +59,49 @@ begin
 
 				NReg <= unsigned(N);
 				MReg <= unsigned(M);
-				MResetValue <= unsigned(M);
-
-			else
-
-				if MReg = 1 then
-					MReg <= MResetValue;
-				else
-					MReg <= MReg - 1;
-				end if;
 
 			end if;
 
 		end if;
 
 	end process;
-	
+
+
+	-- Counts from 0 to M - 1 
+	Counter: process(Clock, Reset) begin
+
+		if Reset = '1' then
+
+			CounterReg <= (others => '0');
+
+		elsif rising_edge(Clock) then
+
+			-- Counter++ mod M
+			--incr(value: integer ; maxValue: in integer ; minValue: in integer)
+			CounterReg <= to_unsigned(incr(to_integer(CounterReg), to_integer(M) - 1, 0), CounterBitWidth);
+
+		end if;
+
+	end process;
+
+
+	-- Compares CounterReg to N
+	Comparator: process(Clock, Reset) begin
+
+		if Reset = '1' then
+
+			ComparatorReg <= '0';
+
+		elsif rising_edge(Clock) then
+
+			if NReg < MReg then
+				ComparatorReg <= '1';
+			else
+				ComparatorReg <= '0';
+			end if; 
+
+		end if;
+
+	end process;
+
 end architecture RTL;
