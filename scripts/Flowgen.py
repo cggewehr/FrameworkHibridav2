@@ -116,7 +116,7 @@ def flowgen(args):
     print("Done implementing Workload to Platform")
     
     print("Implementing AllocationMap to Platform")
-    print(AllocMap)
+    #print(AllocMap)
     Platform.setAllocationMap(AllocMap)
     print("Done implementing AllocationMap to Platform")
 

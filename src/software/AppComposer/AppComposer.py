@@ -11,7 +11,7 @@ class Flow:
     FlowParameters = ["StartTime", "StopTime", "Periodic", "MSGAmount", "ControlFlowFlag"]
 
     #def __init__(self, Bandwidth, TargetThread, SourceThread = None, FlowType = "CBR", StartTime = 0, StopTime = -1, Periodic = False, MSGAmount = 0, ControlFlowFlag = False):
-    def __init__(self, Bandwidth, TargetThread, SourceThread = None, FlowType = "CBR", StartTime = 0, StopTime = 0, Periodic = False, MSGAmount = 0, ControlFlowFlag = False):
+    def __init__(self, Bandwidth, TargetThread, SourceThread = None, FlowType = "CBR", StartTime = 0, StopTime = 0, Periodic = False, MSGAmount = 0, ControlFlowFlag = False, Header = ["ADDR", "SIZE"], Payload = ["PEPOS", "TMSTP"] + (["RANDO"] * (126 - 2))):
 
         # SourceThread must be a Thread object
         if isinstance(SourceThread, Thread) or SourceThread is None:
@@ -38,6 +38,10 @@ class Flow:
         self.Periodic = Periodic
         self.MSGAmount = MSGAmount
         self.ControlFlowFlag = ControlFlowFlag
+
+        # Injector parameters
+        self.Header = Header
+        self.Payload = Payload
 
 
     def __str__(self):

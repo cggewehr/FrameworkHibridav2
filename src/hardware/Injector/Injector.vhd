@@ -142,7 +142,7 @@ begin
 
         elsif rising_edge(Clock) then
 
-            if Enable = '1' then
+            if (flitCounter = 0 and Enable = '1') or flitCounter > 0 then
 
                 if OutputBufferAvailableFlag = '1' then
 
