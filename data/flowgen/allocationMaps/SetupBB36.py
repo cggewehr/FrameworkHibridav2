@@ -163,7 +163,7 @@ AllocMap = [None] * 36
 
 # Merges workload specific allocations into one and adds DVFS slave threads
 for i in range(0, 36):
-    AllocMap[i] = [BBWorkload[i], MMWorkload[i], AAWorkload[i], HHWorkload[i], "DVFSSlave" + str(i)]
+    AllocMap[i] = ["DVFSSlave" + str(i), BBWorkload[i], MMWorkload[i], AAWorkload[i], HHWorkload[i]]
     
     # Removes all None values from list
     while True:
@@ -172,10 +172,9 @@ for i in range(0, 36):
         except ValueError:
             break
             
-# Adds DVFS master thread
-AllocMap[DVFSMasterPEPos] += "DVFSMaster"
+# Adds DVFS master thread (moves "DVFSMaster" to the front)
+AllocMap[DVFSMasterPEPos] = ["DVFSMaster"] + AllocMap[DVFSMasterPEPos]
 
 # Saves Alocation Map to JSON file
 with open("SetupBB36.json", "w") as JSONFile:
     JSONFile.write(json.dumps(AllocMap, sort_keys = False, indent = 4))
-

@@ -58,7 +58,7 @@ class Platform:
 
             for x in range(BaseNoCDimensions[0]):
 
-                self.BaseNoC[x][y] = PE(PEPos = i, BaseNoCPos = i)
+                self.BaseNoC[x][y] = PE(PEPos = i, BaseNoCPos = i, StructPos = i, CommStructure = "NoC")
                 #self.PEs[i] = self.BaseNoC[x][y]
 
                 i += 1
@@ -482,8 +482,8 @@ class Platform:
             for x in range(BaseNoCDimensions[0]):
 
                 #newBaseNoC[x][y] = PE(PEPos=i, BaseNoCPos = i, AppID=None, ThreadID=None, InjectorClockFrequency=self.ReferenceClock)
-                newBaseNoC[x][y] = PE(PEPos=i, BaseNoCPos = i, StructPos = i)
-                self.PEs[i] = newBaseNoC[x][y]
+                newBaseNoC[x][y] = PE(PEPos=i, BaseNoCPos = i, StructPos = i, CommStructure = "NoC")
+                #self.PEs[i] = newBaseNoC[x][y]
 
                 i += 1
         

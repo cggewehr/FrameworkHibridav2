@@ -6,7 +6,7 @@ class PE:
     def __init__(self, PEPos, BaseNoCPos, StructPos = None, ThreadSet = None, CommStructure = "NoC", DataWidth = 32, BridgeBufferSize = 4, BusArbiter = "RR"):
 
         self.PEPos = PEPos
-        #self.CommStructure = CommStructure
+        self.CommStructure = CommStructure
         self.BaseNoCPos = BaseNoCPos
         self.StructPos = StructPos
         
