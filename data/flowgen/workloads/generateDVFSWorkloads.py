@@ -13,10 +13,14 @@ def generateDVFSWorkloads(Workload, PlatformName):
     
         # Open Router-grained DVFS Application file
         with open("../applications/DVFSAppRouterGrained" + str(PlatformName) + ".json", "r") as RouterGrainedFile:
+
+            # Open new base Workload
+            BaseWorkload = AppComposer.Workload()
+            BaseWorkload.fromJSON(Workload)
         
             # Reads Application from JSON
             DVFSAppRouterGrained = AppComposer.Application()
-            DVFSAppRouterGrained.fromJSON(DVFSAppRouterGrained.read())
+            DVFSAppRouterGrained.fromJSON(RouterGrainedFile.read())
             
             # Add DVFSAppRouterGrained to BaseWorkload
             BaseWorkload.addApplication(DVFSAppRouterGrained)
@@ -31,14 +35,18 @@ def generateDVFSWorkloads(Workload, PlatformName):
     try:
     
         # Open Struct-grained DVFS Application file
-        with open("../applications/DVFSAppRouterGrained" + str(PlatformName) + ".json", "r") as RouterGrainedFile:
+        with open("../applications/DVFSAppStructGrained" + str(PlatformName) + ".json", "r") as StructGrainedFile:
         
+            # Open new base Workload
+            BaseWorkload = AppComposer.Workload()
+            BaseWorkload.fromJSON(Workload)
+
             # Reads Application from JSON
-            DVFSAppRouterGrained = AppComposer.Application()
-            DVFSAppRouterGrained.fromJSON(DVFSAppRouterGrained.read())
+            DVFSAppStructGrained = AppComposer.Application()
+            DVFSAppStructGrained.fromJSON(StructGrainedFile.read())
             
             # Add DVFSAppRouterGrained to BaseWorkload
-            BaseWorkload.addApplication(DVFSAppRouterGrained)
+            BaseWorkload.addApplication(DVFSAppStructGrained)
             
             # Export Workload to JSON
             BaseWorkload.toJSON(SaveToFile = True, FileName = "DVFSWorkloadStructGrained" + str(PlatformName))
@@ -50,14 +58,18 @@ def generateDVFSWorkloads(Workload, PlatformName):
     try:
     
         # Open Global-grained DVFS Application file
-        with open("../applications/DVFSAppRouterGrained" + str(PlatformName) + ".json", "r") as RouterGrainedFile:
-        
+        with open("../applications/DVFSAppGlobalGrained" + str(PlatformName) + ".json", "r") as GlobalGrainedFile:
+                
+            # Open new base Workload
+            BaseWorkload = AppComposer.Workload()
+            BaseWorkload.fromJSON(Workload)
+
             # Reads Application from JSON
-            DVFSAppRouterGrained = AppComposer.Application()
-            DVFSAppRouterGrained.fromJSON(DVFSAppRouterGrained.read())
+            DVFSAppGlobalGrained = AppComposer.Application()
+            DVFSAppGlobalGrained.fromJSON(GlobalGrainedFile.read())
             
             # Add DVFSAppRouterGrained to BaseWorkload
-            BaseWorkload.addApplication(DVFSAppRouterGrained)
+            BaseWorkload.addApplication(DVFSAppGlobalGrained)
             
             # Export Workload to JSON
             BaseWorkload.toJSON(SaveToFile = True, FileName = "DVFSWorkloadGlobalGrained" + str(PlatformName))
@@ -69,14 +81,18 @@ def generateDVFSWorkloads(Workload, PlatformName):
     try:
     
         # Open Static-clocked DVFS Application file
-        with open("../applications/DVFSAppRouterGrained" + str(PlatformName) + ".json", "r") as RouterGrainedFile:
-        
+        with open("../applications/DVFSAppStaticClocked" + str(PlatformName) + ".json", "r") as StaticClockedFile:
+                        
+            # Open new base Workload
+            BaseWorkload = AppComposer.Workload()
+            BaseWorkload.fromJSON(Workload)
+
             # Reads Application from JSON
-            DVFSAppRouterGrained = AppComposer.Application()
-            DVFSAppRouterGrained.fromJSON(DVFSAppRouterGrained.read())
+            DVFSAppStaticClocked = AppComposer.Application()
+            DVFSAppStaticClocked.fromJSON(StaticClockedFile.read())
             
             # Add DVFSAppRouterGrained to BaseWorkload
-            BaseWorkload.addApplication(DVFSAppRouterGrained)
+            BaseWorkload.addApplication(DVFSAppStaticClocked)
             
             # Export Workload to JSON
             BaseWorkload.toJSON(SaveToFile = True, FileName = "DVFSWorkloadStaticClocked" + str(PlatformName))

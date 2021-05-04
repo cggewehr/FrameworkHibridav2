@@ -23,4 +23,4 @@ with open("../topologies/SetupAA36.json", "r") as AA36File:
     SetupAA36.fromJSON(AA36File.read())
     
     # Generate DVFS apps
-    generateDVFSApps(Platform = SetupAA36, PlatformName = "SetupAA36", RouterClockFrequencies, BusClockFrequencies, CrossbarClockFrequencies)
+    generateDVFSApps(Platform = SetupAA36, PlatformName = "SetupAA36", RouterClockFrequencies = RouterClockFrequencies, BusClockFrequencies = BusClockFrequencies, CrossbarClockFrequencies = CrossbarClockFrequencies)

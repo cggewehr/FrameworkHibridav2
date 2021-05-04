@@ -14,12 +14,13 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
         
     # TODO: Check if not standalone struct
     
-    # Extract base parameters from given Platform object. TODO: Extract from Platform
+    # Extract base parameters from given Platform object. 
     AmountOfRouters = Platform.BaseNoCDimensions[0] * Platform.BaseNoCDimensions[1]
     AmountOfBuses = Platform.AmountOfBuses
     AmountOfCrossbars = Platform.AmountOfCrossbars
     AmountOfPEs = Platform.AmountOfPEs
     DVFSServiceID = Platform.DVFSServiceID  # 32 bit constant as hex
+    DVFSCounterResolution = Platform.DVFSCounterResolution 
     # TODO: Do search for BusID/CrossbarID of first PEPos in struct here
     
     #MaxFrequency = 250  # in MHz
@@ -27,11 +28,23 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
     #QuantumTime = 1000000  # 1 ms in nanoseconds
     
     # Check if amount of Quantums is coherent for each clock frequency list
-    if len(RouterClockFrequencies) == len(BusClockFrequencies) and len(RouterClockFrequencies) == len(CrossbarClockFrequencies):
-        AmountOfQuantums = len(RouterClockFrequencies)
-    else:
-        print("Error: Incoherent amount of quantums: Per Router <" + str(len(RouterClockFrequencies)) + "> Per Bus <" + str(len(BusClockFrequencies)) + "> Per Crossbar <" + str(len(CrossbarClockFrequencies)) + ">")
-        exit(1)
+    if BusClockFrequencies is not None:
+
+        if len(RouterClockFrequencies) == len(BusClockFrequencies):
+            AmountOfQuantums = len(RouterClockFrequencies)
+        else:
+            print("Error: Incoherent amount of quantums: Per Router <" + str(len(RouterClockFrequencies)) + "> Per Bus <" + str(len(BusClockFrequencies))+ ">")
+            exit(1)
+
+    if CrossbarClockFrequencies is not None:
+
+        if len(RouterClockFrequencies) == len(CrossbarClockFrequencies):
+            AmountOfQuantums = len(RouterClockFrequencies)
+        else:
+            print("Error: Incoherent amount of quantums: Per Router <" + str(len(RouterClockFrequencies))+ "> Per Crossbar <" + str(len(CrossbarClockFrequencies)) + ">")
+            exit(1)
+    
+    AmountOfQuantums = len(RouterClockFrequencies)
         
     # Check if amount of routers or PEs in Bus/Crossbars are coherent with info from Platform object
     for i, ClocksInQuantum in enumerate(RouterClockFrequencies):
@@ -39,15 +52,17 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             print("Error: Amount of Routers = <" + str(len(ClocksInQuantum)) + "> for Quantum <" + str(i) + "> differs from amount of Routers from Platform object <" + str(AmountOfRouters) + ">")
             exit(1)
             
-    for i, ClocksInQuantum in enumerate(BusClockFrequencies):
-        if len(ClocksInQuantum) != AmountOfBuses:
-            print("Error: Amount of PEs in Bus = <" + str(len(ClocksInQuantum)) + "> for Quantum <" + str(i) + "> differs from amount of Buses from Platform object <" + str(AmountOfBuses) + ">")
-            exit(1)
-            
-    for i, ClocksInQuantum in enumerate(CrossbarClockFrequencies):
-        if len(ClocksInQuantum) != AmountOfCrossbars:
-            print("Error: Amount of PEs in Crossbar = <" + str(len(ClocksInQuantum)) + "> for Quantum <" + str(i) + "> differs from amount of Crossbars from Platform object <" + str(AmountOfCrossbars) + ">")
-            exit(1)
+    if BusClockFrequencies is not None: 
+        for i, ClocksInQuantum in enumerate(BusClockFrequencies):
+            if len(ClocksInQuantum) != AmountOfBuses:
+                print("Error: Amount of Buses = <" + str(len(ClocksInQuantum)) + "> for Quantum <" + str(i) + "> differs from amount of Buses from Platform object <" + str(AmountOfBuses) + ">")
+                exit(1)
+
+    if CrossbarClockFrequencies is not None:            
+        for i, ClocksInQuantum in enumerate(CrossbarClockFrequencies):
+            if len(ClocksInQuantum) != AmountOfCrossbars:
+                print("Error: Amount of Crossbars = <" + str(len(ClocksInQuantum)) + "> for Quantum <" + str(i) + "> differs from amount of Crossbars from Platform object <" + str(AmountOfCrossbars) + ">")
+                exit(1)
 
     # Clock frequencies per router + per bus + per crossbar, per Workload
     #ClockFrequenciesBB = [48, 32, 0, 45, 15, 16, 16, 30, 75, 30, 48, 24, 32, 45, 23.625, 48, 24, 48, 23.785, 12.215, 24, 24, 24, 48, 16] + [24, 17.75875]  # Workload BB, frequency in MHz
@@ -74,26 +89,27 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             for PEPos, PE in enumerate(Platform.PEs):
             
                 # Only NoC and first-of-struct PEs are needed (no DVFS for PEs inside Bus/Crossbar)
-                if PE.CommStructure != "NoC" and StructPos != 0:
+                if PE.CommStructure != "NoC" and PE.StructPos != 0:
                     continue
                 
                 # Determines N and M (numerator and denominator) on config flit
                 if PE.CommStructure == "NoC":
                 
-                    DivRatio = Fraction(RouterClockFrequencies[Quantum][PE.BaseNoCPos] / InputClockFrequency).limit_denominator(2**Resolution)
+                    DivRatio = Fraction(RouterClockFrequencies[Quantum][PE.BaseNoCPos] / InputClockFrequency).limit_denominator(2**DVFSCounterResolution)
                     
                 elif PE.CommStructure == "Bus":
                 
                     BusID = None
                     
                     # Finds which Bus this PE is in
-                    for i, Crossbar in enumerate(Platform.Crossbars):
-                        if Crossbar.PEs[0].PEPos == PEPos:
+                    for i, Bus in enumerate(Platform.Buses):
+
+                        if Bus.PEs[0].PEPos == PEPos:
                             BusID = i
-                            
+ 
                     try:
-                        DivRatio = Fraction(BusClockFrequencies[Quantum][BusID] / InputClockFrequency).limit_denominator(2**Resolution)
-                    except IndexError:
+                        DivRatio = Fraction(BusClockFrequencies[Quantum][BusID] / InputClockFrequency).limit_denominator(2**DVFSCounterResolution)
+                    except TypeError:
                         print("Error: Cant find a BusID for PEPos <" + str(PEPos) + ">")
                         exit(1)
                         
@@ -103,13 +119,14 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                             
                     # Finds which Crossbar this PE is in        
                     for i, Crossbar in enumerate(Platform.Crossbars):
+
                         if Crossbar.PEs[0].PEPos == PEPos:
                             CrossbarID = i
-                            
+
                     try:
-                        DivRatio = Fraction(CrossbarClockFrequencies[Quantum][BusID] / InputClockFrequency).limit_denominator(2**Resolution)
-                    except IndexError:
-                        print("Error: Cant find a BusID for PEPos <" + str(PEPos) + ">")
+                        DivRatio = Fraction(CrossbarClockFrequencies[Quantum][CrossbarID] / InputClockFrequency).limit_denominator(2**DVFSCounterResolution)
+                    except TypeError:
+                        print("Error: Cant find a CrossbarID for PEPos <" + str(PEPos) + ">")
                         exit(1)
                         
                 else:
@@ -119,10 +136,16 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                 SupplySwitchBit = '1' if DivRatio > Fraction(1, 2) else '0' 
                     
                 # Determine IsNoC bit on config flit
-                IsNoCBit = '1' if PE.CommStructure = "NoC" else '0'
+                IsNoCBit = '1' if PE.CommStructure == "NoC" else '0'
                     
                 # Determines config flit for DVFS Payload
-                ConfigFlit = SupplySwitchBit + IsNoCBit + str(DivRatio.numerator).format("0" + str(Resolution) + "b") + str(DivRatio.denominator).format("0" + str(Resolution) + "b")
+                ConfigFlit = SupplySwitchBit + IsNoCBit + format(DivRatio.numerator, "0" + str(DVFSCounterResolution) + "b") + format(DivRatio.denominator, "0" + str(DVFSCounterResolution) + "b")
+                ConfigFlit = '%0*X' % ((len(ConfigFlit) + 3) // 4, int(ConfigFlit, 2))  # Converts bit string to hex string "https://stackoverflow.com/questions/2072351/python-conversion-from-binary-string-to-hexadecimal"
+
+                # DEBUG
+                #print("Ratio: " + str(DivRatio.numerator) + " by " + str(DivRatio.denominator))
+                #print("N as binary: " + format(DivRatio.numerator, "0" + str(DVFSCounterResolution) + "b"))
+                #print("M as binary: " + format(DivRatio.denominator, "0" + str(DVFSCounterResolution) + "b"))
                     
                 # Adds Flow with custom Payload to master DVFS Thread
                 DVFSMaster.addFlow(AppComposer.Flow(TargetThread = DVFSSlaves[PEPos], Bandwidth = 128000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
@@ -135,9 +158,9 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                     
         # Write Router-grained DVFS Application to a JSON file
         DVFSApp.toJSON(SaveToFile = True, FileName = "DVFSAppRouterGrained" + str(PlatformName))
-        
+
     # Generates Struct-grained DVFS App (Whole NoC + All Buses + All Crossbars). Skipped if standalone NoC (no Bus/Crossbars)    
-    if GenStructGrained and (AmountOfCrossbars != 0 and AmountOfBuses != 0):
+    if GenStructGrained and (AmountOfCrossbars > 0 or AmountOfBuses > 0):
         
         # Make Application
         if SaveToFile:
@@ -156,27 +179,27 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             for PEPos, PE in enumerate(Platform.PEs):
             
                 # Only NoC and first-of-struct PEs are needed (no DVFS for PEs inside Bus/Crossbar)
-                if PE.CommStructure != "NoC" and StructPos != 0:
+                if PE.CommStructure != "NoC" and PE.StructPos != 0:
                     continue
                 
                 # Determines N and M (numerator and denominator) on config flit
                 if PE.CommStructure == "NoC":
                 
                     # Max Router clock defines all other Routers'
-                    DivRatio = Fraction(max(RouterClockFrequencies[Quantum]) / InputClockFrequency).limit_denominator(2**Resolution)
+                    DivRatio = Fraction(max(RouterClockFrequencies[Quantum]) / InputClockFrequency).limit_denominator(2**DVFSCounterResolution)
                     
                 elif PE.CommStructure == "Bus":
                 
                     BusID = None
                     
                     # Finds which Bus this PE is in
-                    for i, Crossbar in enumerate(Platform.Crossbars):
-                        if Crossbar.PEs[0].PEPos == PEPos:
+                    for i, Bus in enumerate(Platform.Buses):
+                        if Bus.PEs[0].PEPos == PEPos:
                             BusID = i
                             
                     try:
-                        DivRatio = Fraction(BusClockFrequencies[Quantum][BusID] / InputClockFrequency).limit_denominator(2**Resolution)
-                    except IndexError:
+                        DivRatio = Fraction(BusClockFrequencies[Quantum][BusID] / InputClockFrequency).limit_denominator(2**DVFSCounterResolution)
+                    except TypeError:
                         print("Error: Cant find a BusID for PEPos <" + str(PEPos) + ">")
                         exit(1)
                         
@@ -190,8 +213,8 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                             CrossbarID = i
                             
                     try:
-                        DivRatio = Fraction(CrossbarClockFrequencies[Quantum][BusID] / InputClockFrequency).limit_denominator(2**Resolution)
-                    except IndexError:
+                        DivRatio = Fraction(CrossbarClockFrequencies[Quantum][CrossbarID] / InputClockFrequency).limit_denominator(2**DVFSCounterResolution)
+                    except TypeError:
                         print("Error: Cant find a BusID for PEPos <" + str(PEPos) + ">")
                         exit(1)
                         
@@ -202,10 +225,11 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                 SupplySwitchBit = '1' if DivRatio > Fraction(1, 2) else '0' 
                     
                 # Determine IsNoC bit on config flit
-                IsNoCBit = '1' if PE.CommStructure = "NoC" else '0'
+                IsNoCBit = '1' if PE.CommStructure == "NoC" else '0'
                     
                 # Determines config flit for DVFS Payload
-                ConfigFlit = SupplySwitchBit + IsNoCBit + str(DivRatio.numerator).format("0" + str(Resolution) + "b") + str(DivRatio.denominator).format("0" + str(Resolution) + "b")
+                ConfigFlit = SupplySwitchBit + IsNoCBit + format(DivRatio.numerator, "0" + str(DVFSCounterResolution) + "b") + format(DivRatio.denominator, "0" + str(DVFSCounterResolution) + "b")
+                ConfigFlit = '%0*X' % ((len(ConfigFlit) + 3) // 4, int(ConfigFlit, 2))  # Converts bit string to hex string "https://stackoverflow.com/questions/2072351/python-conversion-from-binary-string-to-hexadecimal"
                     
                 # Adds Flow with custom Payload to master DVFS Thread
                 DVFSMaster.addFlow(AppComposer.Flow(TargetThread = DVFSSlaves[PEPos], Bandwidth = 128000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
@@ -239,32 +263,33 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             for PEPos, PE in enumerate(Platform.PEs):
             
                 # Only NoC and first-of-struct PEs are needed (no DVFS for PEs inside Bus/Crossbar)
-                if PE.CommStructure != "NoC" and StructPos != 0:
+                if PE.CommStructure != "NoC" and PE.StructPos != 0:
                     continue
                 
                 # Determines N and M (numerator and denominator) on config flit
-                NoCMaxFreq = max(RouterClockFrequencies[Quantum]
+                NoCMaxFreq = max(RouterClockFrequencies[Quantum])
                 try:
-                    BusMaxFreq = max(BusClockFrequencies[Quantum]
+                    BusMaxFreq = max(BusClockFrequencies[Quantum])
                 except (ValueError, TypeError):  # BusClockFrequencies is an empty list (ValueError) or None (TypeError)
                     BusMaxFreq = 0
                 
                 try:
-                    CrossbarMaxFreq = max(CrossbarClockFrequencies[Quantum]
+                    CrossbarMaxFreq = max(CrossbarClockFrequencies[Quantum])
                 except (ValueError, TypeError):  # CrossbarClockFrequencies is an empty list (ValueError) or None (TypeError)
                     CrossbarMaxFreq = 0
                     
                 MaxClockFreq = max(NoCMaxFreq, BusMaxFreq, CrossbarMaxFreq)
-                DivRatio = Fraction(MaxClockFreq / InputClockFrequency).limit_denominator(2**Resolution)
+                DivRatio = Fraction(MaxClockFreq / InputClockFrequency).limit_denominator(2**DVFSCounterResolution)
                 
                 # Determines power switch enable signal on config flit
                 SupplySwitchBit = '1' if DivRatio > Fraction(1, 2) else '0' 
                     
                 # Determine IsNoC bit on config flit
-                IsNoCBit = '1' if PE.CommStructure = "NoC" else '0'
+                IsNoCBit = '1' if PE.CommStructure == "NoC" else '0'
                     
                 # Determines config flit for DVFS Payload
-                ConfigFlit = SupplySwitchBit + IsNoCBit + str(DivRatio.numerator).format("0" + str(Resolution) + "b") + str(DivRatio.denominator).format("0" + str(Resolution) + "b")
+                ConfigFlit = SupplySwitchBit + IsNoCBit + format(DivRatio.numerator, "0" + str(DVFSCounterResolution) + "b") + format(DivRatio.denominator, "0" + str(DVFSCounterResolution) + "b")
+                ConfigFlit = '%0*X' % ((len(ConfigFlit) + 3) // 4, int(ConfigFlit, 2))  # Converts bit string to hex string "https://stackoverflow.com/questions/2072351/python-conversion-from-binary-string-to-hexadecimal"
                     
                 # Adds Flow with custom Payload to master DVFS Thread
                 DVFSMaster.addFlow(AppComposer.Flow(TargetThread = DVFSSlaves[PEPos], Bandwidth = 128000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
@@ -298,21 +323,22 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             for PEPos, PE in enumerate(Platform.PEs):
             
                 # Only NoC and first-of-struct PEs are needed (no DVFS for PEs inside Bus/Crossbar)
-                if PE.CommStructure != "NoC" and StructPos != 0:
+                if PE.CommStructure != "NoC" and PE.StructPos != 0:
                     continue
                 
                 # Determines N and M (numerator and denominator) on config flit
                 #DivRatio = Fraction(MaxFrequency).limit_denominator(Resolution)
-                DivRatio = Fraction(1, 1).limit_denominator(2**Resolution)
+                DivRatio = Fraction(1, 1).limit_denominator(2**DVFSCounterResolution)
                 
                 # Determines power switch enable signal on config flit
                 SupplySwitchBit = '1' if DivRatio > Fraction(1, 2) else '0' 
                     
                 # Determine IsNoC bit on config flit
-                IsNoCBit = '1' if PE.CommStructure = "NoC" else '0'
+                IsNoCBit = '1' if PE.CommStructure == "NoC" else '0'
                     
                 # Determines config flit for DVFS Payload
-                ConfigFlit = SupplySwitchBit + IsNoCBit + str(DivRatio.numerator).format("0" + str(Resolution) + "b") + str(DivRatio.denominator).format("0" + str(Resolution) + "b")
+                ConfigFlit = SupplySwitchBit + IsNoCBit + format(DivRatio.numerator, "0" + str(DVFSCounterResolution) + "b") + format(DivRatio.denominator, "0" + str(DVFSCounterResolution) + "b")
+                ConfigFlit = '%0*X' % ((len(ConfigFlit) + 3) // 4, int(ConfigFlit, 2))  # Converts bit string to hex string "https://stackoverflow.com/questions/2072351/python-conversion-from-binary-string-to-hexadecimal"
                     
                 # Adds Flow with custom Payload to master DVFS Thread
                 DVFSMaster.addFlow(AppComposer.Flow(TargetThread = DVFSSlaves[PEPos], Bandwidth = 128000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))

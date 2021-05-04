@@ -23,4 +23,4 @@ with open("../topologies/SetupBB36.json", "r") as BB36File:
     SetupBB36.fromJSON(BB36File.read())
     
     # Generate DVFS apps
-    generateDVFSApps(Platform = SetupBB36, PlatformName = "SetupBB36", RouterClockFrequencies, BusClockFrequencies, CrossbarClockFrequencies)
+    generateDVFSApps(Platform = SetupBB36, PlatformName = "SetupBB36", RouterClockFrequencies = RouterClockFrequencies, BusClockFrequencies = BusClockFrequencies, CrossbarClockFrequencies = CrossbarClockFrequencies)

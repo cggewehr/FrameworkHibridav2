@@ -25,8 +25,8 @@ class Structure:
         
         returnString += "StructureType: " + str(self.StructureType) + "\n"
         returnString += "AmountOfPEs: " + str(self.AmountOfPEs) + "\n"
-        returnString += "AddressInBaseNoC: " + str(self.AddressInBaseNoC) + "\n"
-        returnString += "PE Addresses: " + str([PE.PEPos for PE in self.PEs])
+        returnString += "BaseNoCPos: " + str(self.BaseNoCPos)
+        #returnString += "PE Addresses: " + str([PE.PEPos for PE in self.PEs])
         
         return returnString
 

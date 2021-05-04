@@ -248,6 +248,8 @@ class Platform:
                     #self.PEs[PEPos] = self.BaseNoC[xBase][yBase].PEs[0]
                 
                     #with PEinStruct as self.BaseNoC[x][y].PEs[0]:
+                    #print(self.BaseNoC[x][y])
+                    #print(self.BaseNoC[x][y].PEs)
                     PEinStruct = self.BaseNoC[x][y].PEs[0]
                     
                     # Sets PEPos value to first PE of this Structure
@@ -580,6 +582,8 @@ class Platform:
         
         for PEinStruct in NewStructure.PEs:
             PEinStruct.BaseNoCPos = (WrapperLocationInBaseNoC[1] * self.BaseNoCDimensions[0]) + WrapperLocationInBaseNoC[0]
+
+        print("Added new " + str(NewStructure.StructureType) + " to base NoC location <" + str(WrapperLocationInBaseNoC) + ">")
 
         # Update PEPos values for every PE
         #self.updatePEAddresses()
@@ -1163,7 +1167,7 @@ class Platform:
         JSONDict["BusPEIDs"] = BusPEIDs
         JSONDict["LargestBus"] = LargestBus
         
-        JSONDict["BusWrapperIDs"] = [int(BusInPlat.BaseNoCPos) for BusInPlat in self.Buses]
+        JSONDict["BusWrapperIDs"] = [int(BusInPlat.BaseNoCPos) for BusInPlat in self.Buses] if self.AmountOfBuses > 0 else [-1]
         
         # Crossbar info
         JSONDict["IsStandaloneCrossbar"] = self.IsStandaloneCrossbar
@@ -1184,7 +1188,7 @@ class Platform:
         JSONDict["CrossbarPEIDs"] = CrossbarPEIDs
         JSONDict["LargestCrossbar"] = LargestCrossbar
         
-        JSONDict["CrossbarWrapperIDs"] = [int(CrossbarInPlat.BaseNoCPos) for CrossbarInPlat in self.Crossbars]
+        JSONDict["CrossbarWrapperIDs"] = [int(CrossbarInPlat.BaseNoCPos) for CrossbarInPlat in self.Crossbars] if self.AmountOfCrossbars > 0 else [-1]
         
         # sort_keys must be set as False so Buses and Crossbars are inserted in the same order in reconstructed Platform object
         JSONString = json.dumps(JSONDict, sort_keys = False, indent = 4)
@@ -1208,7 +1212,7 @@ class Platform:
     
         # Generates dictionary from given JSON file
         JSONDict = json.loads(JSONString)
-        print(JSONDict)
+        #print(JSONDict)
         
         self.BaseNoCDimensions = tuple(JSONDict["BaseNoCDimensions"])
         #self.BaseNoC = [[None for x in range(BaseNoCDimensions[0])] for y in range(BaseNoCDimensions[1])]
@@ -1250,11 +1254,21 @@ class Platform:
         
         # Add Buses to Platform
         for i, BusSize in enumerate(JSONDict["AmountOfPEsInBuses"]):
+            
+            # -1 = dummy value, inserted so that VHDL JSON parser doesnt see an empty array
+            if BusSize == -1:
+                break
+
             BaseNoCTuple = (int(JSONDict["BusWrapperAddresses"][i] % self.BaseNoCDimensions[0]), int(JSONDict["BusWrapperAddresses"][i] / self.BaseNoCDimensions[0]))
             self.addStructure(Bus(AmountOfPEs = BusSize), BaseNoCTuple)
 
         # Add Crossbars to Platform
         for i, CrossbarSize in enumerate(JSONDict["AmountOfPEsInCrossbars"]):
+            
+            # -1 = dummy value, inserted so that VHDL JSON parser doesnt see an empty array
+            if CrossbarSize == -1:
+                break
+
             BaseNoCTuple = (int(JSONDict["CrossbarWrapperAddresses"][i] % self.BaseNoCDimensions[0]), int(JSONDict["CrossbarWrapperAddresses"][i] / self.BaseNoCDimensions[0]))
             self.addStructure(Crossbar(AmountOfPEs = CrossbarSize), BaseNoCTuple)
         

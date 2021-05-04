@@ -28,7 +28,7 @@ class PE:
         
         elif ThreadSet is None:
         
-            print("Warning: PE <" + str(PEPos) + "> instantiated with no associated Thread object. This is to be expected if no Workload has been defined, or PE.__init__() is called from Platform.__init().")
+            #print("Warning: PE <" + str(PEPos) + "> instantiated with no associated Thread object. This is to be expected if no Workload has been defined, or PE.__init__() is called from Platform.__init().")
             
             self.AmountOfThreads = 1
             self.AmountOfFlows = 1

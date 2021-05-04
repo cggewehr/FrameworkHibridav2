@@ -7,8 +7,8 @@ SetupBB36 = PlatformComposer.Platform(BaseNoCDimensions=(5, 5))
 BusA = PlatformComposer.Bus(AmountOfPEs = 6)
 SetupBB36.addStructure(NewStructure=BusA, WrapperLocationInBaseNoC=(0, 2))
 
-# Adds bus containing 7 PEs @ base NoC position (5, 2)
+# Adds bus containing 7 PEs @ base NoC position (4, 2)
 BusB = PlatformComposer.Bus(AmountOfPEs = 7)
-SetupBB36.addStructure(NewStructure=BusB, WrapperLocationInBaseNoC=(5, 2))
+SetupBB36.addStructure(NewStructure=BusB, WrapperLocationInBaseNoC=(4, 2))
 
 SetupBB36.toJSON(SaveToFile = True, FileName = "SetupBB36")

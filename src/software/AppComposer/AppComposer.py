@@ -203,7 +203,7 @@ class Thread:
     def setFlowParameter(self, Parameter, Value):
     
         if Parameter in Flow.FlowParameters:
-            for OutgoingFlow in OutgoingFlows:
+            for OutgoingFlow in self.OutgoingFlows:
                 setattr(OutgoingFlow, Parameter, Value)
                 
         else:
@@ -502,6 +502,9 @@ class Application:
                 flowDict["Periodic"] = OutgoingFlow.Periodic
                 flowDict["MSGAmount"] = OutgoingFlow.MSGAmount
                 flowDict["ControlFlowFlag"] = OutgoingFlow.ControlFlowFlag
+
+                flowDict["Header"] = OutgoingFlow.Header
+                flowDict["Payload"] = OutgoingFlow.Payload
                 
                 OutgoingFlows.append(flowDict)
 
@@ -561,7 +564,7 @@ class Application:
 
                 SourceThread = self.getThread(ThreadName = FlowInThread["SourceThread"])
                 TargetThread = self.getThread(ThreadName = FlowInThread["TargetThread"])
-                ThreadInApp.addFlow(Flow(Bandwidth = FlowInThread["Bandwidth"], SourceThread = SourceThread, TargetThread = TargetThread, StartTime = FlowInThread["StartTime"], StopTime = FlowInThread["StopTime"], Periodic = FlowInThread["Periodic"], MSGAmount = FlowInThread["MSGAmount"], ControlFlowFlag = FlowInThread["ControlFlowFlag"]))
+                ThreadInApp.addFlow(Flow(Bandwidth = FlowInThread["Bandwidth"], SourceThread = SourceThread, TargetThread = TargetThread, StartTime = FlowInThread["StartTime"], StopTime = FlowInThread["StopTime"], Periodic = FlowInThread["Periodic"], MSGAmount = FlowInThread["MSGAmount"], ControlFlowFlag = FlowInThread["ControlFlowFlag"], Header = FlowInThread["Header"], Payload = FlowInThread["Payload"]))
 
 
     def __str__(self):

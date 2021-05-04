@@ -4,7 +4,7 @@ import PlatformComposer
 SetupAA36 = PlatformComposer.Platform(BaseNoCDimensions=(4, 4))
 
 # Adds Crossbar containing 7 PEs @ base NoC position (3, 0)
-CrossbarA = PlatformComposer.Bus(AmountOfPEs = 7)
+CrossbarA = PlatformComposer.Crossbar(AmountOfPEs = 7)
 SetupAA36.addStructure(NewStructure=CrossbarA, WrapperLocationInBaseNoC=(3, 0))
 
 # Adds Crossbar containing 8 PEs @ base NoC position (0, 3)

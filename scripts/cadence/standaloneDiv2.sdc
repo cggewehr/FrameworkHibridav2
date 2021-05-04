@@ -13,13 +13,13 @@ if {[info exists XSize]} {
     set_ideal_net [get_nets {PEOutputs[*][ClockTx]}]
 
     # Set unidealistic values as 5% of clock period
-    set_clock_uncertainty [expr $ClockPeriodMult2 * 0.05] [get_clocks]
-    set_clock_latency [expr $ClockPeriodMult2 * 0.05] [get_clocks]
-    set_input_delay -clock [get_clocks ClockTx] [expr $ClockPeriodMult2 * 0.05] [remove_from_collection [all_inputs] [get_ports {"Clocks" {PEOutputs[*][ClockTx]}}]]
-    set_output_delay -clock [get_clocks MainClock] [expr $ClockPeriodMult2 * 0.05] [remove_from_collection [all_outputs] [get_ports {PEInputs[*][ClockRx]}]]
+    set_clock_uncertainty [expr $ClockPeriod * 0.05] [get_clocks]
+    set_clock_latency [expr $ClockPeriod * 0.05] [get_clocks]
+    set_input_delay -clock [get_clocks ClockTx] [expr $ClockPeriod * 0.05] [remove_from_collection [all_inputs] [get_ports {"Clocks" {PEOutputs[*][ClockTx]}}]]
+    set_output_delay -clock [get_clocks MainClock] [expr $ClockPeriod * 0.05] [remove_from_collection [all_outputs] [get_ports {PEInputs[*][ClockRx]}]]
 
     # Set transition times as 1% of clock period
-    set_max_transition [expr $ClockPeriodMult2 * 0.01] [remove_from_collection [all_inputs] [get_ports {"Clocks" {PEOutputs[*][ClockTx]}}]]
+    set_max_transition [expr $ClockPeriod * 0.01] [remove_from_collection [all_inputs] [get_ports {"Clocks" {PEOutputs[*][ClockTx]}}]]
 
 } else {
 
@@ -32,13 +32,13 @@ if {[info exists XSize]} {
     set_ideal_net [get_nets {PEOutputs[*][ClockTx]}]
 
     # Set unidealistic values as 5% of clock period
-    set_clock_uncertainty [expr $ClockPeriodMult2 * 0.05] [get_clocks]
-    set_clock_latency [expr $ClockPeriodMult2 * 0.05] [get_clocks]
-    set_input_delay -clock [get_clocks ClockTx] [expr $ClockPeriodMult2 * 0.05] [remove_from_collection [all_inputs] [get_ports {"Clock" {PEOutputs[*][ClockTx]}}]]
-    set_output_delay -clock [get_clocks MainClock] [expr $ClockPeriodMult2 * 0.05] [remove_from_collection [all_outputs] [get_ports {PEInputs[*][ClockRx]}]]
+    set_clock_uncertainty [expr $ClockPeriod * 0.05] [get_clocks]
+    set_clock_latency [expr $ClockPeriod * 0.05] [get_clocks]
+    set_input_delay -clock [get_clocks ClockTx] [expr $ClockPeriod * 0.05] [remove_from_collection [all_inputs] [get_ports {"Clock" {PEOutputs[*][ClockTx]}}]]
+    set_output_delay -clock [get_clocks MainClock] [expr $ClockPeriod * 0.05] [remove_from_collection [all_outputs] [get_ports {PEInputs[*][ClockRx]}]]
 
     # Set transition times as 1% of clock period
-    set_max_transition [expr $ClockPeriodMult2 * 0.01] [remove_from_collection [all_inputs] [get_ports {"Clock" {PEOutputs[*][ClockTx]}}]]
+    set_max_transition [expr $ClockPeriod * 0.01] [remove_from_collection [all_inputs] [get_ports {"Clock" {PEOutputs[*][ClockTx]}}]]
    
 }
 
