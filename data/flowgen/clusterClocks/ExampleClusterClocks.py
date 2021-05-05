@@ -14,14 +14,7 @@ ClusterClocks[6] = float(10)
 ClusterClocks[7] = float(10)
 ClusterClocks[8] = float(10)
 
-class ComplexEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, complex):
-            return [obj.real, obj.imag]
-        # Let the base class default method raise the TypeError
-        return json.JSONEncoder.default(self, obj)
-
-ClocksJSONString = json.dumps(ClusterClocks, sort_keys = False, indent = 4, cls=ComplexEncoder)
+ClocksJSONString = json.dumps(ClusterClocks, sort_keys = False, indent = 4)
 
 with open("ExampleClusterClocks.json", "w") as JSONFile:
     JSONFile.write(ClocksJSONString)
