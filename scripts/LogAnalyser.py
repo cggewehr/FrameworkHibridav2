@@ -1,4 +1,5 @@
 
+
 class Message:
 
     # Constructor
@@ -77,12 +78,12 @@ def loganalyser(argv):
     import os
     import sys
 
+     # Gets framework configs
+    ConfigFile = open(os.getenv("HIBRIDA_CONFIG_FILE"), "r")
+    ConfigDict = json.loads(ConfigFile.read())
+    ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
+
     # Sets argument values
-    try:
-        #ProjectDir = str(sys.argv[1])
-        ProjectDir = argv[0]
-    except IndexError:
-        ProjectDir = ""
 
     try:
         #debugFlag = int(sys.argv[2])
