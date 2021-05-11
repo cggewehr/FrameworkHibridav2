@@ -75,7 +75,7 @@ architecture RTL of Trigger is
     constant StartTime: time := jsonGetReal(InjectorJSONConfig, "StartTime") * 1 ns;
     constant StopTime: time := jsonGetReal(InjectorJSONConfig, "StopTime") * 1 ns;
     constant Periodic: boolean := jsonGetBoolean(InjectorJSONConfig, "Periodic");
-    constant MaxAmountOfMessages: boolean := jsonGetBoolean(InjectorJSONConfig, "MSGAmount");
+    constant MaxAmountOfMessages: integer := jsonGetInteger(InjectorJSONConfig, "MSGAmount");
 
 begin
 

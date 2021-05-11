@@ -1,244 +1,244 @@
 [
     [
-        "DVFSMaster",
-        "DVFSSlave0",
+        "DVFSApp.Master",
+        "DVFSApp.Slave0",
         "BB_PIP.InpMemA",
         "MM_H264_60_A.MVPadding",
         "AA_MPEG4_A.UpSamp",
         "HH_MPEG4.UpSamp"
     ],
     [
-        "DVFSSlave1",
+        "DVFSApp.Slave1",
         "BB_PIP.HS",
         "MM_H264_60_A.MotionEstimation",
         "AA_MPEG4_A.SRAM2",
         "HH_MPEG4.SRAM2"
     ],
     [
-        "DVFSSlave2",
+        "DVFSApp.Slave2",
         "AA_MPEG4_B.IDCT",
         "HH_MPEG4.IDCT"
     ],
     [
-        "DVFSSlave3",
+        "DVFSApp.Slave3",
         "BB_H264_30.VideoIn",
         "MM_H264_60_B.SampleHold",
         "AA_MPEG4_B.SRAM2",
         "HH_H264_60.VideoIn"
     ],
     [
-        "DVFSSlave4",
+        "DVFSApp.Slave4",
         "BB_H264_30.MVPadding",
         "MM_H264_60_B.DeblockingFilter",
         "AA_MPEG4_B.UpSamp",
         "HH_H264_60.MVPadding"
     ],
     [
-        "DVFSSlave5",
+        "DVFSApp.Slave5",
         "BB_H264_30.StreamOut",
         "AA_VOPD.ARM",
         "HH_H264_60.StreamOut"
     ],
     [
-        "DVFSSlave6",
+        "DVFSApp.Slave6",
         "BB_PIP.JUG1",
         "MM_H264_60_A.ChromaResampler",
         "AA_MPEG4_A.SDRAM",
         "HH_MPEG4.SDRAM"
     ],
     [
-        "DVFSSlave7",
+        "DVFSApp.Slave7",
         "BB_PIP.VS",
         "MM_H264_60_A.YUVGenerator",
         "AA_MPEG4_A.IDCT",
         "HH_MPEG4.RISC"
     ],
     [
-        "DVFSSlave8",
+        "DVFSApp.Slave8",
         "BB_H264_30.ChromaResampler",
         "AA_MPEG4_A.RISC",
         "HH_H264_60.ChromaResampler"
     ],
     [
-        "DVFSSlave9",
+        "DVFSApp.Slave9",
         "BB_H264_30.YUVGenerator",
         "MM_H264_60_B.MotionCompensation",
         "AA_MPEG4_B.RISC",
         "HH_H264_60.YUVGenerator"
     ],
     [
-        "DVFSSlave10",
+        "DVFSApp.Slave10",
         "BB_H264_30.MotionEstimation",
         "MM_H264_60_B.Predictor",
         "AA_MPEG4_B.SDRAM",
         "HH_H264_60.MotionEstimation"
     ],
     [
-        "DVFSSlave11",
+        "DVFSApp.Slave11",
         "BB_H264_30.EntropyEncoder",
         "MM_H264_60_B.StreamOut",
         "AA_MPEG4_B.BAB",
         "HH_H264_60.EntropyEncoder"
     ],
     [
-        "DVFSSlave12",
+        "DVFSApp.Slave12",
         "BB_MWD.SE",
         "MM_H264_60_A.DCT",
         "AA_MPEG4_A.AU",
         "HH_MPEG4.AU"
     ],
     [
-        "DVFSSlave13",
+        "DVFSApp.Slave13",
         "BB_MWD.VS",
         "MM_H264_60_A.VideoIn",
         "AA_MPEG4_A.RAST",
         "HH_MPEG4.RAST"
     ],
     [
-        "DVFSSlave14",
+        "DVFSApp.Slave14",
         "BB_MWD.HS",
         "AA_VOPD.StripeMem"
     ],
     [
-        "DVFSSlave15",
+        "DVFSApp.Slave15",
         "BB_H264_30.MotionCompensation",
         "MM_H264_60_B.VideoIn",
         "AA_MPEG4_B.RAST",
         "HH_H264_60.MotionCompensation"
     ],
     [
-        "DVFSSlave16",
+        "DVFSApp.Slave16",
         "BB_H264_30.DCT",
         "MM_H264_60_B.DCT",
         "AA_MPEG4_B.AU",
         "HH_H264_60.DCT"
     ],
     [
-        "DVFSSlave17",
+        "DVFSApp.Slave17",
         "BB_H264_30.SampleHold",
         "MM_H264_60_B.EntropyEncoder",
         "AA_MPEG4_B.SRAM1",
         "HH_H264_60.SampleHold"
     ],
     [
-        "DVFSSlave18",
+        "DVFSApp.Slave18",
         "BB_MWD.MEM3",
         "MM_H264_60_A.Predictor",
         "AA_VOPD.VLD",
         "HH_PIP.InpMemA"
     ],
     [
-        "DVFSSlave19",
+        "DVFSApp.Slave19",
         "BB_MWD.JUG1",
         "MM_H264_60_A.MotionCompensation",
         "AA_VOPD.AcdcPred",
         "HH_PIP.InpMemB"
     ],
     [
-        "DVFSSlave20",
+        "DVFSApp.Slave20",
         "BB_MWD.IN",
         "AA_VOPD.IQuan",
         "HH_PIP.JUG2"
     ],
     [
-        "DVFSSlave21",
+        "DVFSApp.Slave21",
         "BB_H264_30.Predictor",
         "MM_H264_60_B.YUVGenerator",
         "AA_VOPD.Pad",
         "HH_H264_60.Predictor"
     ],
     [
-        "DVFSSlave22",
+        "DVFSApp.Slave22",
         "BB_H264_30.DeblockingFilter",
         "MM_H264_60_B.ChromaResampler",
         "AA_VOPD.VopMem",
         "HH_H264_60.DeblockingFilter"
     ],
     [
-        "DVFSSlave23",
+        "DVFSApp.Slave23",
         "BB_H264_30.IDCT",
         "MM_H264_60_B.IDCT",
         "AA_MPEG4_B.MedCPU",
         "HH_H264_60.IDCT"
     ],
     [
-        "DVFSSlave24",
+        "DVFSApp.Slave24",
         "BB_MWD.JUG2",
         "MM_H264_60_A.DeblockingFilter",
         "AA_VOPD.RunLeDec",
         "HH_PIP.HS"
     ],
     [
-        "DVFSSlave25",
+        "DVFSApp.Slave25",
         "BB_MWD.HVS",
         "MM_H264_60_A.SampleHold",
         "AA_VOPD.InvScan",
         "HH_PIP.VS"
     ],
     [
-        "DVFSSlave26",
+        "DVFSApp.Slave26",
         "BB_MWD.MEM2",
         "AA_VOPD.IDCT",
         "HH_PIP.JUG1"
     ],
     [
-        "DVFSSlave27",
+        "DVFSApp.Slave27",
         "BB_MWD.NR",
         "MM_H264_60_B.MotionEstimation",
         "AA_VOPD.UpSamp",
         "HH_PIP.MEM"
     ],
     [
-        "DVFSSlave28",
+        "DVFSApp.Slave28",
         "BB_MWD.MEM1",
         "MM_H264_60_B.MVPadding",
         "AA_VOPD.VopRec",
         "HH_PIP.OpDisp"
     ],
     [
-        "DVFSSlave29",
+        "DVFSApp.Slave29",
         "BB_H264_30.IQ",
         "MM_H264_60_B.IQ",
         "AA_MPEG4_B.ADSP",
         "HH_H264_60.IQ"
     ],
     [
-        "DVFSSlave30",
+        "DVFSApp.Slave30",
         "BB_MWD.Blend",
         "MM_H264_60_A.Quantization",
         "AA_MPEG4_A.VU",
         "HH_MPEG4.VU"
     ],
     [
-        "DVFSSlave31",
+        "DVFSApp.Slave31",
         "BB_PIP.InpMemB",
         "MM_H264_60_A.IQ",
         "AA_MPEG4_B.ADSP",
         "HH_MPEG4.ADSP"
     ],
     [
-        "DVFSSlave32",
+        "DVFSApp.Slave32",
         "BB_PIP.JUG2",
         "MM_H264_60_A.IDCT",
         "AA_MPEG4_A.MedCPU",
         "HH_MPEG4.MedCPU"
     ],
     [
-        "DVFSSlave33",
+        "DVFSApp.Slave33",
         "BB_PIP.MEM",
         "MM_H264_60_A.EntropyEncoder",
         "AA_MPEG4_A.SRAM1",
         "HH_MPEG4.SRAM1"
     ],
     [
-        "DVFSSlave34",
+        "DVFSApp.Slave34",
         "BB_PIP.OpDisp",
         "MM_H264_60_A.StreamOut",
         "AA_MPEG4_A.BAB",
         "HH_MPEG4.BAB"
     ],
     [
-        "DVFSSlave35",
+        "DVFSApp.Slave35",
         "BB_H264_30.DCT",
         "MM_H264_60_B.Quantization",
         "AA_MPEG4_B.VU",

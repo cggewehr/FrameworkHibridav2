@@ -756,13 +756,13 @@ class Platform:
                     ThreadInSet.BaseNoCPos = self.PEs[PEPos].BaseNoCPos
                     
                     try:
-                        for PE in self.BaseNoC[PEPos % self.SquareNoCBound][PEPos / self.SquareNoCBound].PEs:
+                        for PE in self.BaseNoC[int(PEPos % self.SquareNoCBound)][int(PEPos / self.SquareNoCBound)].PEs:
                             if PEPos == PE.PEPos:
                                 ThreadInSet.StructPos = PE.StructPos
                             
                     # Allocated PE is in base NoC
                     except AttributeError:
-                        ThreadInSet.StructPos = self.BaseNoC[PEPos % self.SquareNoCBound][PEPos / self.SquareNoCBound].StructPos
+                        ThreadInSet.StructPos = self.BaseNoC[int(PEPos % self.SquareNoCBound)][int(PEPos / self.SquareNoCBound)].StructPos
                     
                 # TODO: Check if allocated Threads allocated to a same PE communicate between themselves, and if so, dont generate Injectors for those Flows
                     
@@ -1126,14 +1126,13 @@ class Platform:
         # Forces setting PEPos values
         self.PEs
 
-        # A "hand-built" dict is required because self.__dict__ doesnt have @property decorators keys (self.AmountOfPEs, etc)
+        # A "hand-built" dict is required because self.__dict__ doesnt have @property decorator keys (self.AmountOfPEs, etc)
         JSONDict = dict()
         
         # General Info
         JSONDict["AmountOfPEs"] = self.AmountOfPEs
         JSONDict["AmountOfWrappers"] = self.AmountOfWrappers
         JSONDict["BaseNoCDimensions"] = self.BaseNoCDimensions
-        #JSONDict["ReferenceClock"] = self.ReferenceClock
         JSONDict["SquareNoCBound"] = self.SquareNoCBound
         #JSONDict["StandaloneFlag"] = self.StandaloneFlag
         #JSONDict["WrapperAddresses"] = [self.WrapperAddresses[PEPos] for PEPos in self.WrapperAddresses.keys()]  #  Dict -> List
@@ -1151,44 +1150,50 @@ class Platform:
         # Bus info
         JSONDict["IsStandaloneBus"] = self.IsStandaloneBus
         JSONDict["AmountOfBuses"] = self.AmountOfBuses 
-        JSONDict["AmountOfPEsInBuses"] = self.AmountOfPEsInBuses if self.AmountOfBuses > 0 else [-1]
-        JSONDict["BusWrapperAddresses"] = self.BusWrapperAddresses if self.AmountOfBuses > 0 else [-1]
         
-        BusPEIDs = dict()
-        LargestBus = 0
-        
-        for i, BusInPlat in enumerate(self.Buses):
-        
-            BusPEIDs["Bus" + str(i)] = [PEinBus.PEPos for PEinBus in BusInPlat.PEs]
+        if self.AmountOfBuses > 0:
+
+            JSONDict["AmountOfPEsInBuses"] = self.AmountOfPEsInBuses
+            JSONDict["BusWrapperAddresses"] = self.BusWrapperAddresses
             
-            if len(BusInPlat.PEs) > LargestBus:
-                LargestBus = len(BusInPlat.PEs)
+            BusPEIDs = dict()
+            LargestBus = 0
             
-        JSONDict["BusPEIDs"] = BusPEIDs
-        JSONDict["LargestBus"] = LargestBus
-        
-        JSONDict["BusWrapperIDs"] = [int(BusInPlat.BaseNoCPos) for BusInPlat in self.Buses] if self.AmountOfBuses > 0 else [-1]
+            for i, BusInPlat in enumerate(self.Buses):
+            
+                BusPEIDs["Bus" + str(i)] = [PEinBus.PEPos for PEinBus in BusInPlat.PEs
+                
+                if len(BusInPlat.PEs) > LargestBus:
+                    LargestBus = len(BusInPlat.PEs)
+                
+            JSONDict["BusPEIDs"] = BusPEIDs
+            JSONDict["LargestBus"] = LargestBus
+            
+            JSONDict["BusWrapperIDs"] = [int(BusInPlat.BaseNoCPos) for BusInPlat in self.Buses]
         
         # Crossbar info
         JSONDict["IsStandaloneCrossbar"] = self.IsStandaloneCrossbar
         JSONDict["AmountOfCrossbars"] = self.AmountOfCrossbars
-        JSONDict["AmountOfPEsInCrossbars"] = self.AmountOfPEsInCrossbars if self.AmountOfCrossbars > 0 else [-1]
-        JSONDict["CrossbarWrapperAddresses"] = self.CrossbarWrapperAddresses if self.AmountOfCrossbars > 0 else [-1]
-        
-        CrossbarPEIDs = dict()
-        LargestCrossbar = 0
-        
-        for i, CrossbarInPlat in enumerate(self.Crossbars):
-        
-            CrossbarPEIDs["Crossbar" + str(i)] = [PEinCrossbar.PEPos for PEinCrossbar in CrossbarInPlat.PEs]
+
+        if self.AmountOfCrossbars > 0:
+
+            JSONDict["AmountOfPEsInCrossbars"] = self.AmountOfPEsInCrossbars 
+            JSONDict["CrossbarWrapperAddresses"] = self.CrossbarWrapperAddresses
             
-            if len(CrossbarInPlat.PEs) > LargestCrossbar:
-                LargestCrossbar = len(CrossbarInPlat.PEs)
+            CrossbarPEIDs = dict()
+            LargestCrossbar = 0
             
-        JSONDict["CrossbarPEIDs"] = CrossbarPEIDs
-        JSONDict["LargestCrossbar"] = LargestCrossbar
-        
-        JSONDict["CrossbarWrapperIDs"] = [int(CrossbarInPlat.BaseNoCPos) for CrossbarInPlat in self.Crossbars] if self.AmountOfCrossbars > 0 else [-1]
+            for i, CrossbarInPlat in enumerate(self.Crossbars):
+            
+                CrossbarPEIDs["Crossbar" + str(i)] = [PEinCrossbar.PEPos for PEinCrossbar in CrossbarInPlat.PEs]
+                
+                if len(CrossbarInPlat.PEs) > LargestCrossbar:
+                    LargestCrossbar = len(CrossbarInPlat.PEs)
+                
+            JSONDict["CrossbarPEIDs"] = CrossbarPEIDs
+            JSONDict["LargestCrossbar"] = LargestCrossbar
+            
+            JSONDict["CrossbarWrapperIDs"] = [int(CrossbarInPlat.BaseNoCPos) for CrossbarInPlat in self.Crossbars]
         
         # sort_keys must be set as False so Buses and Crossbars are inserted in the same order in reconstructed Platform object
         JSONString = json.dumps(JSONDict, sort_keys = False, indent = 4)
@@ -1217,9 +1222,8 @@ class Platform:
         self.BaseNoCDimensions = tuple(JSONDict["BaseNoCDimensions"])
         #self.BaseNoC = [[None for x in range(BaseNoCDimensions[0])] for y in range(BaseNoCDimensions[1])]
         self.BaseNoC = [[None for y in range(self.BaseNoCDimensions[1])] for x in range(self.BaseNoCDimensions[0])]
-        #self.ReferenceClock = JSONDict["ReferenceClock"]  # In MHz
         self.StandaloneFlag = True if JSONDict["IsStandaloneBus"] or JSONDict["IsStandaloneCrossbar"] else False
-        #self.BridgeBufferSize = JSONDict["BridgeBufferSize"]        
+        self.BridgeBufferSize = JSONDict["BridgeBufferSize"]        
         self.MasterPEPos = JSONDict["MasterPEPos"]        
         self.DataWidth = JSONDict["DataWidth"]        
         
@@ -1253,24 +1257,22 @@ class Platform:
                 i += 1
         
         # Add Buses to Platform
-        for i, BusSize in enumerate(JSONDict["AmountOfPEsInBuses"]):
-            
-            # -1 = dummy value, inserted so that VHDL JSON parser doesnt see an empty array
-            if BusSize == -1:
-                break
+        if JSONDict["AmountOfBuses"] > 0:
 
-            BaseNoCTuple = (int(JSONDict["BusWrapperAddresses"][i] % self.BaseNoCDimensions[0]), int(JSONDict["BusWrapperAddresses"][i] / self.BaseNoCDimensions[0]))
-            self.addStructure(Bus(AmountOfPEs = BusSize), BaseNoCTuple)
+            for i, BusSize in enumerate(JSONDict["AmountOfPEsInBuses"]):
+
+                BaseNoCPos = (int(JSONDict["BusWrapperAddresses"][i] % self.BaseNoCDimensions[0]), int(JSONDict["BusWrapperAddresses"][i] / self.BaseNoCDimensions[0]))
+                self.addStructure(Bus(AmountOfPEs = BusSize), BaseNoCPos)
 
         # Add Crossbars to Platform
-        for i, CrossbarSize in enumerate(JSONDict["AmountOfPEsInCrossbars"]):
-            
-            # -1 = dummy value, inserted so that VHDL JSON parser doesnt see an empty array
-            if CrossbarSize == -1:
-                break
+        if JSONDict["AmountOfCrossbars"] > 0:
 
-            BaseNoCTuple = (int(JSONDict["CrossbarWrapperAddresses"][i] % self.BaseNoCDimensions[0]), int(JSONDict["CrossbarWrapperAddresses"][i] / self.BaseNoCDimensions[0]))
-            self.addStructure(Crossbar(AmountOfPEs = CrossbarSize), BaseNoCTuple)
+            for i, CrossbarSize in enumerate(JSONDict["AmountOfPEsInCrossbars"]):
+
+                BaseNoCPos = (int(JSONDict["CrossbarWrapperAddresses"][i] % self.BaseNoCDimensions[0]), int(JSONDict["CrossbarWrapperAddresses"][i] / self.BaseNoCDimensions[0]))
+                self.addStructure(Crossbar(AmountOfPEs = CrossbarSize), BaseNoCPos)
+
+        return self
         
 
     # TODO: Print Platform info for debug

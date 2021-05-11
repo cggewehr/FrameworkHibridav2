@@ -150,16 +150,16 @@ architecture RTL of HyHeMPS is
     -- DVFS parameters
     constant DVFSEnable: boolean := jsonGetBoolean(PlatCFG, "DVFSEnable");
     -- TODO: Convert from Hex string to slv
-    constant DVFSServiceID: DataWidth_t := std_logic_vector(to_unsigned(jsonGetInteger, DataWidth));
+    constant DVFSServiceID: DataWidth_t := std_logic_vector(to_unsigned(jsonGetInteger(PlatCFG, "DVFSServiceID"), DataWidth));
     constant DVFSAmountOfVoltageLevels: integer := jsonGetInteger(PlatCFG, "DVFSAmountOfVoltageLevels");
     constant DVFSCounterResolution: integer := jsonGetInteger(PlatCFG, "DVFSCounterResolution");
 
     -- DVFS interfaces
     subtype DVFSSwitchEnables_t is std_logic_vector(0 to DVFSAmountOfVoltageLevels - 1);
     type DVFSSwitchEnables_vector is array(natural range <>) of DVFSSwitchEnables_t;
-    signal DVFSRouterSwitchEnables: DVFSSwitchEnables_t(0 to AmountOfNoCNodes - 1);
-    signal DVFSBusSwitchEnables: DVFSSwitchEnables_t(0 to AmountOfBuses - 1);
-    signal DVFSCrossbarSwitchEnables: DVFSSwitchEnables_t(0 to AmountOfCrossbars - 1);
+    signal DVFSRouterSwitchEnables: DVFSSwitchEnables_vector(0 to AmountOfNoCNodes - 1);
+    signal DVFSBusSwitchEnables: DVFSSwitchEnables_vector(0 to AmountOfBuses - 1);
+    signal DVFSCrossbarSwitchEnables: DVFSSwitchEnables_vector(0 to AmountOfCrossbars - 1);
 
 begin
 
@@ -194,7 +194,7 @@ begin
 
                 );
 
-        end generate DVFSControllers;
+        end generate NoCDVFSControllers;
 
 
         BusDVFSControllers: for i in 0 to AmountOfBuses - 1 generate
@@ -266,7 +266,7 @@ begin
 
         SetRouterClocks: for i in 0 to AmountOfNoCNodes - 1 generate
             RouterClocks(i) <= Clocks(i);
-        end generate NoCClocks;
+        end generate SetRouterClocks;
 
         SetBusClocks: for i in 0 to AmountOfNoCNodes - 1 generate
             BusClocks(i) <= Clocks(BusWrapperIDs(i));

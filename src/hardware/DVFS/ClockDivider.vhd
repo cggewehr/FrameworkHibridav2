@@ -78,7 +78,7 @@ begin
 
 			-- Counter++ mod M
 			--incr(value: integer ; maxValue: in integer ; minValue: in integer)
-			CounterReg <= to_unsigned(incr(to_integer(CounterReg), to_integer(M) - 1, 0), CounterBitWidth);
+			CounterReg <= to_unsigned(incr(to_integer(CounterReg), to_integer(MReg) - 1, 0), CounterBitWidth);
 
 		end if;
 

@@ -460,7 +460,7 @@ package body HyHeMPS_PKG is
 
     function CONV_INTEGER(bool: boolean) return integer is begin
 
-        if value then
+        if bool then
             return 0;
         else
             return 1;
@@ -470,36 +470,36 @@ package body HyHeMPS_PKG is
 
 
     function CONV_DATAWIDTH(str: string) return DataWidth_t is
-        variable slv: DataWidth_t; 
+        variable slv: DataWidth_t := (others => 'X'); 
     begin 
 
         for i in str'range loop
 
             case (str(i)) is
 
-                when '0' => slv(4*i + 1 to 4*(i + 1)) := "0000";
-                when '1' => slv(4*i + 1 to 4*(i + 1)) := "0001";
-                when '2' => slv(4*i + 1 to 4*(i + 1)) := "0010";
-                when '3' => slv(4*i + 1 to 4*(i + 1)) := "0011";
-                when '4' => slv(4*i + 1 to 4*(i + 1)) := "0100";
-                when '5' => slv(4*i + 1 to 4*(i + 1)) := "0101";
-                when '6' => slv(4*i + 1 to 4*(i + 1)) := "0110";
-                when '7' => slv(4*i + 1 to 4*(i + 1)) := "0111";
-                when '8' => slv(4*i + 1 to 4*(i + 1)) := "1000";
-                when '9' => slv(4*i + 1 to 4*(i + 1)) := "1001";
-                when 'A' => slv(4*i + 1 to 4*(i + 1)) := "1010";
-                when 'B' => slv(4*i + 1 to 4*(i + 1)) := "1011";
-                when 'C' => slv(4*i + 1 to 4*(i + 1)) := "1100";
-                when 'D' => slv(4*i + 1 to 4*(i + 1)) := "1101";
-                when 'E' => slv(4*i + 1 to 4*(i + 1)) := "1110";
-                when 'F' => slv(4*i + 1 to 4*(i + 1)) := "1111";
+                when '0' => slv(4*(i + 1) downto 4*i + 1) := "0000";
+                when '1' => slv(4*(i + 1) downto 4*i + 1) := "0001";
+                when '2' => slv(4*(i + 1) downto 4*i + 1) := "0010";
+                when '3' => slv(4*(i + 1) downto 4*i + 1) := "0011";
+                when '4' => slv(4*(i + 1) downto 4*i + 1) := "0100";
+                when '5' => slv(4*(i + 1) downto 4*i + 1) := "0101";
+                when '6' => slv(4*(i + 1) downto 4*i + 1) := "0110";
+                when '7' => slv(4*(i + 1) downto 4*i + 1) := "0111";
+                when '8' => slv(4*(i + 1) downto 4*i + 1) := "1000";
+                when '9' => slv(4*(i + 1) downto 4*i + 1) := "1001";
+                when 'A' => slv(4*(i + 1) downto 4*i + 1) := "1010";
+                when 'B' => slv(4*(i + 1) downto 4*i + 1) := "1011";
+                when 'C' => slv(4*(i + 1) downto 4*i + 1) := "1100";
+                when 'D' => slv(4*(i + 1) downto 4*i + 1) := "1101";
+                when 'E' => slv(4*(i + 1) downto 4*i + 1) := "1110";
+                when 'F' => slv(4*(i + 1) downto 4*i + 1) := "1111";
                 when others => report "Cant convert <" & str & "> to hexadecimal" severity failure; 
 
             end case;
 
         end loop;
 
-        return slv(DataWidth - 1 downto 0); 
+        return slv; 
 
     end CONV_DATAWIDTH;
 

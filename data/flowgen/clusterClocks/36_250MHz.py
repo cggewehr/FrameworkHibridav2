@@ -2,7 +2,7 @@ import json
 from decimal import Decimal
 
 # ClusterClocks[BaseNoCPos] = Clock Period (in ns)
-ClusterClocks = [float(4)] * 35
+ClusterClocks = [float(4)] * 36
 
 ClocksJSONString = json.dumps(ClusterClocks, sort_keys = False, indent = 4)
 

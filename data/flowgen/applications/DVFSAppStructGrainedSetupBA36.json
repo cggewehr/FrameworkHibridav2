@@ -1,1269 +1,1269 @@
 {
-    "DVFSSlave29": {
+    "Slave34": {
         "Flows": []
     },
-    "DVFSSlave19": {
+    "Slave7": {
         "Flows": []
     },
-    "DVFSMaster": {
+    "Master": {
         "Flows": [
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave0",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave0",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave1",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave1",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave2",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave2",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave3",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave3",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave6",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave6",
                 "Payload": [
                     "0000FFFF",
                     "00040019"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave7",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave7",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave8",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave8",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave9",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave9",
                 "Payload": [
                     "0000FFFF",
                     "017FB98D"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave12",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave12",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave13",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave13",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave14",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave14",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave15",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave15",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave18",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave18",
                 "Payload": [
                     "0000FFFF",
                     "000C007D"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave19",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave19",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave20",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave20",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave21",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 0,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave21",
                 "Payload": [
                     "0000FFFF",
                     "0001800A"
                 ],
-                "StartTime": 0,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave0",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave0",
                 "Payload": [
                     "0000FFFF",
                     "4B61FB0B"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave1",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave1",
                 "Payload": [
                     "0000FFFF",
                     "4B61FB0B"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave2",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave2",
                 "Payload": [
                     "0000FFFF",
                     "4B61FB0B"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave3",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave3",
                 "Payload": [
                     "0000FFFF",
                     "4B61FB0B"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave6",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave6",
                 "Payload": [
                     "0000FFFF",
                     "0515E1A8"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave7",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave7",
                 "Payload": [
                     "0000FFFF",
                     "4B61FB0B"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave8",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave8",
                 "Payload": [
                     "0000FFFF",
                     "4B61FB0B"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave9",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave9",
                 "Payload": [
                     "0000FFFF",
                     "0515E1A8"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave12",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave12",
                 "Payload": [
                     "0000FFFF",
                     "4B61FB0B"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave13",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave13",
                 "Payload": [
                     "0000FFFF",
                     "4B61FB0B"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave14",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave14",
                 "Payload": [
                     "0000FFFF",
                     "4B61FB0B"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave15",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave15",
                 "Payload": [
                     "0000FFFF",
                     "4B61FB0B"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave18",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave18",
                 "Payload": [
                     "0000FFFF",
                     "80018005"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave19",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave19",
                 "Payload": [
                     "0000FFFF",
                     "4B61FB0B"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave20",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave20",
                 "Payload": [
                     "0000FFFF",
                     "4B61FB0B"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave21",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 1000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave21",
                 "Payload": [
                     "0000FFFF",
                     "80018005"
                 ],
-                "StartTime": 1000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave0",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave0",
                 "Payload": [
                     "0000FFFF",
                     "C0020005"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave1",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave1",
                 "Payload": [
                     "0000FFFF",
                     "C0020005"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave2",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave2",
                 "Payload": [
                     "0000FFFF",
                     "C0020005"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave3",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave3",
                 "Payload": [
                     "0000FFFF",
                     "C0020005"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave6",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave6",
                 "Payload": [
                     "0000FFFF",
                     "004B83E8"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave7",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave7",
                 "Payload": [
                     "0000FFFF",
                     "C0020005"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave8",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave8",
                 "Payload": [
                     "0000FFFF",
                     "C0020005"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave9",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave9",
                 "Payload": [
                     "0000FFFF",
                     "003083E8"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave12",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave12",
                 "Payload": [
                     "0000FFFF",
                     "C0020005"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave13",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave13",
                 "Payload": [
                     "0000FFFF",
                     "C0020005"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave14",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave14",
                 "Payload": [
                     "0000FFFF",
                     "C0020005"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave15",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave15",
                 "Payload": [
                     "0000FFFF",
                     "C0020005"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave18",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave18",
                 "Payload": [
                     "0000FFFF",
                     "839987D0"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave19",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave19",
                 "Payload": [
                     "0000FFFF",
                     "C0020005"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave20",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave20",
                 "Payload": [
                     "0000FFFF",
                     "C0020005"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave21",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 2000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave21",
                 "Payload": [
                     "0000FFFF",
                     "839987D0"
                 ],
-                "StartTime": 2000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave0",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave0",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave1",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave1",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave2",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave2",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave3",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave3",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave6",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave6",
                 "Payload": [
                     "0000FFFF",
                     "006083E8"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave7",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave7",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave8",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave8",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave9",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave9",
                 "Payload": [
                     "0000FFFF",
                     "0515E1A8"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave12",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave12",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave13",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave13",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave14",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave14",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave15",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave15",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave18",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave18",
                 "Payload": [
                     "0000FFFF",
                     "839987D0"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave19",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave19",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave20",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave20",
                 "Payload": [
                     "0000FFFF",
                     "400C007D"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             },
             {
-                "MSGAmount": 1,
-                "SourceThread": "DVFSMaster",
-                "TargetThread": "DVFSSlave21",
+                "StopTime": 0,
+                "SourceThread": "Master",
+                "StartTime": 3000000,
                 "Header": [
                     "ADDR",
                     "SIZE"
                 ],
+                "TargetThread": "Slave21",
                 "Payload": [
                     "0000FFFF",
                     "80018005"
                 ],
-                "StartTime": 3000000,
-                "ControlFlowFlag": false,
                 "Periodic": false,
-                "StopTime": 0,
+                "ControlFlowFlag": false,
+                "MSGAmount": 1,
                 "Bandwidth": 128000
             }
         ]
     },
-    "DVFSSlave30": {
+    "Slave26": {
         "Flows": []
     },
-    "DVFSSlave28": {
+    "Slave30": {
         "Flows": []
     },
-    "DVFSSlave24": {
+    "Slave3": {
         "Flows": []
     },
-    "DVFSSlave34": {
+    "Slave19": {
         "Flows": []
     },
-    "DVFSSlave1": {
+    "Slave17": {
         "Flows": []
     },
-    "DVFSSlave22": {
+    "Slave12": {
         "Flows": []
     },
-    "StopTime": 0,
-    "DVFSSlave33": {
+    "Slave1": {
         "Flows": []
     },
-    "DVFSSlave23": {
+    "Slave11": {
         "Flows": []
     },
-    "DVFSSlave5": {
+    "Slave18": {
         "Flows": []
     },
-    "AppName": "DVFSAppStructGrainedSetupBA36",
-    "DVFSSlave31": {
+    "Slave6": {
         "Flows": []
     },
-    "DVFSSlave4": {
+    "Slave15": {
         "Flows": []
     },
-    "DVFSSlave27": {
+    "Slave23": {
         "Flows": []
     },
-    "DVFSSlave18": {
+    "Slave5": {
         "Flows": []
     },
-    "DVFSSlave26": {
+    "Slave28": {
         "Flows": []
     },
-    "DVFSSlave32": {
+    "Slave13": {
         "Flows": []
     },
-    "DVFSSlave0": {
+    "Slave9": {
         "Flows": []
     },
-    "DVFSSlave3": {
+    "Slave27": {
         "Flows": []
     },
-    "DVFSSlave13": {
+    "Slave4": {
         "Flows": []
     },
-    "DVFSSlave11": {
+    "Slave0": {
         "Flows": []
     },
-    "DVFSSlave35": {
-        "Flows": []
-    },
-    "DVFSSlave25": {
-        "Flows": []
-    },
-    "DVFSSlave17": {
+    "Slave25": {
         "Flows": []
     },
     "StartTime": 0,
-    "DVFSSlave21": {
+    "Slave22": {
         "Flows": []
     },
-    "DVFSSlave7": {
+    "Slave33": {
         "Flows": []
     },
-    "DVFSSlave8": {
+    "Slave35": {
         "Flows": []
     },
-    "DVFSSlave6": {
+    "Slave21": {
         "Flows": []
     },
-    "DVFSSlave9": {
+    "Slave31": {
         "Flows": []
     },
-    "DVFSSlave16": {
+    "Slave20": {
         "Flows": []
     },
-    "DVFSSlave15": {
+    "Slave16": {
         "Flows": []
     },
-    "DVFSSlave2": {
+    "Slave29": {
         "Flows": []
     },
-    "DVFSSlave12": {
+    "StopTime": 0,
+    "Slave10": {
         "Flows": []
     },
-    "DVFSSlave10": {
+    "AppName": "DVFSApp",
+    "Slave14": {
         "Flows": []
     },
-    "DVFSSlave14": {
+    "Slave2": {
         "Flows": []
     },
-    "DVFSSlave20": {
+    "Slave8": {
+        "Flows": []
+    },
+    "Slave24": {
+        "Flows": []
+    },
+    "Slave32": {
         "Flows": []
     }
 }

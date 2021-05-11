@@ -74,11 +74,11 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
     if GenRouterGrained:
     
         # Make Application
-        DVFSApp = AppComposer.Application(AppName = "DVFSAppRouterGrained" + str(PlatformName), StartTime = 0, StopTime = 0)
+        DVFSApp = AppComposer.Application(AppName = "DVFSApp", StartTime = 0, StopTime = 0)
 
         # Make Threads
-        DVFSMaster = AppComposer.Thread(ThreadName = "DVFSMaster")
-        DVFSSlaves = [AppComposer.Thread(ThreadName = "DVFSSlave" + str(i)) for i in range(0, AmountOfPEs)]
+        DVFSMaster = AppComposer.Thread(ThreadName = "Master")
+        DVFSSlaves = [AppComposer.Thread(ThreadName = "Slave" + str(i)) for i in range(0, AmountOfPEs)]
 
         # Add Threads to applications
         DVFSApp.addThread(DVFSMaster)
@@ -164,11 +164,11 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
         
         # Make Application
         if SaveToFile:
-            DVFSApp = AppComposer.Application(AppName = "DVFSAppStructGrained" + str(PlatformName), StartTime = 0, StopTime = 0)
+            DVFSApp = AppComposer.Application(AppName = "DVFSApp", StartTime = 0, StopTime = 0)
 
         # Make Threads
-        DVFSMaster = AppComposer.Thread(ThreadName = "DVFSMaster")
-        DVFSSlaves = [AppComposer.Thread(ThreadName = "DVFSSlave" + str(i)) for i in range(0, AmountOfPEs)]
+        DVFSMaster = AppComposer.Thread(ThreadName = "Master")
+        DVFSSlaves = [AppComposer.Thread(ThreadName = "Slave" + str(i)) for i in range(0, AmountOfPEs)]
 
         # Add Threads to applications
         DVFSApp.addThread(DVFSMaster)
@@ -248,11 +248,11 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
     if GenGlobalGrained:
         
         # Make Application
-        DVFSApp = AppComposer.Application(AppName = "DVFSAppGlobalGrained" + str(PlatformName), StartTime = 0, StopTime = 0)
+        DVFSApp = AppComposer.Application(AppName = "DVFSApp", StartTime = 0, StopTime = 0)
 
         # Make Threads
-        DVFSMaster = AppComposer.Thread(ThreadName = "DVFSMaster")
-        DVFSSlaves = [AppComposer.Thread(ThreadName = "DVFSSlave" + str(i)) for i in range(0, AmountOfPEs)]
+        DVFSMaster = AppComposer.Thread(ThreadName = "Master")
+        DVFSSlaves = [AppComposer.Thread(ThreadName = "Slave" + str(i)) for i in range(0, AmountOfPEs)]
 
         # Add Threads to applications
         DVFSApp.addThread(DVFSMaster)
@@ -308,11 +308,11 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
     if GenStaticClocked:
         
         # Make Application
-        DVFSApp = AppComposer.Application(AppName = "DVFSAppStaticClocked" + str(PlatformName), StartTime = 0, StopTime = 0)
+        DVFSApp = AppComposer.Application(AppName = "DVFSApp" + str(PlatformName), StartTime = 0, StopTime = 0)
 
         # Make Threads
-        DVFSMaster = AppComposer.Thread(ThreadName = "DVFSMaster")
-        DVFSSlaves = [AppComposer.Thread(ThreadName = "DVFSSlave" + str(i)) for i in range(0, AmountOfPEs)]
+        DVFSMaster = AppComposer.Thread(ThreadName = "Master")
+        DVFSSlaves = [AppComposer.Thread(ThreadName = "Slave" + str(i)) for i in range(0, AmountOfPEs)]
 
         # Add Threads to applications
         DVFSApp.addThread(DVFSMaster)

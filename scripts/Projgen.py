@@ -188,9 +188,9 @@ def projgen(args):
                 make_file.write('	@echo "############### FINALIZE SIMULATION HYBRID #################"\n')
                 make_file.write("\n")
                 make_file.write("all:\n")
-                make_file.write("	make compile\n")
-                make_file.write("	make elab\n")
-                make_file.write("	make sim\n")
+                make_file.write("	make -C $(PROJECT_DIR) compile\n")
+                make_file.write("	make -C $(PROJECT_DIR) elab\n")
+                make_file.write("	make -C $(PROJECT_DIR) sim\n")
                 
                 # TODO: make clean
                 # waves.shm

@@ -15,7 +15,7 @@ BBWorkload[7] = "BB_H264_30.IDCT"
 BBWorkload[8] = "BB_PIP.OpDisp"
 BBWorkload[9] = "BB_PIP.MEM"
 BBWorkload[10] = "BB_PIP.JUG2"
-BBWorkload[11] = "BB_PIP.InpMemA"
+BBWorkload[11] = "BB_PIP.InpMemB"
 BBWorkload[12] = "BB_H264_30.Quantization"
 BBWorkload[13] = "BB_H264_30.SampleHold"
 BBWorkload[14] = "BB_H264_30.DeblockingFilter"
@@ -95,7 +95,7 @@ AAWorkload[9] = "AA_MPEG4_B.AU"
 AAWorkload[10] = "AA_MPEG4_B.IDCT"
 AAWorkload[11] = "AA_MPEG4_B.SRAM2"
 AAWorkload[12] = "AA_MPEG4_A.VU"
-AAWorkload[13] = "AA_MPEG4_B.SDRAM"
+AAWorkload[13] = "AA_MPEG4_A.SDRAM"
 AAWorkload[14] = "AA_MPEG4_A.UpSamp"
 AAWorkload[15] = "AA_MPEG4_B.VU"
 AAWorkload[16] = "AA_MPEG4_B.SDRAM"
@@ -163,7 +163,7 @@ AllocMap = [None] * 36
 
 # Merges workload specific allocations into one and adds DVFS slave threads
 for i in range(0, 36):
-    AllocMap[i] = ["DVFSSlave" + str(i), BBWorkload[i], MMWorkload[i], AAWorkload[i], HHWorkload[i]]
+    AllocMap[i] = ["DVFSApp.Slave" + str(i), BBWorkload[i], MMWorkload[i], AAWorkload[i], HHWorkload[i]]
     
     # Removes all None values from list
     while True:
@@ -173,7 +173,7 @@ for i in range(0, 36):
             break
             
 # Adds DVFS master thread (moves "DVFSMaster" to the front)
-AllocMap[DVFSMasterPEPos] = ["DVFSMaster"] + AllocMap[DVFSMasterPEPos]
+AllocMap[DVFSMasterPEPos] = ["DVFSApp.Master"] + AllocMap[DVFSMasterPEPos]
 
 # Saves Alocation Map to JSON file
 with open("Hermes36.json", "w") as JSONFile:

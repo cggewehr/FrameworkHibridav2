@@ -216,7 +216,7 @@ package body Injector_PKG is
             -- Interprets flit as hexadecimal literal
             else
 
-            	Payload := CONV_DATAWIDTH(PayloadFlitString);
+            	Payload(flit) := CONV_DATAWIDTH(PayloadFlitString);
             	--report "Flit number " & integer'image(flit) & " <" & PayloadFlitString & "> of header of message from PE ID <" & integer'image(SourcePEPos) & "> to PE ID <" & integer'image(TargetPEPos) & "> is not defined" severity error;
 
             end if;
