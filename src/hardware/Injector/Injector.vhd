@@ -77,18 +77,18 @@ architecture RTL of Injector is
     constant FlowType: string(1 to 3) := jsonGetString(InjectorJSONConfig, "FlowType");
 
     -- Emulated Workload Values
-    constant Bandwidth: integer := jsonGetInteger(InjectorJSONConfig, "Bandwidth");  -- in MBps
+    constant Bandwidth: real := jsonGetReal(InjectorJSONConfig, "Bandwidth");  -- in MBps
     constant SourcePEPos: integer := jsonGetInteger(InjectorJSONConfig, "SourcePEPos");
     constant SourceBaseNoCPos: integer := jsonGetInteger(InjectorJSONConfig, "SourceBaseNoCPos");
     constant SourceThreadID: integer := jsonGetInteger(InjectorJSONConfig, "SourceThreadID");
-    constant SourceThreadName: string := jsonGetString(InjectorJSONConfig, "SourceThreadName");
+    --constant SourceThreadName: string := jsonGetString(InjectorJSONConfig, "SourceThreadName");
     constant TargetPEPos: integer := jsonGetInteger(InjectorJSONConfig, "TargetPEPos");
     constant TargetBaseNoCPos: integer := jsonGetInteger(InjectorJSONConfig, "TargetBaseNoCPos");
     constant TargetThreadID: integer := jsonGetInteger(InjectorJSONConfig, "TargetThreadID");
-    constant TargetThreadName: string := jsonGetString(InjectorJSONConfig, "TargetThreadName");
+    --constant TargetThreadName: string := jsonGetString(InjectorJSONConfig, "TargetThreadName");
     constant AppID: integer := jsonGetInteger(InjectorJSONConfig, "AppID");
-    constant AppName: string := jsonGetString(InjectorJSONConfig, "AppName");
-    constant WorkloadName: string := jsonGetString(InjectorJSONConfig, "WorkloadName");
+    --constant AppName: string := jsonGetString(InjectorJSONConfig, "AppName");
+    --constant WorkloadName: string := jsonGetString(InjectorJSONConfig, "WorkloadName");
     
     -- Message Header
     constant HeaderSize: integer := jsonGetInteger(InjectorJSONConfig, "HeaderSize");

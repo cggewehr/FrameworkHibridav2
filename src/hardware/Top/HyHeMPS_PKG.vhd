@@ -198,9 +198,9 @@ package body HyHeMPS_PKG is
         
         constant AmountOfPEs: integer := jsonGetInteger(PlatCFG, "AmountOfPEs");
         constant AmountOfBuses: integer := jsonGetInteger(PlatCFG, "AmountOfBuses");
-        constant AmountOfPEsInBuses: integer_vector(0 to AmountOfBuses - 1) := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInBuses");
+        --constant AmountOfPEsInBuses: integer_vector(0 to AmountOfBuses - 1) := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInBuses");
         constant AmountOfCrossbars: integer := jsonGetInteger(PlatCFG, "AmountOfCrossbars");
-        constant AmountOfPEsInCrossbars: integer_vector(0 to AmountOfCrossbars - 1) := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInCrossbars");
+        --constant AmountOfPEsInCrossbars: integer_vector(0 to AmountOfCrossbars - 1) := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInCrossbars");
         constant SquareNoCBound: integer := jsonGetInteger(PlatCFG, "SquareNoCBound");
         constant WrapperAddresses: integer_vector(0 to AmountOfPEs - 1) := jsonGetIntegerArray(PlatCFG, "WrapperAddresses");
         
@@ -212,9 +212,16 @@ package body HyHeMPS_PKG is
         ));
         
         variable PE: integer;
+        variable AmountOfPEsInBuses: integer_vector(0 to AmountOfBuses - 1);
+        variable AmountOfPEsInCrossbars: integer_vector(0 to AmountOfCrossbars - 1);
 
     begin
-    
+
+        -- Get amount of PEs for every bus
+        if AmountOfBuses > 0 then
+            AmountOfPEsInBuses := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInBuses");
+        end if;
+
         -- Loop through every bus
         for BusID in 0 to AmountOfBuses - 1 loop
         
@@ -232,10 +239,15 @@ package body HyHeMPS_PKG is
             end loop; 
         
         end loop;
-        
+
+        -- Get amount of PEs for every crossbar
+        if AmountOfCrossbars > 0 then
+            AmountOfPEsInCrossbars := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInCrossbars");
+        end if;
+
         -- Loop through every crossbar
         for CrossbarID in 0 to AmountOfCrossbars - 1 loop
-        
+
             -- Loop through every PE in current crossbar
             for PEInCrossbar in 0 to AmountOfPEsInCrossbars(CrossbarID) - 1 loop
             
@@ -470,32 +482,35 @@ package body HyHeMPS_PKG is
 
 
     function CONV_DATAWIDTH(str: string) return DataWidth_t is
-        variable slv: DataWidth_t := (others => 'X'); 
+        variable slv: DataWidth_t := (others => 'X');
+        variable slv_index: integer := DataWidth - 1; 
     begin 
 
         for i in str'range loop
 
             case (str(i)) is
 
-                when '0' => slv(4*(i + 1) downto 4*i + 1) := "0000";
-                when '1' => slv(4*(i + 1) downto 4*i + 1) := "0001";
-                when '2' => slv(4*(i + 1) downto 4*i + 1) := "0010";
-                when '3' => slv(4*(i + 1) downto 4*i + 1) := "0011";
-                when '4' => slv(4*(i + 1) downto 4*i + 1) := "0100";
-                when '5' => slv(4*(i + 1) downto 4*i + 1) := "0101";
-                when '6' => slv(4*(i + 1) downto 4*i + 1) := "0110";
-                when '7' => slv(4*(i + 1) downto 4*i + 1) := "0111";
-                when '8' => slv(4*(i + 1) downto 4*i + 1) := "1000";
-                when '9' => slv(4*(i + 1) downto 4*i + 1) := "1001";
-                when 'A' => slv(4*(i + 1) downto 4*i + 1) := "1010";
-                when 'B' => slv(4*(i + 1) downto 4*i + 1) := "1011";
-                when 'C' => slv(4*(i + 1) downto 4*i + 1) := "1100";
-                when 'D' => slv(4*(i + 1) downto 4*i + 1) := "1101";
-                when 'E' => slv(4*(i + 1) downto 4*i + 1) := "1110";
-                when 'F' => slv(4*(i + 1) downto 4*i + 1) := "1111";
+                when '0' => slv(slv_index downto slv_index - 3) := "0000";
+                when '1' => slv(slv_index downto slv_index - 3) := "0001";
+                when '2' => slv(slv_index downto slv_index - 3) := "0010";
+                when '3' => slv(slv_index downto slv_index - 3) := "0011";
+                when '4' => slv(slv_index downto slv_index - 3) := "0100";
+                when '5' => slv(slv_index downto slv_index - 3) := "0101";
+                when '6' => slv(slv_index downto slv_index - 3) := "0110";
+                when '7' => slv(slv_index downto slv_index - 3) := "0111";
+                when '8' => slv(slv_index downto slv_index - 3) := "1000";
+                when '9' => slv(slv_index downto slv_index - 3) := "1001";
+                when 'A' => slv(slv_index downto slv_index - 3) := "1010";
+                when 'B' => slv(slv_index downto slv_index - 3) := "1011";
+                when 'C' => slv(slv_index downto slv_index - 3) := "1100";
+                when 'D' => slv(slv_index downto slv_index - 3) := "1101";
+                when 'E' => slv(slv_index downto slv_index - 3) := "1110";
+                when 'F' => slv(slv_index downto slv_index - 3) := "1111";
                 when others => report "Cant convert <" & str & "> to hexadecimal" severity failure; 
 
             end case;
+
+            slv_index := slv_index - 4;
 
         end loop;
 

@@ -29,7 +29,7 @@ class Injector:
         
         # Flow info
         self.FlowType = Flow.FlowType  # Default = "CBR"
-        self.Bandwidth = Flow.Bandwidth  # in MBps
+        self.Bandwidth = float(Flow.Bandwidth)  # in MBps
         #self.InjectorClockPeriod = (DataWidth / 8) / (Flow.Bandwidth * 1000)  # in nanoseconds
         self.InjectorClockPeriod = float((1000 * DataWidth / 8) / (Flow.Bandwidth)) if Flow.Bandwidth != 0 else float(9999999) # in nanoseconds
         self.StartTime = float(Flow.StartTime)  # in nanoseconds
@@ -53,8 +53,11 @@ class Injector:
         self.WorkloadName = SourceThread.ParentApplication.ParentWorkload.WorkloadName
 
         # Message info
+        # TODO: 
         self.Header = Flow.Header  # Default = ["ADDR", "SIZE"]
-        self.Payload = Flow.Payload  # Deafult = ["PEPOS", "TMSTP"] + (["RANDO"] * 126 - 2)
+        #self.Payload = Flow.Payload  # Default = ["PEPOS", "TMSTP"] + (["RANDO"] * 126 - 2)
+        self.Payload = [flit.ljust(int(DataWidth / 4), " ") for flit in Flow.Payload]  # Pad each flit description to DataWidth/4 chars
+        #print(self.Payload)
         self.HeaderSize = len(self.Header)
         self.PayloadSize = len(self.Payload)
         self.MessageSize = len(self.Header) + len(self.Payload)

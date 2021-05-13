@@ -58,7 +58,7 @@ architecture RTL of HyHeMPS is
     -- Reads platform JSON config file
     constant PlatCFG: T_JSON := jsonLoad(PlatformConfigFile);
 
-    -- Reads PE topology information
+    -- Reads PE topology information (from JSON config)
     constant PEInfo: PEInfo_vector(0 to AmountOfPEs - 1) := GetPEInfo(PlatCFG);
 
     -- Buffer size for Bus/Crossbar bridges (NoC buffer size is defined statically as 4 in HeMPS_defaults)
@@ -77,9 +77,9 @@ architecture RTL of HyHeMPS is
 
     -- Bus Parameters (from JSON config)
     constant AmountOfBuses: integer := jsonGetInteger(PlatCFG, "AmountOfBuses");
-    constant AmountOfPEsInBuses: integer_vector(0 to AmountOfBuses - 1) := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInBuses");
+    --constant AmountOfPEsInBuses: integer_vector(0 to AmountOfBuses - 1) := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInBuses");
     constant SizeOfLargestBus: integer := jsonGetInteger(PlatCFG, "LargestBus");
-    constant BusWrapperIDs: integer_vector(0 to AmountOfBuses - 1) := jsonGetIntegerArray(PlatCFG, "BusWrapperIDs");
+    --constant BusWrapperIDs: integer_vector(0 to AmountOfBuses - 1) := jsonGetIntegerArray(PlatCFG, "BusWrapperIDs");
     constant IsStandaloneBus: boolean := jsonGetBoolean(PlatCFG, "IsStandaloneBus");
     
     -- Bus interfaces
@@ -113,9 +113,9 @@ architecture RTL of HyHeMPS is
 
     -- Crossbars Parameters (from JSON config)
     constant AmountOfCrossbars: integer := jsonGetInteger(PlatCFG, "AmountOfCrossbars");
-    constant AmountOfPEsInCrossbars: integer_vector(0 to AmountOfCrossbars - 1) := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInCrossbars");
+    --constant AmountOfPEsInCrossbars: integer_vector(0 to AmountOfCrossbars - 1) := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInCrossbars");
     constant SizeOfLargestCrossbar: integer := jsonGetInteger(PlatCFG, "LargestCrossbar");
-    constant CrossbarWrapperIDs: integer_vector(0 to AmountOfCrossbars - 1) := jsonGetIntegerArray(PlatCFG, "CrossbarWrapperIDs");
+    --constant CrossbarWrapperIDs: integer_vector(0 to AmountOfCrossbars - 1) := jsonGetIntegerArray(PlatCFG, "CrossbarWrapperIDs");
     constant IsStandaloneCrossbar: boolean := jsonGetBoolean(PlatCFG, "IsStandaloneCrossbar");
     
     -- Crossbar interfaces
@@ -147,10 +147,10 @@ architecture RTL of HyHeMPS is
     
     constant CrossbarPEAddresses: CrossbarPEAddresses_vector(0 to AmountOfCrossbars - 1) := GetCrossbarPEAddresses(PEInfo);
 
-    -- DVFS parameters
+    -- DVFS parameters (from JSON config)
     constant DVFSEnable: boolean := jsonGetBoolean(PlatCFG, "DVFSEnable");
     -- TODO: Convert from Hex string to slv
-    constant DVFSServiceID: DataWidth_t := std_logic_vector(to_unsigned(jsonGetInteger(PlatCFG, "DVFSServiceID"), DataWidth));
+    constant DVFSServiceID: DataWidth_t := CONV_DATAWIDTH(jsonGetString(PlatCFG, "DVFSServiceID"));
     constant DVFSAmountOfVoltageLevels: integer := jsonGetInteger(PlatCFG, "DVFSAmountOfVoltageLevels");
     constant DVFSCounterResolution: integer := jsonGetInteger(PlatCFG, "DVFSCounterResolution");
 
@@ -163,125 +163,52 @@ architecture RTL of HyHeMPS is
 
 begin
 
-    -- Generates DVFS controllers for every Router, Bus & Crossbar 
-    DVFSClocks: if DVFSEnable generate
-
-        NoCDVFSControllers: for i in 0 to AmountOfNoCNodes - 1 generate
-
-            DVFSController: entity work.DVFSController
-
-                generic map(
-                    DVFSServiceCode => DVFSServiceID,
-                    AmountOfVoltageLevels => DVFSAmountOfVoltageLevels,
-                    CounterBitWidth => DVFSCounterResolution,
-                    BaseNoCPos => RouterAddress(i, NoCXSize),
-                    IsNoC => True
-                )
-
-                port map(
-
-                    Clock => Clocks(i),
-                    Reset => Reset,
-
-                    ClockToCommStruct => RouterClocks(i),
-
-                    SupplySwitchesEnable => DVFSRouterSwitchEnables(i),
-
-                    LocalPortData => LocalPortInputs(i).DataOut,
-                    LocalPortTX => LocalPortInputs(i).Tx,
-                    LocalPortCreditI => LocalPortOutputs(i).CreditI,
-                    LocalPortClockTX => LocalPortInputs(i).ClockTX
-
-                );
-
-        end generate NoCDVFSControllers;
-
-
-        BusDVFSControllers: for i in 0 to AmountOfBuses - 1 generate
-
-            DVFSController: entity work.DVFSController
-
-                generic map(
-                    DVFSServiceCode => DVFSServiceID,
-                    AmountOfVoltageLevels => DVFSAmountOfVoltageLevels,
-                    CounterBitWidth => DVFSCounterResolution,
-                    BaseNoCPos => RouterAddress(BusWrapperIDs(i), NoCXSize),
-                    IsNoC => False
-                )
-
-                port map(
-
-                    Clock => Clocks(BusWrapperIDs(i)),
-                    Reset => Reset,
-
-                    ClockToCommStruct => BusClocks(i),
-
-                    SupplySwitchesEnable => DVFSBusSwitchEnables(i),
-
-                    LocalPortData => LocalPortInputs(BusWrapperIDs(i)).DataOut,
-                    LocalPortTX => LocalPortInputs(BusWrapperIDs(i)).Tx,
-                    LocalPortCreditI => LocalPortOutputs(BusWrapperIDs(i)).CreditI,
-                    LocalPortClockTX => LocalPortInputs(BusWrapperIDs(i)).ClockTX
-
-                );
-
-        end generate BusDVFSControllers;
-
-
-        CrossbarDVFSControllers: for i in 0 to AmountOfCrossbars - 1 generate
-
-            DVFSController: entity work.DVFSController
-
-                generic map(
-                    DVFSServiceCode => DVFSServiceID,
-                    AmountOfVoltageLevels => DVFSAmountOfVoltageLevels,
-                    CounterBitWidth => DVFSCounterResolution,
-                    BaseNoCPos => RouterAddress(CrossbarWrapperIDs(i), NoCXSize),
-                    IsNoC => False
-                )
-
-                port map(
-
-                    Clock => Clocks(CrossbarWrapperIDs(i)),
-                    Reset => Reset,
-
-                    ClockToCommStruct => CrossbarClocks(i),
-
-                    SupplySwitchesEnable => DVFSCrossbarSwitchEnables(i),
-
-                    LocalPortData => LocalPortInputs(CrossbarWrapperIDs(i)).DataOut,
-                    LocalPortTX => LocalPortInputs(CrossbarWrapperIDs(i)).Tx,
-                    LocalPortCreditI => LocalPortOutputs(CrossbarWrapperIDs(i)).CreditI,
-                    LocalPortClockTX => LocalPortInputs(CrossbarWrapperIDs(i)).ClockTX
-
-                );
-
-        end generate CrossbarDVFSControllers;
-
-    end generate DVFSClocks;
-
-
-    -- Sets static clock signals for all elements
-    NoDVFSClocks: if not DVFSEnable generate
-
-        SetRouterClocks: for i in 0 to AmountOfNoCNodes - 1 generate
-            RouterClocks(i) <= Clocks(i);
-        end generate SetRouterClocks;
-
-        SetBusClocks: for i in 0 to AmountOfNoCNodes - 1 generate
-            BusClocks(i) <= Clocks(BusWrapperIDs(i));
-        end generate SetBusClocks;
-
-        SetCrossbarClocks: for i in 0 to AmountOfNoCNodes - 1 generate
-            BusClocks(i) <= Clocks(CrossbarWrapperIDs(i));
-        end generate SetCrossbarClocks;
-
-    end generate NoDVFSClocks;
-
-
     -- Instantiates Hermes NoC, if no standalone structure is to be instantiated
     NoCCond: if (not IsStandaloneBus) and (not IsStandaloneCrossbar) generate
+        
+        -- Instantiates a DVFS controller for every router
+        DVFSCond: if DVFSEnable generate
+
+            NoCDVFSControllers: for i in 0 to AmountOfNoCNodes - 1 generate
+
+                DVFSController: entity work.DVFSController
+
+                    generic map(
+                        DVFSServiceCode => DVFSServiceID,
+                        AmountOfVoltageLevels => DVFSAmountOfVoltageLevels,
+                        CounterBitWidth => DVFSCounterResolution,
+                        BaseNoCPos => RouterAddress(i, NoCXSize),
+                        IsNoC => True
+                    )
+
+                    port map(
+
+                        Clock => Clocks(i),
+                        Reset => Reset,
+
+                        ClockToCommStruct => RouterClocks(i),
+
+                        SupplySwitchesEnable => DVFSRouterSwitchEnables(i),
+
+                        LocalPortData => LocalPortInputs(i).DataOut,
+                        LocalPortTX => LocalPortInputs(i).Tx,
+                        LocalPortCreditI => LocalPortOutputs(i).CreditI,
+                        LocalPortClockTX => LocalPortInputs(i).ClockTX
+
+                    );
+
+            end generate NoCDVFSControllers;
+
+        end generate DVFSCond;
+
+        -- Directly sets router clocks as entity interface given clocks (no DVFS)
+        NODVFS: if not DVFSEnable generate
+        
+            RouterClocks <= Clocks;
+
+        end generate NODVFS;
     
+        -- Instantiates NoC
         NoCGen: entity work.Hermes
 
             generic map(
@@ -300,9 +227,57 @@ begin
     end generate NoCCond;
     
     
-    -- Instantiate buses, if any are to be instantiated
+    -- Instantiate Buses, if any are to be instantiated
     BusesCond: if AmountOfBuses > 0 generate
+        constant AmountOfPEsInBuses: integer_vector(0 to AmountOfBuses - 1) := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInBuses");
+        constant BusWrapperIDs: integer_vector(0 to AmountOfBuses - 1) := jsonGetIntegerArray(PlatCFG, "BusWrapperIDs");
+    begin
 
+        -- Instantiates a DVFS controller for every Bus
+        DVFSCond: if DVFSEnable generate
+
+            BusDVFSControllers: for i in 0 to AmountOfBuses - 1 generate
+
+                DVFSController: entity work.DVFSController
+
+                    generic map(
+                        DVFSServiceCode => DVFSServiceID,
+                        AmountOfVoltageLevels => DVFSAmountOfVoltageLevels,
+                        CounterBitWidth => DVFSCounterResolution,
+                        BaseNoCPos => RouterAddress(BusWrapperIDs(i), NoCXSize),
+                        IsNoC => False
+                    )
+
+                    port map(
+
+                        Clock => Clocks(BusWrapperIDs(i)),
+                        Reset => Reset,
+
+                        ClockToCommStruct => BusClocks(i),
+
+                        SupplySwitchesEnable => DVFSBusSwitchEnables(i),
+
+                        LocalPortData => LocalPortInputs(BusWrapperIDs(i)).DataOut,
+                        LocalPortTX => LocalPortInputs(BusWrapperIDs(i)).Tx,
+                        LocalPortCreditI => LocalPortOutputs(BusWrapperIDs(i)).CreditI,
+                        LocalPortClockTX => LocalPortInputs(BusWrapperIDs(i)).ClockTX
+
+                    );
+
+            end generate BusDVFSControllers;
+
+        end generate DVFSCond;
+
+        -- Set Bus clocks as same clocks of its associated Router, as given through entity interface (no DVFS)
+        NODVFS: if not DVFSEnable generate
+
+            SetBusClocks: for i in 0 to AmountOfBuses - 1 generate
+                BusClocks(i) <= Clocks(BusWrapperIDs(i));
+            end generate SetBusClocks;
+
+        end generate NODVFS;
+
+        -- Instantiates every Bus
         BusesGen: for i in 0 to AmountOfBuses - 1 generate 
         
             BusInstance: entity work.HyBus
@@ -355,6 +330,52 @@ begin
 
     -- Instantiate crossbars, if any are to be instantiated
     CrossbarCond: if AmountOfCrossbars > 0 generate
+        constant AmountOfPEsInCrossbars: integer_vector(0 to AmountOfCrossbars - 1) := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInCrossbars");
+        constant CrossbarWrapperIDs: integer_vector(0 to AmountOfCrossbars - 1) := jsonGetIntegerArray(PlatCFG, "CrossbarWrapperIDs");
+    begin
+
+        DVFSCond: if DVFSEnable generate
+
+            CrossbarDVFSControllers: for i in 0 to AmountOfCrossbars - 1 generate
+
+                DVFSController: entity work.DVFSController
+
+                    generic map(
+                        DVFSServiceCode => DVFSServiceID,
+                        AmountOfVoltageLevels => DVFSAmountOfVoltageLevels,
+                        CounterBitWidth => DVFSCounterResolution,
+                        BaseNoCPos => RouterAddress(CrossbarWrapperIDs(i), NoCXSize),
+                        IsNoC => False
+                    )
+
+                    port map(
+
+                        Clock => Clocks(CrossbarWrapperIDs(i)),
+                        Reset => Reset,
+
+                        ClockToCommStruct => CrossbarClocks(i),
+
+                        SupplySwitchesEnable => DVFSCrossbarSwitchEnables(i),
+
+                        LocalPortData => LocalPortInputs(CrossbarWrapperIDs(i)).DataOut,
+                        LocalPortTX => LocalPortInputs(CrossbarWrapperIDs(i)).Tx,
+                        LocalPortCreditI => LocalPortOutputs(CrossbarWrapperIDs(i)).CreditI,
+                        LocalPortClockTX => LocalPortInputs(CrossbarWrapperIDs(i)).ClockTX
+
+                    );
+
+            end generate CrossbarDVFSControllers;
+
+        end generate DVFSCond;
+
+        -- Set Bus clocks as same clocks of its associated Router, as given through entity interface (no DVFS)
+        NODVFS: if not DVFSEnable generate
+
+            SetCrossbarClocks: for i in 0 to AmountOfCrossbars - 1 generate
+                CrossbarClocks(i) <= Clocks(CrossbarWrapperIDs(i));
+            end generate SetCrossbarClocks;
+
+        end generate NODVFS;
 
         CrossbarsGen: for i in 0 to AmountOfCrossbars - 1 generate
 
@@ -407,7 +428,7 @@ begin
     end generate CrossbarCond;
 
 
-    -- Connects PE interfaces passed from top entity to local port of routers and into dedicated structures
+    -- Connects PE interfaces passed from top entity interface to local port of routers and into Bus-Crossbars
     PEConnectGen: for i in 0 to AmountOfPEs - 1 generate
 
         ConnectToNoC: if PEInfo(i).InterfacingStructure = "NOC" generate

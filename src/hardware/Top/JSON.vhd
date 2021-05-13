@@ -1613,7 +1613,8 @@ package body JSON is
 		constant ElementIndex	: T_UINT16							:= jsonGetElementIndex(JSONContext, Path);
 		constant Element			: T_JSON_INDEX_ELEMENT	:= JSONContext.Index(ElementIndex);
 	begin
---		report "jsonGetString: ElementIndex=" & INTEGER'image(ElementIndex) & "  Type=" & T_ELEMENT_TYPE'image(Element.ElementType) severity NOTE;
+		--report "jsonGetString: ElementIndex=" & INTEGER'image(ElementIndex) & "  Type=" & T_ELEMENT_TYPE'image(Element.ElementType) severity NOTE;
+		report Path severity note;
 		if (ElementIndex /= 0) then
 			case Element.ElementType is
 				when ELEM_NULL =>									return "NULL";

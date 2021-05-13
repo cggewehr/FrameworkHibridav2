@@ -143,15 +143,15 @@ package body Injector_PKG is
 
         constant PayloadSize: integer := jsonGetInteger(InjCFG, "PayloadSize");
         variable Payload: DataWidth_vector(0 to PayloadSize - 1);
-        variable PayloadFlitString : string(1 to 5);
+        variable PayloadFlitString : string(1 to DataWidth/4);
 
     begin
 
-    	report "Compiling header for message from PE ID <" & integer'image(SourcePEPos) & "> to PE ID <" & integer'image(TargetPEPos) & ">" severity note;
+    	report "Compiling payload for message from PE ID <" & integer'image(SourcePEPos) & "> to PE ID <" & integer'image(TargetPEPos) & ">" severity note;
 
         BuildFlitLoop: for flit in Payload'range loop 
 			
-			PayloadFlitString := jsonGetString(InjCFG, "Payload/" & integer'image(flit));
+			PayloadFlitString(1 to DataWidth/4) := jsonGetString(InjCFG, "Payload/" & integer'image(flit));
 
             -- A payload flit can be : "PEPOS" (PE position in network), 
             --                         "APPID" (ID of app being emulated by this injector), 
@@ -162,34 +162,34 @@ package body Injector_PKG is
             --                         "RANDO" (Randomize every bit)
             --                         "BLANK" (Fills with zeroes)
             
-            if PayloadFlitString = "PEPOS" then
+            if PayloadFlitString(1 to 5) = "PEPOS" then
 
                 Payload(flit) := std_logic_vector(to_unsigned(SourcePEPos, DataWidth));
 
-            elsif PayloadFlitString = "THDID" then
+            elsif PayloadFlitString(1 to 5) = "THDID" then
 
                 Payload(flit) := std_logic_vector(to_unsigned(SourceThreadID, DataWidth));
 
-            elsif PayloadFlitString = "APPID" then
+            elsif PayloadFlitString(1 to 5) = "APPID" then
 
                 Payload(flit) := std_logic_vector(to_unsigned(AppID, DataWidth));
 
-            elsif PayloadFlitString = "AVGPT" then
+            elsif PayloadFlitString(1 to 5) = "AVGPT" then
 
                 --Payloads(target, flit) := std_logic_vector(to_unsigned(jsonGetInteger(InjectorJSONConfig, "AverageProcessingTimeInClockPulses"), DataWidth));
                 Payload(flit) := (others => '1');
 
-            elsif PayloadFlitString = "TMSTP" then
+            elsif PayloadFlitString(1 to 5) = "TMSTP" then
 
                 -- Flags for "real time" processing
                 Payload(flit) := std_logic_vector(to_unsigned(TimestampFlag, DataWidth));
 
-            elsif PayloadFlitString = "AMMSG" then 
+            elsif PayloadFlitString(1 to 5) = "AMMSG" then 
 
                 -- Flags for "real time" processing
                 Payload(flit) := std_logic_vector(to_unsigned(AmountOfMessagesSentFlag, DataWidth));
 
-            elsif PayloadFlitString = "RANDO" then
+            elsif PayloadFlitString(1 to 5) = "RANDO" then
 
                 -- Randomizes each bit of current flit
                 for i in 0 to DataWidth - 1 loop
@@ -209,7 +209,7 @@ package body Injector_PKG is
 
                 end loop;
 
-            elsif PayloadFlitString = "BLANK" then
+            elsif PayloadFlitString(1 to 5) = "BLANK" then
 
                 Payload(flit) := (others=>'0');
 

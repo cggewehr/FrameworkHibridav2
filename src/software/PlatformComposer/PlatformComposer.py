@@ -1149,7 +1149,8 @@ class Platform:
 
         # Bus info
         JSONDict["IsStandaloneBus"] = self.IsStandaloneBus
-        JSONDict["AmountOfBuses"] = self.AmountOfBuses 
+        JSONDict["AmountOfBuses"] = self.AmountOfBuses
+        JSONDict["LargestBus"] = 0  # Default value, will be replaced below if there are any Busses
         
         if self.AmountOfBuses > 0:
 
@@ -1161,7 +1162,7 @@ class Platform:
             
             for i, BusInPlat in enumerate(self.Buses):
             
-                BusPEIDs["Bus" + str(i)] = [PEinBus.PEPos for PEinBus in BusInPlat.PEs
+                BusPEIDs["Bus" + str(i)] = [PEinBus.PEPos for PEinBus in BusInPlat.PEs]
                 
                 if len(BusInPlat.PEs) > LargestBus:
                     LargestBus = len(BusInPlat.PEs)
@@ -1174,6 +1175,7 @@ class Platform:
         # Crossbar info
         JSONDict["IsStandaloneCrossbar"] = self.IsStandaloneCrossbar
         JSONDict["AmountOfCrossbars"] = self.AmountOfCrossbars
+        JSONDict["LargestCrossbar"] = 0  # Default value, will be replaced below if there are any Crossbars
 
         if self.AmountOfCrossbars > 0:
 

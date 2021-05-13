@@ -68,7 +68,7 @@ architecture RTL of Trigger is
     constant FlowType: string(1 to 3) := jsonGetString(InjectorJSONConfig, "FlowType");
     constant SourceThreadName: string := jsonGetString(InjectorJSONConfig, "SourceThreadName");
     constant TargetThreadName: string := jsonGetString(InjectorJSONConfig, "TargetThreadName");
-    constant Bandwidth: integer := jsonGetInteger(InjectorJSONConfig, "Bandwidth");  -- in MBps
+    constant Bandwidth: real := jsonGetReal(InjectorJSONConfig, "Bandwidth");  -- in MBps
     constant AppName: string := jsonGetString(InjectorJSONConfig, "AppName");
     constant AppID: integer := jsonGetInteger(InjectorJSONConfig, "AppID");
     constant InjectorClockPeriod: time := jsonGetReal(InjectorJSONConfig, "InjectorClockPeriod") * 1 ns;
@@ -115,13 +115,13 @@ begin
 
 		  		-- Enables associated injector
 				wait for StartTime;
-				report "Starting Flow <" & AppName & "." & SourceThreadName & " -- " & integer'image(Bandwidth) & " -> " & AppName & "." & TargetThreadName & ">" severity note;
+				report "Starting Flow <" & AppName & "." & SourceThreadName & " -- " & real'image(Bandwidth) & " -> " & AppName & "." & TargetThreadName & ">" severity note;
 				Enable <= '1';
 
 				-- Flow doesnt have a StopTime, 0 and -1 are default values
 				if StopTime /= -1 ns and StopTime /= 0 ns then
 					wait for StopTime + ResetFallingEdgeTime;
-					report "Stopping Flow <" & AppName & "." & SourceThreadName & " -- " & integer'image(Bandwidth) & " -> " & AppName & "." & TargetThreadName & ">" severity note;
+					report "Stopping Flow <" & AppName & "." & SourceThreadName & " -- " & real'image(Bandwidth) & " -> " & AppName & "." & TargetThreadName & ">" severity note;
 					Enable <= '0';
 				end if;
 
