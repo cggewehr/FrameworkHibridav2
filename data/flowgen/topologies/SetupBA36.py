@@ -1,7 +1,7 @@
 import PlatformComposer
 
 # Creates base 4x4 NoC
-SetupBA36 = PlatformComposer.Platform(BaseNoCDimensions=(4, 4))
+SetupBA36 = PlatformComposer.Platform(BaseNoCDimensions=(4, 4), DVFSEnable = True)
 
 # Adds Bus containing 4 PEs @ base NoC position (0, 1)
 BusA = PlatformComposer.Bus(AmountOfPEs = 4)

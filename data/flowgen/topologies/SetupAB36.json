@@ -1,48 +1,70 @@
 {
-    "AmountOfWrappers": 4,
-    "DVFSAmountOfVoltageLevels": 2,
-    "LargestBus": 6,
-    "CrossbarWrapperAddresses": [
-        2,
-        17
-    ],
-    "AmountOfBuses": 2,
-    "BusWrapperAddresses": [
-        4,
-        15
-    ],
-    "LargestCrossbar": 4,
-    "IsStandaloneCrossbar": false,
-    "BaseNoCDimensions": [
-        5,
-        4
-    ],
-    "AmountOfPEsInCrossbars": [
-        4,
-        4
-    ],
     "BusWrapperIDs": [
         4,
         15
     ],
-    "DataWidth": 32,
-    "MasterPEPos": 0,
+    "AmountOfWrappers": 4,
     "CrossbarWrapperIDs": [
         2,
         17
     ],
+    "BridgeBufferSize": 4,
+    "DataWidth": 32,
+    "CrossbarWrapperAddresses": [
+        2,
+        17
+    ],
+    "AmountOfPEs": 36,
+    "DVFSServiceID": "0000FFFF",
+    "DVFSAmountOfVoltageLevels": 2,
+    "AmountOfPEsInBuses": [
+        6,
+        6
+    ],
+    "IsStandaloneCrossbar": false,
+    "LargestCrossbar": 4,
+    "IsStandaloneBus": false,
+    "DVFSEnable": true,
     "CrossbarPEIDs": {
-        "Crossbar1": [
-            20,
-            33,
-            34,
-            35
-        ],
         "Crossbar0": [
             2,
             30,
             31,
             32
+        ],
+        "Crossbar1": [
+            20,
+            33,
+            34,
+            35
+        ]
+    },
+    "AmountOfPEsInCrossbars": [
+        4,
+        4
+    ],
+    "LargestBus": 6,
+    "BaseNoCDimensions": [
+        5,
+        4
+    ],
+    "MasterPEPos": 0,
+    "BusPEIDs": {
+        "Bus1": [
+            18,
+            29,
+            23,
+            17,
+            11,
+            5
+        ],
+        "Bus0": [
+            4,
+            24,
+            25,
+            26,
+            27,
+            28
         ]
     },
     "WrapperAddresses": [
@@ -83,34 +105,12 @@
         17,
         17
     ],
-    "AmountOfCrossbars": 2,
-    "DVFSServiceID": "0000FFFF",
-    "AmountOfPEs": 36,
-    "BusPEIDs": {
-        "Bus1": [
-            18,
-            29,
-            23,
-            17,
-            11,
-            5
-        ],
-        "Bus0": [
-            4,
-            24,
-            25,
-            26,
-            27,
-            28
-        ]
-    },
-    "DVFSEnable": false,
+    "AmountOfBuses": 2,
     "SquareNoCBound": 6,
-    "BridgeBufferSize": 4,
-    "IsStandaloneBus": false,
     "DVFSCounterResolution": 15,
-    "AmountOfPEsInBuses": [
-        6,
-        6
+    "AmountOfCrossbars": 2,
+    "BusWrapperAddresses": [
+        4,
+        15
     ]
 }

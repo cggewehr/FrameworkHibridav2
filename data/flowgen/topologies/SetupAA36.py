@@ -1,7 +1,7 @@
 import PlatformComposer
 
 # Creates base 4x4 NoC
-SetupAA36 = PlatformComposer.Platform(BaseNoCDimensions=(4, 4))
+SetupAA36 = PlatformComposer.Platform(BaseNoCDimensions=(4, 4), DVFSEnable = True)
 
 # Adds Crossbar containing 7 PEs @ base NoC position (3, 0)
 CrossbarA = PlatformComposer.Crossbar(AmountOfPEs = 7)
