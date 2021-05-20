@@ -1,241 +1,248 @@
 {
-    "Projects": {
-        "ExampleProject": {
-            "ClusterClocksFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks/ExampleClusterClocks.json",
-            "ProjectDir": "/home/usr/cgewehr/Desktop/HibridaProjects/ExampleProject",
-            "TopologyFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies/ExampleTopology.json",
-            "WorkloadFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads/PIP_WL.json",
-            "AllocationMapFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps/ExampleAllocMap.json"
-        },
-        "NoC_4": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_4",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Bus_25": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_25",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "testesintese": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/HibridaProjects/testesintese",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Crossbar_49": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_49",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "NoC_10": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_10",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Crossbar_81": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_81",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Crossbar_100": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_100",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "NoC_2": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_2",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Bus_36": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_36",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "NoC_3": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_3",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "sintese": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/HibridaProjects/sintese",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "NoC_6": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_6",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Crossbar_25": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_25",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Crossbar_64": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_64",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "NoC_8": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_8",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "NoC_7": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_7",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Crossbar_16": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_16",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "NoC_9": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_9",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Bus_9": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_9",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Bus_64": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_64",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Bus_49": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_49",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Bus_81": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_81",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Crossbar_4": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_4",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Bus_100": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_100",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Bus_4": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_4",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Crossbar_9": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_9",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Hermes36RouterGrained": {
-            "ClusterClocksFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks/36_250MHz.json",
-            "ProjectDir": "/home/usr/cgewehr/Desktop/HibridaProjects/Hermes36RouterGrained",
-            "TopologyFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies/Hermes36.json",
-            "WorkloadFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads/DVFSWorkloadRouterGrainedHermes36.json",
-            "AllocationMapFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps/Hermes36.json"
-        },
-        "Crossbar_36": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_36",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "Bus_16": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_16",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        },
-        "NoC_5": {
-            "ClusterClocksFile": null,
-            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_5",
-            "TopologyFile": null,
-            "WorkloadFile": null,
-            "AllocationMapFile": null
-        }
-    },
-    "ApplicationsPaths": [
-        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/applications"
-    ],
     "AllocationMapsPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps"
     ],
-    "HibridaConfigFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/config.json",
-    "MostRecentProject": "Hermes36RouterGrained",
+    "HibridaPath": "/home/usr/cgewehr/Desktop/FrameworkHibrida",
+    "TopologiesPaths": [
+        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies"
+    ],
     "WorkloadsPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads"
     ],
     "HibridaName": "hibrida",
-    "HibridaPath": "/home/usr/cgewehr/Desktop/FrameworkHibrida",
-    "DefaultProjDir": "/home/usr/cgewehr/Desktop/HibridaProjects",
-    "TopologiesPaths": [
-        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies"
+    "ApplicationsPaths": [
+        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/applications"
     ],
+    "HibridaConfigFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/config.json",
+    "Projects": {
+        "Crossbar_36": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_36",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Bus_64": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_64",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "NoC_3": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_3",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Crossbar_16": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_16",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Bus_4": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_4",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "ExampleProject": {
+            "ClusterClocksFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks/ExampleClusterClocks.json",
+            "AllocationMapFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps/ExampleAllocMap.json",
+            "ProjectDir": "/home/usr/cgewehr/Desktop/HibridaProjects/ExampleProject",
+            "TopologyFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies/ExampleTopology.json",
+            "WorkloadFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads/PIP_WL.json"
+        },
+        "NoC_5": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_5",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Bus_36": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_36",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Crossbar_9": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_9",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "NoC_6": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_6",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "NoC_9": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_9",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "newtest": {
+            "ClusterClocksFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks/36_250MHz.json",
+            "AllocationMapFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps/ExampleAllocMap.json",
+            "ProjectDir": "/home/usr/cgewehr/Desktop/HibridaProjects/newtest",
+            "TopologyFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies/ExampleTopology.json",
+            "WorkloadFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads/PIP_WL.json"
+        },
+        "Bus_81": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_81",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "NoC_8": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_8",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Crossbar_4": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_4",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "NoC_7": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_7",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Crossbar_100": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_100",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Crossbar_64": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_64",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Crossbar_81": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_81",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Bus_100": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_100",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "testesintese": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/HibridaProjects/testesintese",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "sintese": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/HibridaProjects/sintese",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "NoC_4": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_4",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Hermes36RouterGrained": {
+            "ClusterClocksFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks/36_250MHz.json",
+            "AllocationMapFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps/Hermes36.json",
+            "ProjectDir": "/home/usr/cgewehr/Desktop/HibridaProjects/Hermes36RouterGrained",
+            "TopologyFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies/Hermes36.json",
+            "WorkloadFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads/DVFSWorkloadRouterGrainedHermes36.json"
+        },
+        "Bus_25": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_25",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Crossbar_25": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_25",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Bus_16": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_16",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "NoC_10": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_10",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Bus_9": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_9",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "NoC_2": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/NoC_2",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Bus_49": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Bus_49",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        },
+        "Crossbar_49": {
+            "ClusterClocksFile": null,
+            "AllocationMapFile": null,
+            "ProjectDir": "/home/usr/cgewehr/Desktop/DVFSSynthesisMMMC/Crossbar_49",
+            "TopologyFile": null,
+            "WorkloadFile": null
+        }
+    },
     "ClusterClocksPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks"
-    ]
+    ],
+    "DefaultProjDir": "/home/usr/cgewehr/Desktop/HibridaProjects",
+    "MostRecentProject": "newtest"
 }

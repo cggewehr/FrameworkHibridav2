@@ -1,4 +1,16 @@
 {
+    "IsStandaloneBus": false,
+    "AmountOfPEs": 25,
+    "AmountOfCrossbars": 1,
+    "BusWrapperIDs": [
+        5,
+        8
+    ],
+    "AmountOfPEsInBuses": [
+        6,
+        6
+    ],
+    "IsStandaloneCrossbar": false,
     "WrapperAddresses": [
         0,
         1,
@@ -26,21 +38,13 @@
         2,
         2
     ],
+    "SquareNoCBound": 5,
+    "CrossbarWrapperAddresses": [
+        2
+    ],
+    "DVFSEnable": false,
     "MasterPEPos": 0,
-    "AmountOfCrossbars": 1,
-    "LargestCrossbar": 7,
-    "IsStandaloneBus": false,
-    "BusWrapperAddresses": [
-        5,
-        8
-    ],
-    "AmountOfPEsInCrossbars": [
-        7
-    ],
-    "AmountOfPEsInBuses": [
-        6,
-        6
-    ],
+    "BridgeBufferSize": 4,
     "BusPEIDs": {
         "Bus0": [
             7,
@@ -59,7 +63,25 @@
             22
         ]
     },
-    "SquareNoCBound": 5,
+    "DVFSServiceID": "0000FFFF",
+    "LargestBus": 6,
+    "DVFSAmountOfVoltageLevels": 2,
+    "AmountOfBuses": 2,
+    "CrossbarWrapperIDs": [
+        2
+    ],
+    "DataWidth": 32,
+    "BusWrapperAddresses": [
+        5,
+        8
+    ],
+    "DVFSCounterResolution": 15,
+    "BaseNoCDimensions": [
+        3,
+        3
+    ],
+    "LargestCrossbar": 7,
+    "AmountOfWrappers": 3,
     "CrossbarPEIDs": {
         "Crossbar0": [
             2,
@@ -71,24 +93,7 @@
             4
         ]
     },
-    "BaseNoCDimensions": [
-        3,
-        3
-    ],
-    "AmountOfWrappers": 3,
-    "IsStandaloneCrossbar": false,
-    "BusWrapperIDs": [
-        5,
-        8
-    ],
-    "LargestBus": 6,
-    "AmountOfBuses": 2,
-    "BridgeBufferSize": 4,
-    "CrossbarWrapperIDs": [
-        2
-    ],
-    "AmountOfPEs": 25,
-    "CrossbarWrapperAddresses": [
-        2
+    "AmountOfPEsInCrossbars": [
+        7
     ]
 }

@@ -157,7 +157,9 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                 #print("N as binary: " + format(DivRatio.numerator, "0" + str(DVFSCounterResolution) + "b"))
                 #print("M as binary: " + format(DivRatio.denominator, "0" + str(DVFSCounterResolution) + "b"))
                 print("N: " + str(DivRatio.numerator) + " M: " + str(DivRatio.denominator))
-                print("Target Frequency: " + str(TargetFrequency) + " Actual Frequency: " + str((DivRatio.numerator / DivRatio.denominator) * InputClockFrequency))           
+                print("Target Frequency: " + str(TargetFrequency) + " Actual Frequency: " + str((DivRatio.numerator / DivRatio.denominator) * InputClockFrequency))
+                if PEPos == 7:
+                    exit(1)                
                     
                 # Adds Flow with custom Payload to master DVFS Thread
                 DVFSMaster.addFlow(AppComposer.Flow(TargetThread = DVFSSlaves[PEPos], Bandwidth = 128000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
