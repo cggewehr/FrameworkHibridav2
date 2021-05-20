@@ -72,7 +72,7 @@ architecture RTL of DVFSController is
 
 	-- Divider control signals
 	signal DividerClockGated: std_logic; 
-	signal DividerWriteEnable: std_logic; 
+	signal WriteEnable: std_logic; 
 
 	-- Control FSM
 	type ControllerState_t is (Sidle, Ssize, Sservice, SvaluesOfInterest, SwaitUntilMSGFinished);
@@ -94,7 +94,7 @@ begin
 
 			N => DividerNAsync,
 			M => DividerMAsync,
-			WriteEnable => DividerWriteEnable,
+			WriteEnable => WriteEnable,
 
 			ClockGated => DividerClockGated
 
@@ -109,17 +109,32 @@ begin
 	--end process ClockGate;
 	ClockToCommStruct <= DividerClockGated;
 
-	-- Controls writing of signals to counter & switch regs
-	DVFSStateMachine: process(LocalPortClockTX, Reset) begin
+    -- Registers the decoded output of power switch enable signals
+	SupplySwitchEnableRegs: process(LocalPortClockTX, Reset) begin
 
-		if Reset = '1' then
+        if Reset = '1' then
 
-			-- Defaults to lowest gated frequency (N/M = 1/CounterResolution)
-			DividerWriteEnable <= '0';
-
-			-- Defaults to lowest voltage
+            -- Defaults to highest voltage
             SupplySwitchesEnable <= (others => '0');
-            SupplySwitchesEnable(0) <= '1';
+            SupplySwitchesEnable(AmountOfVoltageLevels - 1) <= '1';
+
+        elsif rising_edge(Clock) then
+
+            if WriteEnable = '1' then
+                SupplySwitchesEnable <= decode(SupplyVoltageSwitchToTurnONAsync);
+            end if;
+
+        end if;
+
+    end process;
+
+	-- Controls writing of signals to counter & switch regs
+	DVFSStateMachine: process(LocalPortClockTX, Reset) 
+        variable NAsInt, MAsInt: integer;  -- Integer representation on N and M (for asserts at the end)
+    begin
+
+        -- Defaults to highest clock frequency possible, ensuring required throughput is always given until a DVFS packet arrives
+		if Reset = '1' then
 
 			ControllerState <= Sidle;
 
@@ -143,7 +158,7 @@ begin
 					ControllerState <= Ssize;
 				end if;
 
-			-- Compares first payload flit to established DVFS service ID
+			-- Compares first payload flit to established DVFS service ID (known at elab time)
 			elsif ControllerState = Sservice then
 
 				if LocalPortData = DVFSServiceCode and LocalPortTX = '1' and LocalPortCreditI = '1' then
@@ -152,17 +167,16 @@ begin
 					ControllerState <= SwaitUntilMSGFinished;
 				end if;
 
-			-- Sets voltage switches and clock divider ratio 
+			-- Sets voltage switches and clock divider ratio, as defined by the 2nd flit of 
 			elsif ControllerState = SvaluesOfInterest then
 
-				if (IsNoC and IsNoCBit = '1') or ((not IsNoc) and IsNoCBit = '0') then
+                ControllerState <= SwaitUntilMSGFinished;
 
-					DividerWriteEnable <= '1';
-					SupplySwitchesEnable <= decode(SupplyVoltageSwitchToTurnONAsync);
-
-					ControllerState <= SwaitUntilMSGFinished;
-
-				end if;
+                -- Certifies switch to be enabled is coherent with N/M values (ONLY FOR AmountOfVoltageLevels = 2)
+                NAsInt := to_integer(unsigned(DividerNAsync));
+                MAsInt := to_integer(unsigned(DividerMAsync));
+                assert not (AmountOfVoltageLevels = 2 and SupplyVoltageSwitchToTurnONAsync = "1" and NAsInt <= MAsInt/2) report "High voltage supply switch enabled for N/M <= 1/2: <" & integer'image(NAsInt) & "/" & integer'image(MAsInt) & ">" severity error;
+                assert not (AmountOfVoltageLevels = 2 and SupplyVoltageSwitchToTurnONAsync = "0" and NAsInt > MAsInt/2) report "Low voltage supply switch enabled for N/M > 1/2: <" & integer'image(NAsInt) & "/" & integer'image(MAsInt) & ">" severity error;
 
 			-- Waits for end of packet
 			elsif ControllerState = SwaitUntilMSGFinished then
@@ -179,7 +193,15 @@ begin
 
 	end process;
 
-	-- Certifies field widths are coherent with DataWidth
-	assert not ((2 * CounterBitWidth) + AmountOfVoltageLevels + 1 >= DataWidth) report "Amount of Voltage Levels and Counter Values exceed platform bit witdh: 2*" & integer'image(CounterBitWidth) & " + " & integer'image(AmountOfVoltageLevels) & ">" & integer'image(DataWidth) severity FAILURE;
+    -- Combinationally determines the write enable signals for supply switch and divider regs (<= info from 2nd payload flit)
+    WriteEnable <= '1' when ControllerState = SvaluesOfInterest and ((IsNoC and IsNoCBit = '1') or ((not IsNoc) and IsNoCBit = '0')) else '0';
+
+	-- Certifies field widths are coherent with DataWidth (only involves constants, should only run at 0 simulation time)
+	assert not ((2 * CounterBitWidth) + Log2OfVoltageSwitchField + 1 > DataWidth) report "Amount of Voltage Levels and Counter Values exceed platform bit width: 2*" & integer'image(CounterBitWidth) & " + " & integer'image(Log2OfVoltageSwitchField) & " + 1 > " & integer'image(DataWidth) severity failure;
+
+    --NAsInt <= to_integer(unsigned(DividerNAsync));
+    --MAsInt <= to_integer(unsigned(DividerMAsync));
+    --assert not (AmountOfVoltageLevels = 2 and ControllerState = SvaluesOfInterest and SupplyVoltageSwitchToTurnONAsync = "1" and NAsInt <= MAsInt/2) report "High voltage supply switch enabled for N/M <= 1/2: <" & integer'image(NAsInt) & "/" & integer'image(MAsInt) & ">" severity error;
+    --assert not (AmountOfVoltageLevels = 2 and ControllerState = SvaluesOfInterest and SupplyVoltageSwitchToTurnONAsync = "0" and NAsInt > MAsInt/2) report "Low voltage supply switch enabled for N/M > 1/2: <" & integer'image(NAsInt) & "/" & integer'image(MAsInt) & ">" severity error;
 	
 end architecture RTL;

@@ -42,15 +42,14 @@ begin
 	-- Propagates clock when N < M
 	GatedClock: ClockGated <= Clock when ComparatorReg = '1' else '0';
 
-
 	-- Control writing to N and M registers
 	process(Clock, Reset) begin
 
 		if Reset = '1' then
 
-			-- Defaults to slowest possible clock
-            NReg <= (others => '0');
-            Nreg(0) <= '1';
+			-- Defaults to fastest possible clock
+            NReg <= (others => '1');
+            --Nreg(0) <= '1';
 			MReg <= (others => '1');
 
 		elsif rising_edge(Clock) then
@@ -66,7 +65,6 @@ begin
 
 	end process;
 
-
 	-- Counts from 0 to M - 1 
 	Counter: process(Clock, Reset) begin
 
@@ -77,13 +75,15 @@ begin
 		elsif rising_edge(Clock) then
 
 			-- Counter++ mod M
-			--incr(value: integer ; maxValue: in integer ; minValue: in integer)
-			CounterReg <= to_unsigned(incr(to_integer(CounterReg), to_integer(MReg) - 1, 0), CounterBitWidth);
+            if WriteEnable = '1' then
+                CounterReg <= (others => '0');
+            else
+			    CounterReg <= to_unsigned(incr(to_integer(CounterReg), to_integer(MReg) - 1, 0), CounterBitWidth);
+            end if;
 
 		end if;
 
 	end process;
-
 
 	-- Compares CounterReg to N
 	Comparator: process(Clock, Reset) begin
@@ -94,7 +94,7 @@ begin
 
 		elsif rising_edge(Clock) then
 
-			if NReg < MReg then
+			if CounterReg < NReg then
 				ComparatorReg <= '1';
 			else
 				ComparatorReg <= '0';
@@ -103,5 +103,8 @@ begin
 		end if;
 
 	end process;
+
+    -- Ensures N <= M for every new write
+    assert not (NReg > MReg) report "New N value <" & integer'image(to_integer(NReg)) & "> greater then new M value <" & integer'image(to_integer(MReg)) & ">" severity error;
 
 end architecture RTL;

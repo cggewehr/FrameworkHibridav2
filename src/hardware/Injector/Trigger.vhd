@@ -109,6 +109,7 @@ begin
 		  	while True loop
 
 		  		if Reset = '1' then
+                    Enable <= '0';
 		  			wait until Reset = '0';
 		  			ResetFallingEdgeTime := now;
 		  		end if;
@@ -120,27 +121,27 @@ begin
 
 				-- Flow doesnt have a StopTime, 0 and -1 are default values
 				if StopTime /= -1 ns and StopTime /= 0 ns then
+                    report "Flow <" & AppName & "." & SourceThreadName & " -- " & real'image(Bandwidth) & " -> " & AppName & "." & TargetThreadName & "> waiting for " & time'image(StopTime + ResetFallingEdgeTime) severity note;
 					wait for StopTime + ResetFallingEdgeTime;
 					report "Stopping Flow <" & AppName & "." & SourceThreadName & " -- " & real'image(Bandwidth) & " -> " & AppName & "." & TargetThreadName & ">" severity note;
 					Enable <= '0';
 				end if;
 
 				-- Loops around if injector is periodic
-				if not Periodic then
-					exit;
-				else
-					ResetFallingEdgeTime := 0 ns;
-				end if;
+				--if not Periodic then
+				--	exit;
+				--else
+				--	ResetFallingEdgeTime := 0 ns;
+				--end if;
+
+                -- Wait until current message is finished being sent by the injector
+                wait until LastFlitFlag = '1';
 
 				-- Breaks loop if max amount of messages has been sent
-				if LastFlitFlag = '1' then
-
-					if MessageCounter = MaxAmountOfMessages - 1 then
-						exit;
-					else
-						MessageCounter := MessageCounter + 1;
-					end if;
-
+				if MessageCounter = MaxAmountOfMessages - 1 then
+					exit;
+				else
+					MessageCounter := MessageCounter + 1;
 				end if;
 				
 			end loop;

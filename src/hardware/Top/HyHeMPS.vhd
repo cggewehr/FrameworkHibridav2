@@ -190,10 +190,10 @@ begin
 
                         SupplySwitchesEnable => DVFSRouterSwitchEnables(i),
 
-                        LocalPortData => LocalPortInputs(i).DataOut,
-                        LocalPortTX => LocalPortInputs(i).Tx,
-                        LocalPortCreditI => LocalPortOutputs(i).CreditI,
-                        LocalPortClockTX => LocalPortInputs(i).ClockTX
+                        LocalPortData => LocalPortOutputs(i).DataIn,
+                        LocalPortTX => LocalPortOutputs(i).Rx,
+                        LocalPortCreditI => LocalPortInputs(i).CreditO,
+                        LocalPortClockTX => LocalPortOutputs(i).ClockRX
 
                     );
 
@@ -257,10 +257,10 @@ begin
 
                         SupplySwitchesEnable => DVFSBusSwitchEnables(i),
 
-                        LocalPortData => LocalPortInputs(BusWrapperIDs(i)).DataOut,
-                        LocalPortTX => LocalPortInputs(BusWrapperIDs(i)).Tx,
-                        LocalPortCreditI => LocalPortOutputs(BusWrapperIDs(i)).CreditI,
-                        LocalPortClockTX => LocalPortInputs(BusWrapperIDs(i)).ClockTX
+                        LocalPortData => LocalPortOutputs(BusWrapperIDs(i)).DataIn,
+                        LocalPortTX => LocalPortOutputs(BusWrapperIDs(i)).Rx,
+                        LocalPortCreditI => LocalPortInputs(BusWrapperIDs(i)).CreditO,
+                        LocalPortClockTX => LocalPortOutputs(BusWrapperIDs(i)).ClockRX
 
                     );
 
