@@ -155,7 +155,8 @@ package body Injector_PKG is
 
             -- A payload flit can be : "PEPOS" (PE position in network), 
             --                         "APPID" (ID of app being emulated by this injector), 
-            --                         "THDID" (ID of thread of the app being emulated in this PE),
+            --                         "SRCID" (ID of thread being emulated in this PE),
+            --                         "TGTID" (ID of target thread ),
             --                         "AVGPT" (Average processing time of a message received by the app being emulated by this PE),
             --                         "TMSTP" (Timestamp of message being sent (to be set in real time, not in this function)),
             --                         "AMMSG" (Amount of messages sent by this PE (also to be se in real time)),
@@ -166,9 +167,13 @@ package body Injector_PKG is
 
                 Payload(flit) := std_logic_vector(to_unsigned(SourcePEPos, DataWidth));
 
-            elsif PayloadFlitString(1 to 5) = "THDID" then
+            elsif PayloadFlitString(1 to 5) = "SRCID" then
 
                 Payload(flit) := std_logic_vector(to_unsigned(SourceThreadID, DataWidth));
+
+            elsif PayloadFlitString(1 to 5) = "TGTID" then
+
+                Payload(flit) := std_logic_vector(to_unsigned(TargetThreadID, DataWidth));
 
             elsif PayloadFlitString(1 to 5) = "APPID" then
 

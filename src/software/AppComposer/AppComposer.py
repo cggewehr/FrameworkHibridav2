@@ -11,7 +11,8 @@ class Flow:
     FlowParameters = ["StartTime", "StopTime", "Periodic", "MSGAmount", "ControlFlowFlag"]
 
     #def __init__(self, Bandwidth, TargetThread, SourceThread = None, FlowType = "CBR", StartTime = 0, StopTime = -1, Periodic = False, MSGAmount = 0, ControlFlowFlag = False):
-    def __init__(self, Bandwidth, TargetThread, SourceThread = None, FlowType = "CBR", StartTime = 0, StopTime = 0, Periodic = False, MSGAmount = 0, ControlFlowFlag = False, Header = ["ADDR", "SIZE"], Payload = ["PEPOS", "TMSTP"] + (["RANDO"] * (126 - 2))):
+    #def __init__(self, Bandwidth, TargetThread, SourceThread = None, FlowType = "CBR", StartTime = 0, StopTime = 0, Periodic = False, MSGAmount = 0, ControlFlowFlag = False, Header = ["ADDR", "SIZE"], Payload = ["PEPOS", "TMSTP"] + (["RANDO"] * (126 - 2))):
+    def __init__(self, Bandwidth, TargetThread, SourceThread = None, FlowType = "CBR", StartTime = 0, StopTime = 0, Periodic = False, MSGAmount = 0, ControlFlowFlag = False, Header = ["ADDR", "SIZE"], Payload = ["FFFF0000", "APPID", "TGTID", "SRCID"] + (["RANDO"] * (126 - 4))):
 
         # SourceThread must be a Thread object
         if isinstance(SourceThread, Thread) or SourceThread is None:
@@ -28,16 +29,22 @@ class Flow:
         else:
             print("Error: Given <TargetThread: " + str(TargetThread) + "> is not a Thread object")
             exit(1)
-           
-        self.Bandwidth = Bandwidth  # In MBps
+            
+        # Index in SourceThread.OutgoingFlows[]. To be set when SourceThread.addFlow() is called
+        #self.FlowID = None 
+        
+        # Only CBR type currently supported
         self.FlowType = FlowType  # Only CBR type currently supported
+        
+        # CBR Flow type parameters
+        self.Bandwidth = Bandwidth  # In MBps
         
         # Dynamic parameters
         self.StartTime = StartTime
         self.StopTime = StopTime
-        self.Periodic = Periodic
+        self.Periodic = Periodic  # WIP, doesnt do anything
         self.MSGAmount = MSGAmount
-        self.ControlFlowFlag = ControlFlowFlag
+        self.ControlFlowFlag = ControlFlowFlag  # WIP, doesnt do anything
 
         # Injector parameters
         self.Header = Header
@@ -226,7 +233,7 @@ class Thread:
                 print("Warning: New given Thread name is not a string, maintaining old Thread name")
                 
                 
-    # Merges ThreadToMerge into self
+    # WIP: Merges ThreadToMerge into self
     def mergeThread(self, ThreadToMerge):
     
         if ThreadToMerge == self:

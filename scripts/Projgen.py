@@ -156,7 +156,7 @@ def projgen(args):
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Injector_PKG.vhd -work HyHeMPS\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Injector.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Trigger.vhd\n")
-                make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Receiver.vhd\n")
+                make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Logger.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/InjBuffer.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/PEBus.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/PE.vhd\n")

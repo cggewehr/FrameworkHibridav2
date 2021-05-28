@@ -160,6 +160,7 @@ package HyHeMPS_PKG is
     -- Type conversion functions
     function CONV_INTEGER(bool: boolean) return integer;
     function CONV_DATAWIDTH(str: string) return DataWidth_t;
+    function CONV_STRING(slv: std_logic_vector) return string;
     -- TODO: CONV_STRING(int: integer)
     -- TODO: CONV_INTEGER(str: string)
 
@@ -473,9 +474,9 @@ package body HyHeMPS_PKG is
     function CONV_INTEGER(bool: boolean) return integer is begin
 
         if bool then
-            return 0;
-        else
             return 1;
+        else
+            return 0;
         end if;
         
     end function CONV_INTEGER;
@@ -518,6 +519,44 @@ package body HyHeMPS_PKG is
 
     end CONV_DATAWIDTH;
 
+
+    -- Only works for multiples of 4
+    function CONV_STRING(slv: std_logic_vector) return string is
+        variable str: string(1 to slv'length/4);
+        variable slv_index: integer := slv'high - 1;
+    begin
+
+        for i in str'range loop
+
+            case slv(slv_index downto slv_index - 3) is
+
+                when "0000" => str(i) := '0';
+                when "0001" => str(i) := '1';
+                when "0010" => str(i) := '2';
+                when "0011" => str(i) := '3';
+                when "0100" => str(i) := '4';
+                when "0101" => str(i) := '5';
+                when "0110" => str(i) := '6';
+                when "0111" => str(i) := '7';
+                when "1000" => str(i) := '8';
+                when "1001" => str(i) := '9';
+                when "1010" => str(i) := 'A';
+                when "1011" => str(i) := 'B';
+                when "1100" => str(i) := 'C';
+                when "1101" => str(i) := 'D';
+                when "1110" => str(i) := 'E';
+                when "1111" => str(i) := 'F';
+
+            end case;
+
+            slv_index := slv_index - 4;
+
+        end loop;
+
+        return str;
+
+    end function CONV_STRING;
+    
     -- TODO: CONV_STRING(int: integer)
     -- TODO: CONV_INTEGER(str: string)
 

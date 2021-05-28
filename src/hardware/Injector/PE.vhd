@@ -95,11 +95,14 @@ architecture Injector of PE is
     signal DataInBus: DataWidth_vector(0 to AmountOfFlows - 1);
     signal CreditOBus: std_logic_vector(0 to AmountOfFlows - 1);
 
+    -- Temp signals for output ports (used in Logger interface)
     signal txBuffer: std_logic;
+    signal clockTxBuffer: std_logic;
+    signal dataOutBuffer: DataWidth_t;
+    signal creditOBuffer: std_logic;
 
     function get_i(ThreadNum: integer; FlowNum: integer; AmountOfFlowsInThread: integer_vector) return integer is 
         variable i: integer := 0;
-        variable loopBound: integer := 0;
     begin
 
         if ThreadNum = 0 then
@@ -232,9 +235,12 @@ begin
     -- Grounds outputs if no injectors are instantiated
     GroundGen: if AmountOfFlows = 0 generate
 
-        ClockTx <= ClockRx;
-        DataOut <= (others => '0');
-        Tx <= '0';
+        --ClockTx <= ClockRx;
+        --DataOut <= (others => '0');
+        --Tx <= '0';
+        clockTxBuffer <= ClockRx;
+        dataOutBuffer <= (others => '0');
+        txBuffer <= '0';
     
     end generate GroundGen;
 
@@ -261,10 +267,12 @@ begin
                 CreditO => InjectorInterfaces_2D(0, 0).OutputBufferAvailableFlag,
 
                 -- Struct Interface
-                ClockTx => ClockTx,
-                Tx => Tx,
-                --Tx => txBuffer,
-                DataOut => DataOut,
+                --ClockTx => ClockTx,
+                ClockTx => clockTxBuffer,
+                --Tx => Tx,
+                Tx => txBuffer,
+                --DataOut => DataOut,
+                DataOut => dataOutBuffer,
                 CreditI => CreditI,
 
                 -- Arbiter Interface
@@ -302,30 +310,50 @@ begin
                 CreditO => CreditOBus,
 
                 -- Output Interface (to comm structure)
-                DataOut => DataOut,
-                DataOutAV => Tx,
+                --DataOut => DataOut,
+                DataOut => dataOutBuffer,
+                --DataOutAV => Tx,
+                DataOutAV => txBuffer,
                 CreditI => CreditI,
-                ClockTx => ClockTx
+                --ClockTx => ClockTx
+                ClockTx => clockTxBuffer
 
             );
 
     end generate PEBusGen;
 
 
+    -- Maps out signals in interface to temp signals
+    ClockTx <= clockTxBuffer;
+    Tx <= txBuffer;
+    DataOut <= dataOutBuffer;
+    creditOBuffer <= '1';
+    CreditO <= creditOBuffer;
+
+
     -- Instantiates a receiver, which generates a log of all incoming messages
-    Receiver: entity work.Receiver
+    Logger: entity work.Logger
 
       	generic map(
       		InboundLogFilename => LogPath & "PE " & integer'image(PEPos) & "/InLog" & integer'image(PEPos) & ".txt",
+            OutboundLogFilename => LogPath & "PE " & integer'image(PEPos) & "/OutLog" & integer'image(PEPos) & ".txt",
       		SquareNoCBound => SquareNoCBound
       	)
       	port map(
 
-      		Clock   => ClockRx,
-      		Reset   => Reset,
-      		DataIn  => DataIn,
-      		Rx      => Rx,
-      		CreditO => CreditO
+                Reset => Reset,
+
+                -- From network
+                ClockRx => ClockRx,
+                Rx => Rx,
+                DataIn => DataIn,
+                CreditO => creditOBuffer,
+
+                -- To network
+                ClockTx => clockTxBuffer,
+                Tx => txBuffer,
+                DataOut => dataOutBuffer,
+                CreditI => CreditI
 
       	);
 
