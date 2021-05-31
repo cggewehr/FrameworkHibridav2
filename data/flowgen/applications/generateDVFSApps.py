@@ -1,9 +1,12 @@
+import math
 import AppComposer
 import PlatformComposer
 from fractions import Fraction
 
+# TODO: Extend supply voltage possibilities to > 2
+
 # This script generate DVFS AppComposer Applications for a given network topology and router-grained previously computed clock frequencies.
-def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFrequencies, CrossbarClockFrequencies, GenRouterGrained = True, GenStructGrained = True, GenGlobalGrained = True, GenStaticClocked = True, InputClockFrequency = 250, QuantumTime = 1000000, SaveToFile = True, ReturnAsJSON = False):
+def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFrequencies, CrossbarClockFrequencies, GenRouterGrained = True, GenStructGrained = True, GenGlobalGrained = True, GenStaticClocked = True, DataWidth = 32, InputClockFrequency = 250, QuantumTime = 1000000, SaveToFile = True, ReturnAsJSON = False):
         
     if not isinstance(Platform, PlatformComposer.Platform):
         print("Error: Object given as Platform parameter is not of PlatformComposer.Platform class")
@@ -14,6 +17,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
         
     # TODO: Check if not standalone struct
     
+    
     # Extract base parameters from given Platform object. 
     AmountOfRouters = Platform.BaseNoCDimensions[0] * Platform.BaseNoCDimensions[1]
     AmountOfBuses = Platform.AmountOfBuses
@@ -21,11 +25,14 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
     AmountOfPEs = Platform.AmountOfPEs
     DVFSServiceID = Platform.DVFSServiceID  # 32 bit constant as hex
     DVFSCounterResolution = Platform.DVFSCounterResolution 
+    DVFSAmountOfVoltageLevels = Platform.DVFSAmountOfVoltageLevels 
     # TODO: Do search for BusID/CrossbarID of first PEPos in struct here
     
-    #MaxFrequency = 250  # in MHz
-    #Resolution = 15  # in bits
-    #QuantumTime = 1000000  # 1 ms in nanoseconds
+	# Info flit fields (field bit width below):
+	# |        Voltage Level        | IsNoC | ... |         N         |         M         |
+	#   log2(AmountOfVoltageLevels)     1           CounterResolution   CounterResolution
+    VoltageLevelFieldSize = math.ceil(math.log2(DVFSAmountOfVoltageLevels))
+    ZeroPadding = "0" * (DataWidth - VoltageLevelFieldSize - 1 - 2*DVFSCounterResolution)
     
     # Check if amount of Quantums is coherent for each clock frequency list
     if BusClockFrequencies is not None:
@@ -80,11 +87,12 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
         DVFSMaster = AppComposer.Thread(ThreadName = "Master")
         DVFSSlaves = [AppComposer.Thread(ThreadName = "Slave" + str(i)) for i in range(0, AmountOfPEs)]
 
-        # Add Threads to applications
+        # Add Threads to DVFS Application
         DVFSApp.addThread(DVFSMaster)
         for DVFSSlave in DVFSSlaves:
             DVFSApp.addThread(DVFSSlave)
         
+        # Determine VF-pair setup for each Router/Bus/Crossbar in each time window (quantum)
         for Quantum in range(AmountOfQuantums):
             for PEPos, PE in enumerate(Platform.PEs):
             
@@ -148,7 +156,10 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                 IsNoCBit = '1' if PE.CommStructure == "NoC" else '0'
                     
                 # Determines config flit for DVFS Payload
-                ConfigFlit = SupplySwitchBit + IsNoCBit + format(DivRatio.numerator, "0" + str(DVFSCounterResolution) + "b") + format(DivRatio.denominator, "0" + str(DVFSCounterResolution) + "b")
+                # Info flit fields (field bit width below):
+                # |        Voltage Level        | IsNoC | ... |         N         |         M         |
+                #   log2(AmountOfVoltageLevels)     1           CounterResolution   CounterResolution
+                ConfigFlit = SupplySwitchBit + IsNoCBit + ZeroPadding + format(DivRatio.numerator, "0" + str(DVFSCounterResolution) + "b") + format(DivRatio.denominator, "0" + str(DVFSCounterResolution) + "b")
                 ConfigFlit = '%0*X' % ((len(ConfigFlit) + 3) // 4, int(ConfigFlit, 2))  # Converts bit string to hex string "https://stackoverflow.com/questions/2072351/python-conversion-from-binary-string-to-hexadecimal"
 
                 # DEBUG
@@ -182,11 +193,12 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
         DVFSMaster = AppComposer.Thread(ThreadName = "Master")
         DVFSSlaves = [AppComposer.Thread(ThreadName = "Slave" + str(i)) for i in range(0, AmountOfPEs)]
 
-        # Add Threads to applications
+        # Add Threads to DVFS Application
         DVFSApp.addThread(DVFSMaster)
         for DVFSSlave in DVFSSlaves:
             DVFSApp.addThread(DVFSSlave)
         
+        # Determine VF-pair setup for each Router/Bus/Crossbar in each time window (quantum)
         for Quantum in range(AmountOfQuantums):
             for PEPos, PE in enumerate(Platform.PEs):
             
@@ -240,7 +252,10 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                 IsNoCBit = '1' if PE.CommStructure == "NoC" else '0'
                     
                 # Determines config flit for DVFS Payload
-                ConfigFlit = SupplySwitchBit + IsNoCBit + format(DivRatio.numerator, "0" + str(DVFSCounterResolution) + "b") + format(DivRatio.denominator, "0" + str(DVFSCounterResolution) + "b")
+                # Info flit fields (field bit width below):
+                # |        Voltage Level        | IsNoC | ... |         N         |         M         |
+                #   log2(AmountOfVoltageLevels)     1           CounterResolution   CounterResolution
+                ConfigFlit = SupplySwitchBit + IsNoCBit + ZeroPadding + format(DivRatio.numerator, "0" + str(DVFSCounterResolution) + "b") + format(DivRatio.denominator, "0" + str(DVFSCounterResolution) + "b")
                 ConfigFlit = '%0*X' % ((len(ConfigFlit) + 3) // 4, int(ConfigFlit, 2))  # Converts bit string to hex string "https://stackoverflow.com/questions/2072351/python-conversion-from-binary-string-to-hexadecimal"
                     
                 # Adds Flow with custom Payload to master DVFS Thread
@@ -266,11 +281,12 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
         DVFSMaster = AppComposer.Thread(ThreadName = "Master")
         DVFSSlaves = [AppComposer.Thread(ThreadName = "Slave" + str(i)) for i in range(0, AmountOfPEs)]
 
-        # Add Threads to applications
+        # Add Threads to DVFS Application
         DVFSApp.addThread(DVFSMaster)
         for DVFSSlave in DVFSSlaves:
             DVFSApp.addThread(DVFSSlave)
         
+        # Determine VF-pair setup for each Router/Bus/Crossbar in each time window (quantum)
         for Quantum in range(AmountOfQuantums):
             for PEPos, PE in enumerate(Platform.PEs):
             
@@ -300,7 +316,10 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                 IsNoCBit = '1' if PE.CommStructure == "NoC" else '0'
                     
                 # Determines config flit for DVFS Payload
-                ConfigFlit = SupplySwitchBit + IsNoCBit + format(DivRatio.numerator, "0" + str(DVFSCounterResolution) + "b") + format(DivRatio.denominator, "0" + str(DVFSCounterResolution) + "b")
+                # Info flit fields (field bit width below):
+                # |        Voltage Level        | IsNoC | ... |         N         |         M         |
+                #   log2(AmountOfVoltageLevels)     1           CounterResolution   CounterResolution
+                ConfigFlit = SupplySwitchBit + IsNoCBit + ZeroPadding + format(DivRatio.numerator, "0" + str(DVFSCounterResolution) + "b") + format(DivRatio.denominator, "0" + str(DVFSCounterResolution) + "b")
                 ConfigFlit = '%0*X' % ((len(ConfigFlit) + 3) // 4, int(ConfigFlit, 2))  # Converts bit string to hex string "https://stackoverflow.com/questions/2072351/python-conversion-from-binary-string-to-hexadecimal"
                     
                 # Adds Flow with custom Payload to master DVFS Thread
@@ -315,8 +334,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
         # Write global-grained DVFS Application to a JSON file
         if SaveToFile:
             DVFSApp.toJSON(SaveToFile = True, FileName = "DVFSAppGlobalGrained" + str(PlatformName))    
-        
-    # TODO: Skip if standalone NoC (no Bus/Crossbars)    
+         
     if GenStaticClocked:
         
         # Make Application
@@ -326,11 +344,12 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
         DVFSMaster = AppComposer.Thread(ThreadName = "Master")
         DVFSSlaves = [AppComposer.Thread(ThreadName = "Slave" + str(i)) for i in range(0, AmountOfPEs)]
 
-        # Add Threads to applications
+        # Add Threads to DVFS Application
         DVFSApp.addThread(DVFSMaster)
         for DVFSSlave in DVFSSlaves:
             DVFSApp.addThread(DVFSSlave)
         
+        # Determine VF-pair setup for each Router/Bus/Crossbar in each time window (quantum)
         for Quantum in range(AmountOfQuantums):
             for PEPos, PE in enumerate(Platform.PEs):
             
@@ -349,7 +368,10 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                 IsNoCBit = '1' if PE.CommStructure == "NoC" else '0'
                     
                 # Determines config flit for DVFS Payload
-                ConfigFlit = SupplySwitchBit + IsNoCBit + format(DivRatio.numerator, "0" + str(DVFSCounterResolution) + "b") + format(DivRatio.denominator, "0" + str(DVFSCounterResolution) + "b")
+                # Info flit fields (field bit width below):
+                # |        Voltage Level        | IsNoC | ... |         N         |         M         |
+                #   log2(AmountOfVoltageLevels)     1           CounterResolution   CounterResolution
+                ConfigFlit = SupplySwitchBit + IsNoCBit + ZeroPadding + format(DivRatio.numerator, "0" + str(DVFSCounterResolution) + "b") + format(DivRatio.denominator, "0" + str(DVFSCounterResolution) + "b")
                 ConfigFlit = '%0*X' % ((len(ConfigFlit) + 3) // 4, int(ConfigFlit, 2))  # Converts bit string to hex string "https://stackoverflow.com/questions/2072351/python-conversion-from-binary-string-to-hexadecimal"
                     
                 # Adds Flow with custom Payload to master DVFS Thread
