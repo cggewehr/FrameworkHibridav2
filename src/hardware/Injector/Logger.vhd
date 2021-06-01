@@ -67,8 +67,8 @@ architecture RTL of Logger is
     constant HeaderSize: integer := 2;
 
     -- Service IDs
-    constant DVFSServiceID: DataWidth_t := "0000FFFF";
-    constant SyntheticTrafficServiceID: DataWidth_t := "FFFF0000";
+    constant DVFSServiceID: DataWidth_t := x"0000FFFF";
+    constant SyntheticTrafficServiceID: DataWidth_t := x"FFFF0000";
 
     -- Opens log files
     file InboundLog: text open write_mode is InboundLogFilename;
@@ -84,7 +84,7 @@ begin
         variable serviceGo: boolean := False;
 
         variable inputTimestamp: integer := 0;
-        variable checksum: integer := 0;
+        variable checksum: unsigned(DataWidth - 1 downto 0) := (others =>'0');
 
         variable inboundLogLine: line;
 
@@ -97,7 +97,7 @@ begin
             serviceGo := False;
 
             inputTimestamp := 0;
-            checksum := 0;
+            checksum := (others =>'0');
 
         elsif rising_edge(ClockTx) then
 
@@ -141,17 +141,17 @@ begin
                         if flitCounter = 3 then
 
                             -- Write App ID
-                            write(inboundLogLine, integer'image(to_integer(unsigned(DataIn) & " ")));
+                            write(inboundLogLine, integer'image(to_integer(unsigned(DataIn))) & " ");
 
                         elsif flitCounter = 4 then
 
                             -- Write Target Thread ID
-                            write(inboundLogLine, integer'image(to_integer(unsigned(DataIn) & " ")));
+                            write(inboundLogLine, integer'image(to_integer(unsigned(DataIn))) & " ");
 
                         elsif flitCounter = 5 then
 
                             -- Write Source Thread ID
-                            write(inboundLogLine, integer'image(to_integer(unsigned(DataIn) & " ")));
+                            write(inboundLogLine, integer'image(to_integer(unsigned(DataIn))) & " ");
 
                         end if;
 
@@ -166,7 +166,7 @@ begin
                 end if; 
 
                 -- Update Checksum with new flit
-                checksum := checksum + to_integer(unsigned(DataIn));
+                checksum := checksum + unsigned(DataIn);
 
                 -- Increments counter if its less than current message size or SIZE flit has not yet been sent
                 if (flitCounter < payloadSize + HeaderSize - 1) or (flitCounter < HeaderSize) then
@@ -179,14 +179,14 @@ begin
                     -- Write to log file (| Target PEPos | Payload Size | Service ID | <Service specific data> | Timestamp | Checksum |)
                     inputTimestamp := NOW / 1 ns;
                     write(inboundLogLine, integer'image(inputTimestamp) & " ");
-                    write(inboundLogLine, integer'image(checksum));
+                    write(inboundLogLine, integer'image(to_integer(checksum)));
                     writeline(inboundLog, inboundLogLine);
 
                     -- Resets flags and counters
                     flitCounter := 0;
                     payloadSize := 0;
                     serviceGo := False;
-                    checksum := 0;
+                    checksum := (others =>'0');
                     inputTimestamp := 0;
 
                 end if;
@@ -206,7 +206,7 @@ begin
         variable serviceGo: boolean := False;
 
         variable outputTimestamp: integer := 0;
-        variable checksum: integer := 0;
+        variable checksum: unsigned(DataWidth - 1 downto 0)  := (others =>'0');
 
         variable outboundLogLine: line;
         
@@ -219,7 +219,7 @@ begin
             serviceGo := False;
 
             outputTimestamp := 0;
-            checksum := 0;
+            checksum := (others =>'0');
 
         elsif rising_edge(ClockTx) then
 
@@ -264,17 +264,17 @@ begin
                         if flitCounter = 3 then
 
                             -- Write App ID
-                            write(outboundLogLine, integer'image(to_integer(unsigned(DataOut) & " ")));
+                            write(outboundLogLine, integer'image(to_integer(unsigned(DataOut))) & " ");
 
                         elsif flitCounter = 4 then
 
                             -- Write Target Thread ID
-                            write(outboundLogLine, integer'image(to_integer(unsigned(DataOut) & " ")));
+                            write(outboundLogLine, integer'image(to_integer(unsigned(DataOut))) & " ");
 
                         elsif flitCounter = 5 then
 
                             -- Write Source Thread ID
-                            write(outboundLogLine, integer'image(to_integer(unsigned(DataOut) & " ")));
+                            write(outboundLogLine, integer'image(to_integer(unsigned(DataOut))) & " ");
 
                         end if;
 
@@ -289,7 +289,7 @@ begin
                 end if; 
 
                 -- Update Checksum with new flit
-                checksum := checksum + to_integer(unsigned(DataOut));
+                checksum := checksum + unsigned(DataOut);
 
                 -- Increments counter if its less than current message size or SIZE flit has not yet been sent
                 if (flitCounter < payloadSize + HeaderSize - 1) or (flitCounter < HeaderSize) then
@@ -301,14 +301,14 @@ begin
 
                     -- Write to log file (| Target PEPos | Payload Size | Service ID | <Service specific data> | Timestamp | Checksum |)
                     write(outboundLogLine, integer'image(outputTimestamp) & " ");
-                    write(outboundLogLine, integer'image(checksum));
+                    write(outboundLogLine, integer'image(to_integer(checksum)));
                     writeline(outboundLog, outboundLogLine);
 
                     -- Resets flags and counters
                     flitCounter := 0;
                     payloadSize := 0;
                     serviceGo := False;
-                    checksum := 0;
+                    checksum := (others =>'0');
                     outputTimestamp := 0;
 
                 end if;

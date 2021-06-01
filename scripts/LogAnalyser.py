@@ -213,12 +213,15 @@ def loganalyser(args):
     ConfigFile = open(os.getenv("HIBRIDA_CONFIG_FILE"), "r")
     ConfigDict = json.loads(ConfigFile.read())
     ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
-    LogDir = ProjectDir + "/logs/"
+    LogDir = ProjectDir + "/log/"
     WorkloadFile = open(ProjectDir + "/src_json/Workload.json", "r")
     Workload = AppComposer.Workload().fromJSON(WorkloadFile.read())
     ClusterClocksFile = open(ProjectDir + "/src_json/ClusterClocks.json", "r")
     ClusterClocks = json.loads(ClusterClocksFile.read())
     TopologyFile = open(ProjectDir + "/src_json/Topology.json", "r")
+
+    # Rebuilds Platform object
+    print("Building Platform object")
     Topology = PlatformComposer.Platform().fromJSON(TopologyFile.read())
     TopologiesPECache = Topology.PEs
     AmountOfPEs = Topology.AmountOfPEs
@@ -264,7 +267,7 @@ def loganalyser(args):
     # Parse log files into Log and Packet objects
     for PEPos in range(0, AmountOfPEs):
 
-        with open(LogDir + "InLog" + str(PEPos) + "/", "r") as InLogFile:
+        with open(LogDir + "PE " + str(PEPos) + "/InLog" + str(PEPos) + ".txt", "r") as InLogFile:
         
             InLog = InLogs[PEPos]
             
@@ -290,11 +293,11 @@ def loganalyser(args):
                     print("Error: ServiceID <" + str(ServiceID) + "> not recognized for entry <" + str(i) + ": " + line + "> in input log of PE <" + str(PEPos) + ">")
                     exit(1)
                     
-        with open(LogDir + "OutLog" + str(PEPos) + "/", "r") as OutLogFile:
+        with open(LogDir + "PE " + str(PEPos) + "/OutLog" + str(PEPos) + ".txt", "r") as OutLogFile:
         
             OutLog = OutLogs[PEPos]
             
-            for i, line in enumerate(InLogFile.read().splitlines()):
+            for i, line in enumerate(OutLogFile.read().splitlines()):
             
                 lineList = line.split()
                 

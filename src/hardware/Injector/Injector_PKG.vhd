@@ -128,10 +128,11 @@ package body Injector_PKG is
     function BuildPayload(InjCFG: T_JSON) return DataWidth_vector is
 
     	constant SourcePEPos: integer := jsonGetInteger(InjCFG, "SourcePEPos");
-	    constant SourceThreadID: integer := jsonGetInteger(InjCFG, "SourceThreadID");
 	    constant TargetPEPos: integer := jsonGetInteger(InjCFG, "TargetPEPos");
-	    constant TargetBaseNoCPos: integer := jsonGetInteger(InjCFG, "TargetBaseNoCPos");
+	    constant SourceThreadID: integer := jsonGetInteger(InjCFG, "SourceThreadID");
+	    constant TargetThreadID: integer := jsonGetInteger(InjCFG, "TargetThreadID");
 	    constant AppID: integer := jsonGetInteger(InjCFG, "AppID");
+	    constant TargetBaseNoCPos: integer := jsonGetInteger(InjCFG, "TargetBaseNoCPos");
 
         constant AmountOfMessagesSentFlag: integer := jsonGetInteger(InjCFG, "AmountOfMessagesSentFlag");
 	    constant TimestampFlag: integer := jsonGetInteger(InjCFG, "TimestampFlag");
@@ -153,7 +154,8 @@ package body Injector_PKG is
 			
 			PayloadFlitString(1 to DataWidth/4) := jsonGetString(InjCFG, "Payload/" & integer'image(flit));
 
-            -- A payload flit can be : "PEPOS" (PE position in network), 
+            -- A payload flit can be : "SRCPE" (Source PE position in network), 
+            --                         "TGTPE" (Target PE position in network), 
             --                         "APPID" (ID of app being emulated by this injector), 
             --                         "SRCID" (ID of thread being emulated in this PE),
             --                         "TGTID" (ID of target thread ),
@@ -163,9 +165,13 @@ package body Injector_PKG is
             --                         "RANDO" (Randomize every bit)
             --                         "BLANK" (Fills with zeroes)
             
-            if PayloadFlitString(1 to 5) = "PEPOS" then
+            if PayloadFlitString(1 to 5) = "SRCPE" then
 
                 Payload(flit) := std_logic_vector(to_unsigned(SourcePEPos, DataWidth));
+
+            elsif PayloadFlitString(1 to 5) = "TGTPE" then
+
+                Payload(flit) := std_logic_vector(to_unsigned(TargetPEPos, DataWidth));
 
             elsif PayloadFlitString(1 to 5) = "SRCID" then
 

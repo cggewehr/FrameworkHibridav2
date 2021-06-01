@@ -520,15 +520,19 @@ package body HyHeMPS_PKG is
     end CONV_DATAWIDTH;
 
 
-    -- Only works for multiples of 4
+    -- WIP: Only works for multiples of 4
     function CONV_STRING(slv: std_logic_vector) return string is
-        variable str: string(1 to slv'length/4);
-        variable slv_index: integer := slv'high - 1;
+        variable str: string(1 to slv'length/4) := (others => 'X');
+        variable slv_index: integer := slv'high;
+        variable slv_slice: std_logic_vector(3 downto 0);
     begin
 
         for i in str'range loop
 
-            case slv(slv_index downto slv_index - 3) is
+            slv_slice := slv(slv_index downto slv_index - 3);
+
+            --case slv(slv_index downto slv_index - 3) is
+            case slv_slice is
 
                 when "0000" => str(i) := '0';
                 when "0001" => str(i) := '1';
@@ -546,6 +550,7 @@ package body HyHeMPS_PKG is
                 when "1101" => str(i) := 'D';
                 when "1110" => str(i) := 'E';
                 when "1111" => str(i) := 'F';
+                when others => report "Unexpected slice value in slv to string comversion. String partial value <" & str & ">" severity failure; 
 
             end case;
 
