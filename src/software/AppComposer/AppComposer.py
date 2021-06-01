@@ -573,6 +573,8 @@ class Application:
                 TargetThread = self.getThread(ThreadName = FlowInThread["TargetThread"])
                 ThreadInApp.addFlow(Flow(Bandwidth = FlowInThread["Bandwidth"], SourceThread = SourceThread, TargetThread = TargetThread, StartTime = FlowInThread["StartTime"], StopTime = FlowInThread["StopTime"], Periodic = FlowInThread["Periodic"], MSGAmount = FlowInThread["MSGAmount"], ControlFlowFlag = FlowInThread["ControlFlowFlag"], Header = FlowInThread["Header"], Payload = FlowInThread["Payload"]))
 
+        return self
+
 
     def __str__(self):
     
@@ -835,6 +837,8 @@ class Workload:
             appJSONString = JSON.dumps(JSONDict[AppName], sort_keys=False, indent=4)
             newApp.fromJSON(appJSONString)
             self.addApplication(newApp)
+
+        return self
 
     
     def __str__(self):

@@ -104,7 +104,7 @@ class DVFSPacket(Packet):
                 DVFSPacket.BusLatencyCounters[PE.PEPos] += 1
                 DVFSPacket.BusLatencies[PE.PEPos] += (Latency - DVFSPacket.BusLatencies[PE.PEPos]) / DVFSPacket.BusLatencyCounters[PE.PEPos]
             
-            else
+            else:
                 print("Error: No StructID found for Bus in BaseNoCPos <" + str(BaseNoCPos) + ">")
                 exit(1)
         
@@ -122,7 +122,7 @@ class DVFSPacket(Packet):
                 DVFSPacket.CrossbarLatencyCounters[PE.PEPos] += 1
                 DVFSPacket.CrossbarLatencies[PE.PEPos] += (Latency - DVFSPacket.CrossbarLatencies[PE.PEPos]) / DVFSPacket.CrossbarLatencyCounters[PE.PEPos]
                 
-            else
+            else:
                 print("Error: No StructID found for Crossbar in BaseNoCPos <" + str(BaseNoCPos) + ">")
                 exit(1)
                 
@@ -222,13 +222,16 @@ def loganalyser(args):
     Topology = PlatformComposer.Platform().fromJSON(TopologyFile.read())
     TopologiesPECache = Topology.PEs
     AmountOfPEs = Topology.AmountOfPEs
+    AmountOfRouters = Topology.BaseNoCDimensions[0] * Topology.BaseNoCDimensions[1]
+    AmountOfBuses = Topology.AmountOfBuses
+    AmountOfCrossbars = Topology.AmountOfCrossbars
     
     # Inits computation variables for DVFS service
     if args.DVFS:
         
-        DVFSPacket.RouterFreq = [[(0, ClusterClocks[Router]]) for Router in range(AmountOfRouters)]
-        DVFSPacket.BusFreq = [[(0, ClusterClocks[Topology.Buses[Bus].BaseNoCPos]]) for Bus in range(AmountOfBuses)]
-        DVFSPacket.CrossbarFreq = [[(0, ClusterClocks[Topology.Crossbars[Crossbar].BaseNoCPos]]) for Crossbar in range(AmountOfCrossbars)]
+        DVFSPacket.RouterFreq = [[(0, ClusterClocks[Router])] for Router in range(AmountOfRouters)]
+        DVFSPacket.BusFreq = [[(0, ClusterClocks[Topology.Buses[Bus].BaseNoCPos])] for Bus in range(AmountOfBuses)]
+        DVFSPacket.CrossbarFreq = [[(0, ClusterClocks[Topology.Crossbars[Crossbar].BaseNoCPos])] for Crossbar in range(AmountOfCrossbars)]
         
         DVFSPacket.Latencies = [0 for PE in range(AmountOfPEs)]
         DVFSPacket.LatencyCounters = [0 for PE in range(AmountOfPEs)]
@@ -279,9 +282,9 @@ def loganalyser(args):
                 except KeyError:
                     print("Warning: Incomplete message <" + line + "> in entry <" + str(i) + "> of input log of PE <" + str(PEPos) + ">")
                 
-                if ServiceID = Packet.DVFSServiceID:
+                if ServiceID == Packet.DVFSServiceID:
                     InLog.addEntry(DVFSPacket(ParentLog = InLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum))
-                elif ServiceID = Packet.SyntheticTrafficServiceID:
+                elif ServiceID == Packet.SyntheticTrafficServiceID:
                     InLog.addEntry(SyntheticTrafficPacket(ParentLog = InLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum))
                 else:
                     print("Error: ServiceID <" + str(ServiceID) + "> not recognized for entry <" + str(i) + ": " + line + "> in input log of PE <" + str(PEPos) + ">")
@@ -305,9 +308,9 @@ def loganalyser(args):
                 except KeyError:
                     print("Warning: Incomplete message <" + line + "> in entry <" + str(i) + "> of output log of PE <" + str(PEPos) + ">")
                 
-                if ServiceID = Packet.DVFSServiceID:
+                if ServiceID == Packet.DVFSServiceID:
                     OutLog.addEntry(DVFSPacket(ParentLog = OutLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum))
-                elif ServiceID = Packet.SyntheticTrafficServiceID:
+                elif ServiceID == Packet.SyntheticTrafficServiceID:
                     OutLog.addEntry(SyntheticTrafficPacket(ParentLog = OutLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum))
                 else:
                     print("Error: ServiceID <" + str(ServiceID) + "> not recognized for entry <" + str(i) + ": " + line + "> in output log of PE <" + str(PEPos) + ">")

@@ -12,7 +12,7 @@ from Injector import Injector
 class Platform:
 
     # Constructor
-    def __init__(self, BaseNoCDimensions, StandaloneStruct = False, BridgeBufferSize = 4, MasterPEPos = 0, DataWidth = 32, DVFSEnable = False, DVFSServiceID = "0000FFFF", DVFSAmountOfVoltageLevels = 2, DVFSCounterResolution = 15):
+    def __init__(self, BaseNoCDimensions = (1,1), StandaloneStruct = False, BridgeBufferSize = 4, MasterPEPos = 0, DataWidth = 32, DVFSEnable = False, DVFSServiceID = "0000FFFF", DVFSAmountOfVoltageLevels = 2, DVFSCounterResolution = 15):
 
         #self.BaseNoC = [[None for x in range(BaseNoCDimensions[0])] for y in range(BaseNoCDimensions[1])]
 
