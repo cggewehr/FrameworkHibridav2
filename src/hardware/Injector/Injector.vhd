@@ -41,8 +41,7 @@ entity Injector is
 
 	generic(
         InjectorConfigFile: string;
-        PlatformConfigFile: string;
-        OutboundLogFilename: string
+        PlatformConfigFile: string
 	);
 
 	port(
@@ -111,9 +110,6 @@ architecture RTL of Injector is
     --signal RNGSeed1: integer := jsonGetInteger(InjectorJSONConfig, "RNGSeed1");
     --signal RNGSeed2: integer := jsonGetInteger(InjectorJSONConfig, "RNGSeed2");
 
-    -- Opens log file
-    file OutboundLog: text open write_mode is OutboundLogFilename;
-
 begin
 
     process(Clock, Reset) 
@@ -123,8 +119,6 @@ begin
 
         variable firstFlitOutTimestamp: DataWidth_t := (others=>'0');
         variable amountOfMessagesSent: DataWidth_t := (others=>'0');
-
-        variable OutboundLogLine: line;
 
     begin
 
@@ -153,11 +147,11 @@ begin
                         amountOfMessagesSent := amountOfMessagesSent + 1;
 
                         -- Write to log file ( | target ID | source ID | payload size | timestamp | )
-                        write(OutboundLogLine, integer'image(TargetPEPos) & " ");
-                        write(OutboundLogLine, integer'image(SourcePEPos) & " ");
-                        write(OutboundLogLine, integer'image(PayloadSize) & " ");
-                        write(OutboundLogLine, integer'image(now / 1 ns));
-                        writeline(OutboundLog, OutboundLogLine);
+                        --write(OutboundLogLine, integer'image(TargetPEPos) & " ");
+                        --write(OutboundLogLine, integer'image(SourcePEPos) & " ");
+                        --write(OutboundLogLine, integer'image(PayloadSize) & " ");
+                        --write(OutboundLogLine, integer'image(now / 1 ns));
+                        --writeline(OutboundLog, OutboundLogLine);
 
                     end if;
 

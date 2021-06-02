@@ -121,35 +121,8 @@ architecture Injector of PE is
     --signal InjectorInterfaces_1D: InjectorInterface_vector(0 to AmountOfFlows - 1) := InjectorInterfaceTo1D(InjectorInterfaces_2D, AmountOfFlows);
     signal InjectorInterfaces_1D: InjectorInterface_vector(0 to AmountOfFlows - 1);
 
-    -- Translates interface mapping from InjInterfaces2D[Thread][Flow] to InjInterfaces1D[i], where 0 < i < MaxAmountOfFlows
-    --procedure InjectorInterfaceTo1D(signal InjectorInterfaces_1D: inout InjectorInterface_vector; signal InjectorInterfaces_2D: inout InjectorInterface_2vector; constant AmountOfThreads: in integer; constant AmountOfFlowsInThread: in integer_vector) is
-    --    variable i: integer := 0;
-    --begin
-
-    --    InjectorGenThread: for ThreadNum in 0 to AmountOfThreads - 1 loop
-
-    --        InjectorGenFlow: for FlowNum in 0 to AmountOfFlowsInThread(ThreadNum) - 1 loop
-
-    --            --InjectorInterfaces_1D(i) := InjectorInterfaces_2D(ThreadNum, FlowNum);
-    --            InjectorInterfaces_1D(i).Clock <= InjectorInterfaces_2D(ThreadNum, FlowNum).Clock;
-    --            InjectorInterfaces_1D(i).Enable <= InjectorInterfaces_2D(ThreadNum, FlowNum).Enable;
-    --            InjectorInterfaces_1D(i).DataOut <= InjectorInterfaces_2D(ThreadNum, FlowNum).DataOut;
-    --            InjectorInterfaces_1D(i).DataOutAV <= InjectorInterfaces_2D(ThreadNum, FlowNum).DataOutAV;
-    --            InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag <= InjectorInterfaces_1D(i).OutputBufferAvailableFlag;
-
-    --            i := i + 1;
-
-    --        end loop InjectorGenFlow;
-
-    --    end loop InjectorGenThread;
-        
-    --end procedure InjectorInterfaceTo1D;
     
 begin 
-
-    -- Translates injector interface mapping
-    --InjectorInterfaces_1D <= InjectorInterfaceTo1D(InjectorInterfaces_2D, AmountOfFlows);
-    --InjectorInterfaceTo1D(InjectorInterfaces_1D, InjectorInterfaces_2D, AmountOfThreads, AmountOfFlowsInThread);
 
     -- Instantiates Injectors and Triggers
   	InjectorGenThread: for ThreadNum in 0 to AmountOfThreads - 1 generate
@@ -160,8 +133,7 @@ begin
 
                 generic map(
                     InjectorConfigFile => ConfigPath & "PE " & integer'image(PEPos) & "/Thread " & integer'image(ThreadNum) & "/Flow " & integer'image(FlowNum) & ".json",                 
-                    PlatformConfigFile => PlatformConfigFile,
-                    OutboundLogFilename => LogPath & "PE " & integer'image(PEPos) & "/OutLog" & integer'image(PEPos) & "_" & integer'image(ThreadNum) & "_" & integer'image(FlowNum) & ".txt"
+                    PlatformConfigFile => PlatformConfigFile
                 )
                 port map(
                     Clock => InjectorInterfaces_2D(ThreadNum, FlowNum).Clock,
@@ -206,31 +178,6 @@ begin
         end generate InjectorGenFlow;
 
     end generate InjectorGenThread;
-
-
-    -- Instantiates Triggers for each Injector
-    --TriggerGenThread: for ThreadNum in 0 to AmountOfThreads - 1 generate
-
-    --    TriggerGenFlow: for FlowNum in 0 to AmountOfFlowsInThread(ThreadNum) - 1 generate
-
-    --        Trigger: entity work.Trigger
-
-    --            generic map(
-    --                InjectorConfigFile => ConfigPath & "PE " & integer'image(PEPos) & "/Thread " & integer'image(ThreadNum) & "/Flow " & integer'image(FlowNum) & ".json",
-    --                PlatformConfigFile => PlatformConfigFile
-    --            )
-    --            port map(
-    --                Reset => Reset,
-    --                Enable => InjectorInterfaces_2D(ThreadNum, FlowNum).Enable,
-    --                InjectorClock => InjectorInterfaces_2D(ThreadNum, FlowNum).Clock,
-    --                OutputBufferAvailableFlag => InjectorInterfaces_2D(ThreadNum, FlowNum).OutputBufferAvailableFlag
-    --            );
-
-    --    end generate TriggerGenFlow;
-
-    --end generate TriggerGenThread;
-    
-    --Tx <= '0' when txBuffer = 'U' or txBuffer = 'Z' else txBuffer;
 
     -- Grounds outputs if no injectors are instantiated
     GroundGen: if AmountOfFlows = 0 generate
