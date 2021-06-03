@@ -51,10 +51,12 @@ entity CrossbarBridge is
 		ClockTx  : out std_logic;
 		Tx       : out std_logic;
 		DataOut  : out DataWidth_t;
-		CreditI  : in std_logic_vector;
+		--CreditI  : in std_logic_vector;
+		CreditI  : in std_logic;
 
 		-- Arbiters Interface
-		ACK      : out std_logic_vector;
+		--ACK      : out std_logic_vector;
+		ACK      : out std_logic;
 		Request  : out std_logic_vector;
 		--Grant    : in std_logic_vector
 		Grant    : in std_logic
@@ -139,10 +141,11 @@ begin
     ClockTx <= Clock;
 	Tx <= bufferAVFlag when currentState = Stransmit else '0';
     DataOut <= bufferDataOut;
-	bufferReadConfirm <= CreditI(targetIndex) when currentState = Stransmit else '0';
+	--bufferReadConfirm <= CreditI(targetIndex) when currentState = Stransmit else '0';
+	bufferReadConfirm <= CreditI when currentState = Stransmit else '0';
     CreditO <= bufferReadyFlag when currentState /= SwaitForControl else '0';
     
-    ACK(SelfIndex) <= '0';
+    --ACK(SelfIndex) <= '0';
     Request(SelfIndex) <= '0';
 
 	ControlFSM: process(Clock, Reset) begin
@@ -150,7 +153,8 @@ begin
         if Reset = '1' then
 
             -- Set default values
-            ACK <= (others => '0');
+            --ACK <= (others => '0');
+            ACK <='0';
 			Request <= (others => '0');
 
             flitCounter <= to_unsigned(0, DataWidth);
@@ -170,7 +174,8 @@ begin
 			    -- Wait for a new message to be sent
 			    when Sstandby =>
 
-                    ACK <= (others => '0');
+                    --ACK <= (others => '0');
+                    ACK <= '0';
                     Request <= (others => '0');
 
 				    if Rx = '1' then
@@ -218,7 +223,8 @@ begin
                 -- Wait for CrossbarControl to recognize new Grant
                 when SwaitForControl =>
                     
-                    if CreditI(targetIndex) = '1' then
+                    --if CreditI(targetIndex) = '1' then
+                    if CreditI = '1' then
                         currentState <= Stransmit;
                     else
                         currentState <= SwaitForControl;
@@ -229,13 +235,16 @@ begin
 
 				    --ACK(targetIndex) <= '0';
 
-				    if CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
+				    --if CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
+				    if CreditI = '1' and bufferAVFlag = '1' then
 					    flitCounter <= flitCounter - 1;
 				    end if;
 
-				    if flitCounter = 1 and CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
+				    --if flitCounter = 1 and CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
+				    if flitCounter = 1 and CreditI = '1' and bufferAVFlag = '1' then
                     --if bufferAVFlag = '0' then
-					    ACK(targetIndex) <= '1';
+					    --ACK(targetIndex) <= '1';
+					    ACK <= '1';
 					    currentState <= Sstandby;
 
 				    else

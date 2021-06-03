@@ -10,8 +10,9 @@
 -- Description : Handles messages from Crossbar to PE
 --------------------------------------------------------------------------------
 -- Revisions   : v0.01 - Initial implementation
+--             : v0.02 - Use arbiter grant signal to determine msg source, reducing complexity 
 --------------------------------------------------------------------------------
--- TODO        : Replace RX mux with OR gate, optimizing area 
+-- TODO        : 
 --------------------------------------------------------------------------------
 
 
@@ -29,10 +30,7 @@ library HyHeMPS;
 entity CrossbarControl is
 
 	generic (
-		PEAddresses: HalfDataWidth_vector;
-		SelfAddress: HalfDataWidth_t;
-        SelfIndex: integer;
-		IsStandalone: boolean
+		AmountOfPEs: integer
 	);
 	port (
 		
@@ -40,20 +38,13 @@ entity CrossbarControl is
 		Clock: in std_logic;
 		Reset: in std_logic;
 
-		-- Crossbar Interface
-		DataInMux: in DataWidth_vector;
-		RXMux: in std_logic_vector(PEAddresses'range);
-		--CreditO: out std_logic_vector(PEAddresses'range);
-		CreditO: out std_logic;
-
-		-- PE Interface
-		PEDataIn: out DataWidth_t;
-		PERx: out std_logic;
-		PECreditO: in std_logic;
-
 		-- Arbiter Interface
-		NewGrant: in std_logic;
-		Grant: in std_logic_vector(PEAddresses'range)
+		ACK: in std_logic;
+		Grant: in std_logic_vector(0 to AmountOfPEs - 1);
+
+		-- Switch Interface
+		SwitchEnable: out std_logic;
+		SwitchSelect: out std_logic_vector(0 to AmountOfPEs - 1)
 
 	);
 	
@@ -62,100 +53,27 @@ end entity CrossbarControl;
 
 architecture RTL of CrossbarControl is
 
-	-- Returns index of active tx (by extension, ID of source PE)
-	function GetIndexOfActiveTx(txArray: std_logic_vector) return integer is begin
-
-		for i in txArray'range loop 
-
-			if txArray(i) = '1' then
-				return i;
-
-			end if;
-
-		end loop;
-
-		return 0;  -- Defaults to 0 so no latch is synthesized 
-		
-	end function GetIndexOfActiveTx;
-
-
-	-- Performs "or" operation between all elements of a given std_logic_vector
-	function OrReduce(inputArray: std_logic_vector) return std_logic is
-		variable orReduced: std_logic := '0';
-	begin
-
-		for i in inputArray'range loop 
-
-			orReduced := orReduced or inputArray(i);
-
-		end loop;
-
-		return orReduced;
-		
-	end function OrReduce;
-
-
-    -- Searches through a given list of addresses of PEs contained in this crossbar, and returns index of a given address in given list of addresses,
-    -- which matches the MUX selector value which produces the data value associated with the given address
-	function GetIndexOfAddr(Addresses: HalfDataWidth_vector; AddressOfInterest: HalfDataWidth_t; IndexToSkip: integer) return integer is begin
-
-		for i in 0 to Addresses'high - 1 loop  -- Ignores wrapper (Last element of Addresses[])
-
-			if i = IndexToSkip then
-				next;
-
-			elsif Addresses(i) = AddressOfInterest then
-				return i;
-
-			end if;
-
-		end loop;
-
-		return Addresses'high;  -- Return index of wrapper (always @ the greatest postition) if given ADDR was not found in crossbar
-		
-	end function GetIndexOfAddr;
-
-	--constant selfIndex: integer := GetIndexOfAddr(PEAddresses, SelfAddress, 0);
-	--signal sourceIndex: integer := 0;
-    signal sourceIndex: integer range 0 to PEAddresses'high;
-
 begin
+
+	SwitchSelect <= Grant;
 
 	process(Clock, Reset) begin
 
         if Reset = '1' then
-            sourceIndex <= 0;
+            SwitchEnable <= '0';
 
 		elsif rising_edge(Clock) then
 
-			--sourceIndex <= GetIndexOfActiveTx(RXMux);
+			if ACK = '1' then
+            	SwitchEnable <= '0';
 
-			-- Checks if arbiter has given out a new grant, signaling a new message is to be received. If so, determine
-			if NewGrant = '1' then
-				sourceIndex <= GetIndexOfActiveTx(Grant);
+			elsif Grant /= (others => '0') then
+				SwitchEnable <= '1';
 
 			end if;
 
 		end if;
 
 	end process;
-
-    -- Mutiplexes DataIn based on "sourceIndex"
-	PEDataIn <= DataInMux(sourceIndex);
-
-    -- Mutiplexes Rx based on "sourceIndex"
-	PERx <= OrReduce(RXMux);
-
-    CreditO <= PECreditO;
-	
-	-- Mutiplexes CreditI based on "sourceIndex"
-	--CreditO <= (sourceIndex => PECreditO, others => '0');
-	--process(sourceIndex, PECreditO) begin  -- (Describes same behaviour, but compatible with Cadence tools)
-
-		--CreditO <= (others => '0');
-		--CreditO(sourceIndex) <= PECreditO;
-        --CreditO(SelfIndex) <= '0';
-
-	--end process;
 	
 end architecture RTL;

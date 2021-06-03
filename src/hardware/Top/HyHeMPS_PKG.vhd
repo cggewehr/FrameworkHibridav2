@@ -40,7 +40,7 @@ package HyHeMPS_PKG is
     constant SOUTH: integer := 3;
     constant LOCAL: integer := 4;
 
-    -- TODO: Use VHDL-2008 package generic feature to set DataWidth dinamically
+    -- TODO: Use VHDL-2008 package generic feature to set DataWidth dynamically
     constant DataWidth: integer := 32; 
     constant HalfDataWidth: integer := DataWidth/2;
     constant QuarterDataWidth: integer := DataWidth/4;

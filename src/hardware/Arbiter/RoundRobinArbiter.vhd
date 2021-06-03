@@ -29,52 +29,33 @@ library ieee;
 	use ieee.numeric_std.all;
 
 
-entity CrossbarRRArbiter is
+entity RoundRobinArbiter is
 
 	generic ( 
 		AmountOfPEs : integer
 	);
 	port (
-		Clock    : in std_logic;
-		Reset    : in std_logic;
+		Clock : in std_logic;
+		Reset : in std_logic;
 
-		Req      : in std_logic_vector(0 to AmountOfPEs - 1);
-		Ack      : in std_logic_vector(0 to AmountOfPEs - 1);
-		Grant    : out std_logic_vector(0 to AmountOfPEs - 1);
-		NewGrant : out std_logic
+		Req   : in std_logic_vector(0 to AmountOfPEs - 1);
+		Ack   : in std_logic;
+		Grant : out std_logic_vector(0 to AmountOfPEs - 1)
 	);
 
-end entity CrossbarRRArbiter;
+end entity RoundRobinArbiter;
 
 
-architecture RTL of CrossbarRRArbiter is
+architecture RTL of RoundRobinArbiter is
 
-	signal grant_q    : std_logic_vector(0 to AmountOfPEs - 1);
-	signal pre_req    : std_logic_vector(0 to AmountOfPEs - 1);
-	signal sel_gnt    : std_logic_vector(0 to AmountOfPEs - 1);
-	signal isol_lsb   : std_logic_vector(0 to AmountOfPEs - 1);
-	signal mask_pre   : std_logic_vector(0 to AmountOfPEs - 1);
-	signal win        : std_logic_vector(0 to AmountOfPEs - 1);
-	signal ackReduced : std_logic;
-
-	-- Performs "or" operation between all elements of a given std_logic_vector
-	function OrReduce(inputArray: std_logic_vector) return std_logic is
-		variable orReduced: std_logic := '0';
-	begin
-
-		for i in inputArray'range loop 
-
-			orReduced := orReduced or inputArray(i);
-
-		end loop;
-
-		return orReduced;
-		
-	end function OrReduce;
+	signal grant_q  : std_logic_vector(0 to AmountOfPEs - 1);
+	signal pre_req  : std_logic_vector(0 to AmountOfPEs - 1);
+	signal sel_gnt  : std_logic_vector(0 to AmountOfPEs - 1);
+	signal isol_lsb : std_logic_vector(0 to AmountOfPEs - 1);
+	signal mask_pre : std_logic_vector(0 to AmountOfPEs - 1);
+	signal win      : std_logic_vector(0 to AmountOfPEs - 1);
 
 begin
-
-	ackReduced <= OrReduce(Ack);
 
 	Grant    <= grant_q;
 	mask_pre <= req and not (std_logic_vector(unsigned(pre_req) - 1) or pre_req); -- Mask off previous winners
@@ -88,14 +69,13 @@ begin
 
 			pre_req <= (others => '0');
 			grant_q <= (others => '0');
-			NewGrant <= '0';
 
 		elsif rising_edge(Clock) then
 
 			grant_q <= grant_q;
 			pre_req <= pre_req;
 
-			if grant_q = (0 to AmountOfPEs - 1 => '0') or ackReduced = '1' then
+			if grant_q = (0 to AmountOfPEs - 1 => '0') or Ack = '1' then
 
 				if win /= (0 to AmountOfPEs - 1 => '0') then
 					pre_req <= win;
@@ -103,12 +83,6 @@ begin
 
 				grant_q <= win;
 
-			end if;
-			
-			if win /= pre_req then
-			    NewGrant <= '1';
-			else
-			    NewGrant <= '0';
 			end if;
 
 		end if;

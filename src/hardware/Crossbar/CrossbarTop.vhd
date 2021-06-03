@@ -33,16 +33,18 @@ entity Crossbar is
 	generic(
 		ArbiterType: string := "RR";
 		AmountOfPEs: integer;
-		PEAddresses: HalfDataWidth_vector; -- := HyHeMPS_PKG.GetDefaultPEAddresses(AmountOfPEs);  -- As XY coordinates
+		PEAddresses: HalfDataWidth_vector;  -- As XY coordinates
 		BridgeBufferSize: integer;
 		IsStandalone: boolean
 	);
 	port(
+
 		Clock: in std_logic;
 		Reset: in std_logic;
-		--PEInterfaces: inout PEInterface_vector
+
 		PEInputs: out PEInputs_vector(0 to AmountOfPEs - 1);
 		PEOutputs: in PEOutputs_vector(0 to AmountOfPEs - 1)
+
 	);
 	
 end entity Crossbar;
@@ -50,34 +52,26 @@ end entity Crossbar;
 
 architecture RTL of Crossbar is
 
-	--constant PEAddresses: HalfDataWidth_vector(0 to AmountOfPEs - 1) := SetPEAddresses(PEAddressesFromTop, UseDefaultPEAddresses, AmountOfPEs);
-
-	-- CrossbarControl input interface
-	subtype CtrlDataIn_t is DataWidth_vector(0 to AmountOfPEs - 1);
-	type CtrlDataIn_vector is array(0 to AmountOfPEs - 1) of CtrlDataIn_t;
-	signal controlDataIn: CtrlDataIn_vector;
-
+	-- Arbiter interface
 	subtype slv_t is std_logic_vector(0 to AmountOfPEs - 1);
 	type slv_vector is array(0 to AmountOfPEs - 1) of slv_t;
-	signal controlRx: slv_vector;
-	--signal controlCreditO: slv_vector;
-	signal controlCreditO: std_logic_vector(0 to AmountOfPEs - 1);
-
-	-- Arbiter interface
 	signal arbiterRequest: slv_vector;
-	signal arbiterACK: slv_vector;
+	signal arbiterACK: std_logic_vector(0 to AmountOfPEs - 1);
 	signal arbiterGrant: slv_vector;
-	signal arbiterNewGrant: std_logic_vector(0 to AmountOfPEs - 1);
 
     -- Bridge output interface
 	signal bridgeTx: std_logic_vector(0 to AmountOfPEs - 1);
 	signal bridgeDataOut: DataWidth_vector(0 to AmountOfPEs - 1);
-	--signal bridgeCredit: slv_vector;
+	signal bridgeCreditI: std_logic_vector(0 to AmountOfPEs - 1);
 
 	-- Bridge to Arbiter interface
-	signal bridgeACK: slv_vector;
+	signal bridgeACK: std_logic_vector(0 to AmountOfPEs - 1);
 	signal bridgeRequest: slv_vector;
-	signal bridgeGrant: slv_vector;
+	signal bridgeGrant: std_logic_vector(0 to AmountOfPEs - 1);
+
+	-- Switch control signals
+	signal switchEnable: std_logic_vector(0 to AmountOfPEs - 1);
+	signal switchSelect: slv_vector;
 
     -- Performs "or" operation between all elements of a given std_logic_vector
 	function OrReduce(inputArray: std_logic_vector) return std_logic is
@@ -119,10 +113,6 @@ begin
 				Reset => Reset,
 
 				-- PE interface (Bridge input)
-				--ClockRx => PEInterfaces(i).ClockTx,
-				--Rx      => PEInterfaces(i).Tx,
-				--DataIn  => PEInterfaces(i).DataOut,
-				--CreditO => PEInterfaces(i).CreditI,
 				ClockRx => PEOutputs(i).ClockTx,
 				Rx      => PEOutputs(i).Tx,
 				DataIn  => PEOutputs(i).DataOut,
@@ -132,32 +122,25 @@ begin
 				ClockTx => open,
 				Tx      => bridgeTx(i),
 				DataOut => bridgeDataOut(i),
-				--CreditI => bridgeCredit(i),
-				CreditI => controlCreditO,
+				CreditI => bridgeCreditI(i),
 
 				-- Arbiter interface
-				--ACK     => bridgeACK,
 				ACK     => bridgeACK(i),
-				--Request => bridgeRequest,
 				Request => bridgeRequest(i),
-				--Grant   => bridgeGrant
-				Grant   => orReduce(bridgeGrant(i))
+				Grant   => bridgeGrant(i)
 
 			);
 
 	end generate CrossbarBridgeGen;
 
 
-	-- Instantiates input controllers
+	-- Instantiates switch controllers
 	CrossbarControlGen: for i in 0 to AmountOfPEs - 1 generate
 
 		CrossbarControl: entity work.CrossbarControl
 
 			generic map(
-				PEAddresses => PEAddresses,
-				SelfAddress => PEAddresses(i),
-                SelfIndex => i,
-				IsStandalone => IsStandalone
+				AmountOfPEs => AmountOfPEs
 			)
 			port map(
 				
@@ -165,115 +148,76 @@ begin
 				Clock => Clock,
 				Reset => Reset,
 
-				-- Input interface (Crossbar)
-				DataInMux => controlDataIn(i),
-				RxMux     => controlRx(i),
-				CreditO   => controlCreditO(i),
+				-- Arbiter Interface
+				ACK => arbiterACK(i),
+				Grant => arbiterGrant(i),
 
-				-- Output interface (PE input)
-				--PEDataIn  => PEInterfaces(i).DataIn,
-				--PERx      => PEInterfaces(i).Rx,
-				--PECreditO => PEInterfaces(i).CreditO,
-				PEDataIn  => PEInputs(i).DataIn,
-				PERx      => PEInputs(i).Rx,
-				--PECreditO => PEInputs(i).CreditO,
-				PECreditO => PEOutputs(i).CreditO,
-				
-				-- Arbiter interface
-				NewGrant  => arbiterNewGrant(i),
-				Grant => arbiterGrant(i)
+				-- Switch Interface
+				SwitchEnable => switchEnable(i),
+				SwitchSelect => switchSelect(i)
 
 			);
 
-			ControlConnectGen: for j in 0 to AmountOfPEs - 1 generate
-
-				ControlMap: if i /= j generate
-
-					controlDataIn(i)(j) <= bridgeDataOut(j);
-					controlRx(i)(j) <= bridgeTx(j);
-					--bridgeCredit(i) <= controlCreditO(i)(j);  -- MOVED TO CrossbarControl
-
-				end generate ControlMap;
-
-				ControlGround: if i = j generate
-
-					controlDataIn(i)(j) <= (others => '0');
-					controlRx(i)(j) <= '0';
-					--bridgeCredit(i) <= '0';  -- MOVED TO CrossbarControl
-
-				end generate ControlGround;
-
-			end generate ControlConnectGen;
-
 	end generate CrossbarControlGen;
 
-
-	-- Instantiates arbiters as given by "Arbiter" generic
+	-- Instantiates arbiters as given by "ArbiterType" generic
 	ArbiterGen: for Arbiter in 0 to AmountOfPEs - 1 generate
 
-		RoundRobinArbiterGen: if ArbiterType = "RR" generate
+		ArbiterFactory: entity work.ArbiterFactory
 
-			RoundRobinArbiter: entity work.CrossbarRRArbiter
+			generic map(
+				ArbiterType => ArbiterType,
+				AmountOfPEs => AmountOfPEs
+			)
 
-				generic map(
-					AmountOfPEs => AmountOfPEs
-				)
-				port map(
-					Clock => Clock,
-					Reset => Reset,
-					Ack   => arbiterACK(Arbiter),
-					Grant => arbiterGrant(Arbiter),
-					Req   => arbiterRequest(Arbiter),
-					NewGrant => arbiterNewGrant(Arbiter)
-				);
+			port map(
+				
+				Clock => Clock,
+				Reset => Reset,
 
-		end generate RoundRobinArbiterGen;
-		
---		DaisyChainArbiterGen: if ArbiterType = "DC" generate
-		
---            DaisyChainArbiter: entity work.CrossbarDCArbiter
+                ACK   => arbiterACK(Arbiter),
+                Grant => arbiterGrant(Arbiter),
+                Req   => arbiterRequest(Arbiter)
 
---				generic map(
---					AmountOfPEs => AmountOfPEs
---				)
---				port map(
---					Clock => Clock,
---					Reset => Reset,
---					Ack   => arbiterACK(Arbiter),
---					Grant => arbiterGrant(Arbiter),
---					Req   => arbiterRequest(Arbiter)
---				);
-		
---		end generate DaisyChainArbiterGen;
-
-		ArbConnectGen: for Bridge in 0 to AmountOfPEs - 1 generate
-
-			ArbMap: if Bridge /= Arbiter generate
-
-				--arbiterACK(Arbiter)(Bridge) <= bridgeACK(Bridge);
-				arbiterACK(Arbiter)(Bridge) <= bridgeACK(Bridge)(Arbiter);
-				--arbiterGrant(Arbiter)(Bridge) <= bridgeGrant(Bridge);
-				bridgeGrant(Bridge)(Arbiter) <= arbiterGrant(Arbiter)(Bridge);
-				--bridgeRequest(Bridge) <= arbiterRequest(Arbiter)(Bridge);
-				arbiterRequest(Arbiter)(Bridge) <= bridgeRequest(Bridge)(Arbiter);
-
-                -- TODO: bridgeGrant(Bridge) <= orReduce(arbiterGrant(Bridge)(Arbiter));
-                -- TODO: do orReduce on ACKs here, instead of in arbiter
-
-			end generate ArbMap;
-
-			ArbGround: if Bridge = Arbiter generate
-
-				arbiterACK(Arbiter)(Bridge) <= '0';
-				--arbiterGrant(Arbiter)(Bridge) <= '0';
-                bridgeGrant(Bridge)(Arbiter) <= '0';
-				--bridgeRequest(Bridge) <= '0';
-                arbiterRequest(Arbiter)(Bridge) <= '0';
-
-			end generate ArbGround;
-
-		end generate ArbConnectGen;
+			);
 
 	end generate ArbiterGen;
+
+	Switch: for PE in 0 to AmountOfPEs - 1 generate
+
+		-- Makes data links
+		DataLinksGen: for Bridge in 0 to AmountOfPEs - 1 generate
+
+			PEInputs(PE).DataIn <= bridgeDataOut(Bridge) when switchSelect(PE)(Bridge) = '1' else (others => 'Z');
+			PEInputs(PE).Rx <= bridgeTx(Bridge) when switchSelect(PE)(Bridge) = '1' else 'Z';
+			bridgeCreditI(Bridge) <= PEOutputs(PE).CreditO when switchSelect(PE)(Bridge) = '1' else 'Z';
+
+		end generate DataLinksGen;
+
+		-- Makes arbiter request connections, ignoring requests to self
+		RequestGen: for Bridge in 0 to AmountOfPEs - 1 generate
+
+			RequestMap: if PE /= Bridge generate
+				arbiterRequest(PE)(Bridge) <= bridgeRequest(Bridge)(PE); 
+			end generate RequestMap;
+
+			RequestGround: if PE = Bridge generate
+				arbiterRequest(PE)(Bridge) <= '0';
+			end generate RequestGround;
+
+		end generate RequestGen;
+
+		-- Makes arbiter links
+		bridgeGrant(PE) <= switchEnable(PE);
+
+		ACKLinkGen: for Bridge in 0 to AmountOfPEs - 1 generate
+
+			ACKMap: if PE /= Bridge generate
+				arbiterACK(PE) <= bridgeACK(Bridge) when switchSelect(PE)(Bridge) = '1' else 'Z';
+			end generate ACKMap;
+
+		end generate ACKLinkGen;
+
+	end generate Switch;
 
 end architecture RTL;
