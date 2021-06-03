@@ -27,6 +27,7 @@ class Injector:
             print("Error: Given Flow <" + str(Flow) + "> TargetThread is not a AppComposer.Thread object")
             exit(1)
         
+        # TODO: Adjust clock period definition so that bandwidth value represents payload flits only
         # Flow info
         self.FlowType = Flow.FlowType  # Default = "CBR"
         self.Bandwidth = float(Flow.Bandwidth)  # in MBps

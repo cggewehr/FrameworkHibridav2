@@ -99,7 +99,7 @@ begin
             inputTimestamp := 0;
             checksum := (others =>'0');
 
-        elsif rising_edge(ClockTx) then
+        elsif rising_edge(ClockRx) then
 
             if Rx = '1' and CreditO = '1' then
 

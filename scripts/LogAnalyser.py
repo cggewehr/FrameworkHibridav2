@@ -1,4 +1,5 @@
 import json
+import math
 import os
 import sys
 import AppComposer
@@ -14,11 +15,11 @@ class Packet:
     def __init__(self, ParentLog, TargetPEPos, Size, Service, Timestamp, Checksum):
 
         self.ParentLog = ParentLog
-        self.TargetPEPos = TargetPEPos
+        self.TargetPEPos = int(TargetPEPos)
         self.Service = Service
         self.Size = Size
-        self.Timestamp = Timestamp
-        self.Checksum = Checksum
+        self.Timestamp = int(Timestamp)
+        self.Checksum = int(Checksum)
 
     # Overloads operator " == " (Compares 2 Packet objects, used for comparing an input Log entry to an output Log entry)
     def __eq__(self, other):
@@ -61,18 +62,26 @@ class DVFSPacket(Packet):
     CrossbarWrapperAddresses = None
     PEs = None
 
+    # Topology DVFS parameters
+    DataWidth = None
+    VoltageLevelFieldSize = None
+    CounterResolution = None
+
     def __init__(self, ParentLog, TargetPEPos, Size, Service, Timestamp, Checksum, Data):
     
         super().__init__(ParentLog = ParentLog, TargetPEPos = TargetPEPos, Size = Size, Service = Packet.DVFSServiceID, Timestamp = Timestamp, Checksum = Checksum)
-        ConfigFlit = Data[0]
         
-        # TODO: Parse ConfigFlit
-        #self.IsNoC = Data[0]
-        #self.SupplySwitch = Data[1]
-        #self.N = Data[2]
-        #self.M = Data[3]
-        #self.Timestamp = Data[4]   
+        # Parse ConfigFlit into DVFSController expected fields
+        ConfigFlit = str(Data[0])[::-1]
+        self.SupplySwitch = int(ConfigFlit[DVFSPacket.DataWidth - 1 : DVFSPacket.VoltageLevelFieldSize : -1], 2)
+        self.IsNoC = ConfigFlit[DVFSPacket.VoltageLevelFieldSize]
+        self.N = int(ConfigFlit[2*DVFSPacket.CounterResolution : DVFSPacket.CounterResolution : -1], 2)
+        self.M = int(ConfigFlit[DVFSPacket.CounterResolution : -1 : -1], 2)
         
+    # Factory design pattern method for generating service-specific Packet objects (DVFSPacket, SyntheticTrafficPacket, ...) 
+    #@staticmethod
+    #def makePacket(logLine):
+
     @staticmethod
     def action(outEntry, matchingInEntry):
 
@@ -92,35 +101,38 @@ class DVFSPacket(Packet):
             
         elif CommStruct == "Bus" and outEntry.IsNoC == '0':
             
-            StructID = None
             for i, WrapperID in enumerate(DVFSPacket.BusWrapperAddresses):
+
                 if WrapperID == BaseNoCPos:
+
                     StructID = i
-                  
-            if StructID is not None:
-            
-                DVFSPacket.BusFreq[StructID].append((outEntry.InputTimestamp, Frequency))
-                    
-                DVFSPacket.BusLatencyCounters[PE.PEPos] += 1
-                DVFSPacket.BusLatencies[PE.PEPos] += (Latency - DVFSPacket.BusLatencies[PE.PEPos]) / DVFSPacket.BusLatencyCounters[PE.PEPos]
-            
+
+                    DVFSPacket.BusFreq[StructID].append((outEntry.InputTimestamp, Frequency))
+                        
+                    DVFSPacket.BusLatencyCounters[PE.PEPos] += 1
+                    DVFSPacket.BusLatencies[PE.PEPos] += (Latency - DVFSPacket.BusLatencies[PE.PEPos]) / DVFSPacket.BusLatencyCounters[PE.PEPos]
+
+                    break
+
             else:
+
                 print("Error: No StructID found for Bus in BaseNoCPos <" + str(BaseNoCPos) + ">")
                 exit(1)
         
         elif CommStruct == "Crossbar" and outEntry.IsNoC == '0':
         
-            StructID = None
             for i, WrapperID in enumerate(DVFSPacket.CrossbarWrapperAddresses):
+
                 if WrapperID == BaseNoCPos:
+
                     StructID = i
-                    
-            if StructID is not None:
             
-                DVFSPacket.CrossbarFreq[StructID].append((outEntry.InputTimestamp, Frequency))
-                
-                DVFSPacket.CrossbarLatencyCounters[PE.PEPos] += 1
-                DVFSPacket.CrossbarLatencies[PE.PEPos] += (Latency - DVFSPacket.CrossbarLatencies[PE.PEPos]) / DVFSPacket.CrossbarLatencyCounters[PE.PEPos]
+                    DVFSPacket.CrossbarFreq[StructID].append((outEntry.InputTimestamp, Frequency))
+                    
+                    DVFSPacket.CrossbarLatencyCounters[PE.PEPos] += 1
+                    DVFSPacket.CrossbarLatencies[PE.PEPos] += (Latency - DVFSPacket.CrossbarLatencies[PE.PEPos]) / DVFSPacket.CrossbarLatencyCounters[PE.PEPos]
+
+                    break
                 
             else:
                 print("Error: No StructID found for Crossbar in BaseNoCPos <" + str(BaseNoCPos) + ">")
@@ -140,6 +152,8 @@ class SyntheticTrafficPacket(Packet):
     #avgLatenciesCountersByPE = None
     MissCountByPE = None
     HitCountByPE = None   
+
+    DataWidth = None
         
     def __init__(self, ParentLog, TargetPEPos, Size, Service, Timestamp, Checksum, Data):
     
@@ -172,10 +186,17 @@ class SyntheticTrafficPacket(Packet):
             SyntheticTrafficPacket.HitCountByThread[AppID][SourceThreadID][TargetThreadID] += 1
             SyntheticTrafficPacket.AvgLatenciesByThread[AppID][SourceThreadID][TargetThreadID] += (latency - SyntheticTrafficPacket.AvgLatenciesByThread[AppID][SourceThreadID][TargetThreadID]) \
                                                                                                          / SyntheticTrafficPacket.HitCountByThread[AppID][SourceThreadID][TargetThreadID]
+            # Increment PE total data count (in bytes)
+            outEntry.ParentLog.TotalAmountOfData += (SyntheticTrafficPacket.DataWidth / 8) * outEntry.Size
+            matchingInEntry.ParentLog.TotalAmountOfData += (SyntheticTrafficPacket.DataWidth / 8) * outEntry.Size
+            
         else:
             
-            print("Warning: No matching in log entry found for out log entry <" + str(outEntry) + "> of PE <" + outEntry.ParentLog.PEPos + ">")
-        
+            print("Warning: No matching in log entry found for out log entry <" + str(outEntry) + "> of PE <" + str(outEntry.ParentLog.PEPos) + ">")
+            
+            print(str(outEntry.AppID))
+            print(str(outEntry.SourceThreadID))
+            print(str(outEntry.TargetThreadID))
             SyntheticTrafficPacket.MissCountByPE[outEntry.ParentLog.PEPos][outEntry.TargetPEPos] += 1
             SyntheticTrafficPacket.MissCountByThread[outEntry.AppID][outEntry.SourceThreadID][outEntry.TargetThreadID] += 1
            
@@ -187,13 +208,17 @@ class Log:
         self.Entries = []
         self.PEPos = PEPos
         self.LogType = LogType  # "Input" or "Output"
+        self.TotalAmountOfData = 0  # in bytes, updated when SyntheticTrafficPacket.action() is called
 
     # Adds a Packet object to Entries array
     def addEntry(self, Packet):
     
         self.Entries.append(Packet)
         Packet.ParentLog = self
-        
+
+    @property
+    def Throughput(self):
+        return self.TotalAmountOfData / self.Entries[-1].Timestamp
 
     def __str__(self):
     
@@ -229,17 +254,21 @@ def loganalyser(args):
     AmountOfBuses = Topology.AmountOfBuses
     AmountOfCrossbars = Topology.AmountOfCrossbars
     
-    # Inits computation variables for DVFS service
+    # TODO: Move these initializations into a service-specific class method
+    # Inits class variables for DVFS service
     if args.DVFS:
         
-        DVFSPacket.RouterFreq = [[(0, ClusterClocks[Router])] for Router in range(AmountOfRouters)]
-        DVFSPacket.BusFreq = [[(0, ClusterClocks[Topology.Buses[Bus].BaseNoCPos])] for Bus in range(AmountOfBuses)]
-        DVFSPacket.CrossbarFreq = [[(0, ClusterClocks[Topology.Crossbars[Crossbar].BaseNoCPos])] for Crossbar in range(AmountOfCrossbars)]
+        # Tuple = (Timestamp (in ns), Clock Frequency (in MHz))
+        DVFSPacket.RouterFreq = [[(0, 1000/ClusterClocks[Router])] for Router in range(AmountOfRouters)]
+        DVFSPacket.BusFreq = [[(0, 1000/ClusterClocks[Topology.Buses[Bus].BaseNoCPos])] for Bus in range(AmountOfBuses)]
+        DVFSPacket.CrossbarFreq = [[(0, 1000/ClusterClocks[Topology.Crossbars[Crossbar].BaseNoCPos])] for Crossbar in range(AmountOfCrossbars)]
         
         DVFSPacket.Latencies = [0 for PE in range(AmountOfPEs)]
         DVFSPacket.LatencyCounters = [0 for PE in range(AmountOfPEs)]
+
+        DVFSPacket.DataWidth = Topology.DataWidth
     
-    # Inits computation variables for synthetic traffic service
+    # Inits class variables for synthetic traffic service
     if args.PE or args.Thread:
     
         SyntheticTrafficPacket.AvgLatenciesByThread = [[[0 for TargetThread in Application.Threads] for SourceThread in Application.Threads] for Application in Workload.Applications]
@@ -255,6 +284,10 @@ def loganalyser(args):
         SyntheticTrafficPacket.BusWrapperAddresses = Topology.BusWrapperAddresses
         SyntheticTrafficPacket.CrossbarWrapperAddresses = Topology.CrossbarWrapperAddresses
         SyntheticTrafficPacket.PEs = Topology.PEs
+
+        SyntheticTrafficPacket.DataWidth = Topology.DataWidth
+        SyntheticTrafficPacket.VoltageLevelFieldSize = math.ceil(math.log2(Topology.DVFSAmountOfVoltageLevels))
+        SyntheticTrafficPacket.CounterResolution = Topology.DVFSCounterResolution
 
     # Starts script execution
     print("Parsing log files")
@@ -273,6 +306,7 @@ def loganalyser(args):
             
             for i, line in enumerate(InLogFile.read().splitlines()):
             
+                # Parse log entry into Packet constructor expected args 
                 lineList = line.split()
                 
                 try:
@@ -285,6 +319,7 @@ def loganalyser(args):
                 except KeyError:
                     print("Warning: Incomplete message <" + line + "> in entry <" + str(i) + "> of input log of PE <" + str(PEPos) + ">")
                 
+                # TODO: Use Factory design pattern from Packet class to make service-specific objects
                 if ServiceID == Packet.DVFSServiceID:
                     InLog.addEntry(DVFSPacket(ParentLog = InLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum))
                 elif ServiceID == Packet.SyntheticTrafficServiceID:
@@ -299,6 +334,7 @@ def loganalyser(args):
             
             for i, line in enumerate(OutLogFile.read().splitlines()):
             
+                # Parse log entry into Packet constructor expected args 
                 lineList = line.split()
                 
                 try:
@@ -310,7 +346,14 @@ def loganalyser(args):
                     Checksum = lineList[-1]
                 except KeyError:
                     print("Warning: Incomplete message <" + line + "> in entry <" + str(i) + "> of output log of PE <" + str(PEPos) + ">")
+
+                # Skip parsing this out entry if out of time bounds
+                if int(Timestamp) < args.MinimumOutputTimestamp:
+                    continue
+                elif args.MaximumOutputTimestamp is not None and int(Timestamp) > args.MaximumOutputTimestamp:
+                    break
                 
+                # TODO: Use Factory design pattern from Packet class to make service-specific objects
                 if ServiceID == Packet.DVFSServiceID:
                     OutLog.addEntry(DVFSPacket(ParentLog = OutLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum))
                 elif ServiceID == Packet.SyntheticTrafficServiceID:
@@ -339,16 +382,17 @@ def loganalyser(args):
             try:
                 currentInLog = InLogs[currentOutEntry.TargetPEPos]
             except KeyError:
-                print("Error: Out Log for PE <" + str(SourcePEPos) + "> entry <" + str(outEntryNumber) + "> defines a message to PEPos <" + str(currentOutEntry.TargetPEPos) + ">, which doesn't exist")
+                print("Error: Out Log for PE <" + str(SourcePEPos) + "> entry <" + str(outEntryNumber) + "> defines a message to PEPos <" + str(currentOutEntry.TargetPEPos) + ">, which doesn't exist in given Topology")
                 exit(1)
 
-            # Loop through all entries of current In log, compares each of them to current message in current Out log
+            # Loop through all entries of current In log, compares each of them to current message in current Out log (compares checksum of Out entry to checksum of In entry in Packet.__eq__())
             matchingInEntry = None
             for currentInEntry in currentInLog.Entries:
                 if currentOutEntry == currentInEntry:
                     matchingInEntry = currentInEntry
                     break
             
+            # Calls service-specific action()
             currentOutEntry.action(currentOutEntry, matchingInEntry)
                 
         print("Done working on out log of PE " + str(SourcePEPos))
@@ -391,8 +435,8 @@ def loganalyser(args):
     
         avgLatenciesByPE = SyntheticTrafficPacket.AvgLatenciesByPE
         
-        for source in range(amountOfPEs):
-            for target in range(amountOfPEs):
+        for source in range(AmountOfPEs):
+            for target in range(AmountOfPEs):
                 if avgLatenciesByPE[source][target] != 0:
                     print("Average latency from PE <" + str(source) + "> to PE <" + str(target) + ">: " + str(avgLatenciesByPE[source][target]) + " ns")
          
@@ -416,24 +460,34 @@ def loganalyser(args):
 
     # Print out frequency info for Router/Bus/Crossbar from DVFS service packets
     if args.DVFS:
+
         print("\n\tRouter Clock Frequencies:")
+
+        routerFreq = DVFSPacket.RouterFreq
+
         for i, router in enumerate(routerFreq):
             print("\nRouter " + str(i) + ":")
             for freqTuple in router:
                 print("Frequency set to <" + str(freqTuple[1]) + "> MHz @ <" + str(freqTuple[0]) + "> ns")
                 
         print("\n\tBus Clock Frequencies:")
-        for bus in busFreq:
+
+        busFreq = DVFSPacket.BusFreq
+
+        for i, bus in enumerate(busFreq):
             print("\nBus " + str(i) + ":")
             for freqTuple in bus:
                 print("Frequency set to <" + str(freqTuple[1]) + "> MHz @ <" + str(freqTuple[0]) + "> ns")
             
         print("\n\tCrossbar Clock Frequencies:")
-        for crossbar in crossbarFreq:
+
+        crossbarFreq = DVFSPacket.CrossbarFreq
+
+        for i, crossbar in enumerate(crossbarFreq):
             print("\nCrossbar " + str(i) + ":")
             for freqTuple in crossbar:
                 print("Frequency set to <" + str(freqTuple[1]) + "> MHz @ <" + str(freqTuple[0]) + "> ns")
                 
         # TODO: Latencies for DVFS messages
     
-    print("loganalyser ran successfully!")
+    print("\nloganalyser ran successfully!")

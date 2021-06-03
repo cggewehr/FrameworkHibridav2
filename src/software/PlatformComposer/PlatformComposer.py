@@ -202,6 +202,7 @@ class Platform:
             return squareNoCBound   
             
            
+    # TODO: Find some way to cache this
     @property
     def PEs(self):  # Updates PE objects with workload info (PE objects are created only at Platform.__init__(), Structure.__init__() and Platform.resizeBaseNoC())
     
