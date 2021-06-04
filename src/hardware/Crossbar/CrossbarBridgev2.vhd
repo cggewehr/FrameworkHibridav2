@@ -68,8 +68,7 @@ end entity CrossbarBridge;
 
 architecture RTL of CrossbarBridge is
 
-	--type state_t is (Sreset, Sstandby, Srequest, SwaitForGrant, Stransmit);
-    type state_t is (Sstandby, Srequest, SwaitForGrant, SwaitForControl, Stransmit);
+    type state_t is (Sstandby, Srequest, SwaitForGrant, StransmitHeader, StransmitSize, StransmitPayload);
 	signal currentState: state_t;
 
     signal flitCounter: unsigned(DataWidth - 1 downto 0);
@@ -139,11 +138,12 @@ begin
 		);
     
     ClockTx <= Clock;
-	Tx <= bufferAVFlag when currentState = Stransmit else '0';
+	Tx <= bufferAVFlag when currentState = StransmitHeader or currentState = StransmitSize or currentState = StransmitPayload else '0';
     DataOut <= bufferDataOut;
 	--bufferReadConfirm <= CreditI(targetIndex) when currentState = Stransmit else '0';
-	bufferReadConfirm <= CreditI when currentState = Stransmit else '0';
-    CreditO <= bufferReadyFlag when currentState /= SwaitForControl else '0';
+	bufferReadConfirm <= CreditI when currentState = StransmitHeader or currentState = StransmitSize or currentState = StransmitPayload else '0';
+    --CreditO <= bufferReadyFlag when currentState /= SwaitForControl else '0';
+    CreditO <= bufferReadyFlag;
     
     --ACK(SelfIndex) <= '0';
     Request(SelfIndex) <= '0';
@@ -178,8 +178,8 @@ begin
                     ACK <= '0';
                     Request <= (others => '0');
 
-				    if Rx = '1' then
-				    --if bufferAVFlag = '1' then
+				    --if Rx = '1' then
+				    if bufferAVFlag = '1' then
 
                         --assert false report "targetIndex = <" & integer'image(GetIndexOfAddr(PEAddresses, DataIn(DataWidth - 1 downto HalfDataWidth), SelfIndex)) & "> for PEPos <" & integer'image(PEPosFromXY(DataIn(DataWidth - 1 downto HalfDataWidth), 5)) & ">" severity note;
                         targetIndex <= GetIndexOfAddr(PEAddresses, DataIn(DataWidth - 1 downto HalfDataWidth), SelfIndex);
@@ -198,7 +198,7 @@ begin
                 when Srequest =>
 
                     Request(targetIndex) <= '1';
-                    flitCounter <= unsigned(DataIn) + 2;
+                    --flitCounter <= unsigned(DataIn) + 2;
 
                     assert targetIndex /= selfIndex report "Crossbar bridge <" & integer'image(selfIndex) & "> trying to transmit to itself" severity error;
 
@@ -216,34 +216,37 @@ begin
 					    currentState <= SwaitForControl;
 
 				    else
-					    currentState <= SwaitForGrant;
+					    currentState <= StransmitHeader;
 
 				    end if;
 
                 -- Wait for CrossbarControl to recognize new Grant
-                when SwaitForControl =>
+                when StransmitHeader =>
                     
-                    --if CreditI(targetIndex) = '1' then
-                    if CreditI = '1' then
-                        currentState <= Stransmit;
+                    if CreditI = '1' and bufferAVFlag = '1' then
+                        currentState <= StransmitHeader;
                     else
-                        currentState <= SwaitForControl;
+                        currentState <= StransmitSize;
+                    end if;
+
+                when StransmitSize => 
+
+                    flitCounter <= unsigned(bufferDataOut);
+
+                    if CreditI = '1' and bufferAVFlag = '1' then
+                        currentState <= StransmitSize;
+                    else
+                        currentState <= StransmitPayload;
                     end if;
 
 			    -- Sends message
-			    when Stransmit => 
+			    when StransmitPayload => 
 
-				    --ACK(targetIndex) <= '0';
-
-				    --if CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
 				    if CreditI = '1' and bufferAVFlag = '1' then
 					    flitCounter <= flitCounter - 1;
 				    end if;
 
-				    --if flitCounter = 1 and CreditI(targetIndex) = '1' and bufferAVFlag = '1' then
 				    if flitCounter = 1 and CreditI = '1' and bufferAVFlag = '1' then
-                    --if bufferAVFlag = '0' then
-					    --ACK(targetIndex) <= '1';
 					    ACK <= '1';
 					    currentState <= Sstandby;
 
@@ -251,11 +254,6 @@ begin
 					    currentState <= Stransmit;
 
 				    end if;
-
-			    -- Defaults to Sreset;
-			   -- when others => 
-
-				    --currentState <= Sreset;
 
 		    end case;
 
