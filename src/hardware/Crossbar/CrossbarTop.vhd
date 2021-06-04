@@ -69,10 +69,6 @@ architecture RTL of Crossbar is
 	signal bridgeRequest: slv_vector;
 	signal bridgeGrant: std_logic_vector(0 to AmountOfPEs - 1);
 
-	-- Switch control signals
-	signal switchEnable: std_logic_vector(0 to AmountOfPEs - 1);
-	signal switchSelect: slv_vector;
-
     -- Performs "or" operation between all elements of a given std_logic_vector
 	function OrReduce(inputArray: std_logic_vector) return std_logic is
 		variable orReduced: std_logic := '0';
@@ -133,33 +129,6 @@ begin
 
 	end generate CrossbarBridgeGen;
 
-
-	-- Instantiates switch controllers
-	CrossbarControlGen: for i in 0 to AmountOfPEs - 1 generate
-
-		CrossbarControl: entity work.CrossbarControl
-
-			generic map(
-				AmountOfPEs => AmountOfPEs
-			)
-			port map(
-				
-				-- Basic
-				Clock => Clock,
-				Reset => Reset,
-
-				-- Arbiter Interface
-				ACK => arbiterACK(i),
-				Grant => arbiterGrant(i),
-
-				-- Switch Interface
-				SwitchEnable => switchEnable(i),
-				SwitchSelect => switchSelect(i)
-
-			);
-
-	end generate CrossbarControlGen;
-
 	-- Instantiates arbiters as given by "ArbiterType" generic
 	ArbiterGen: for Arbiter in 0 to AmountOfPEs - 1 generate
 
@@ -190,9 +159,9 @@ begin
 
             DataLinkMap: if PE /= Bridge generate
 
-			    PEInputs(PE).DataIn <= bridgeDataOut(Bridge) when switchSelect(PE)(Bridge) = '1' else (others => 'Z');
-			    PEInputs(PE).Rx <= bridgeTx(Bridge) when switchSelect(PE)(Bridge) = '1' else 'Z';
-			    bridgeCreditI(Bridge) <= PEOutputs(PE).CreditO when switchSelect(PE)(Bridge) = '1' else 'Z';
+			    PEInputs(PE).DataIn <= bridgeDataOut(Bridge) when arbiterGrant(PE)(Bridge) = '1' else (others => 'Z');
+			    PEInputs(PE).Rx <= bridgeTx(Bridge) when arbiterGrant(PE)(Bridge) = '1' else 'Z';
+			    bridgeCreditI(Bridge) <= PEOutputs(PE).CreditO when arbiterGrant(PE)(Bridge) = '1' else 'Z';
 
             end generate DataLinkMap;
 
@@ -217,8 +186,8 @@ begin
 		ACKLinkGen: for Bridge in 0 to AmountOfPEs - 1 generate
 
 			ACKMap: if PE /= Bridge generate
-			    bridgeGrant(Bridge) <= arbiterGrant(PE)(Bridge) when switchSelect(PE)(Bridge) = '1' else 'Z';
-				arbiterACK(PE) <= bridgeACK(Bridge) when switchSelect(PE)(Bridge) = '1' else 'Z';
+			    bridgeGrant(Bridge) <= arbiterGrant(PE)(Bridge) when arbiterGrant(PE)(Bridge) = '1' else 'Z';
+				arbiterACK(PE) <= bridgeACK(Bridge) when arbiterGrant(PE)(Bridge) = '1' else 'Z';
 			end generate ACKMap;
 
 		end generate ACKLinkGen;

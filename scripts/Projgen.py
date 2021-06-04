@@ -147,7 +147,6 @@ def projgen(args):
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Arbiter/RoundRobinArbiter.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Arbiter/ArbiterFactory.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/HermesTop.vhd\n")
-                make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Crossbar/CrossbarControl.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Crossbar/CrossbarBridgev2.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Crossbar/CrossbarTop.vhd\n")
                 make_file.write("	ncvhdl $(VHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Bus/BusControl.vhd\n")
