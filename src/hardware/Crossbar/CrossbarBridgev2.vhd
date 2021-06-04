@@ -182,8 +182,8 @@ begin
 				    if bufferAVFlag = '1' then
 
                         --assert false report "targetIndex = <" & integer'image(GetIndexOfAddr(PEAddresses, DataIn(DataWidth - 1 downto HalfDataWidth), SelfIndex)) & "> for PEPos <" & integer'image(PEPosFromXY(DataIn(DataWidth - 1 downto HalfDataWidth), 5)) & ">" severity note;
-                        targetIndex <= GetIndexOfAddr(PEAddresses, DataIn(DataWidth - 1 downto HalfDataWidth), SelfIndex);
-                        --targetIndex <= GetIndexOfAddr(PEAddresses, bufferDataOut(DataWidth - 1 downto HalfDataWidth), SelfIndex);
+                        --targetIndex <= GetIndexOfAddr(PEAddresses, DataIn(DataWidth - 1 downto HalfDataWidth), SelfIndex);
+                        targetIndex <= GetIndexOfAddr(PEAddresses, bufferDataOut(DataWidth - 1 downto HalfDataWidth), SelfIndex);
                        
 				        --flitCounter <= unsigned(DataIn) + 2;
 
@@ -207,16 +207,14 @@ begin
 			    -- Waits for arbiter grant
 			    when SwaitForGrant => 
 
-                    -- TODO: Replace with orReduce on targetIndex
-				    --if Grant(targetIndex) = '1' then
                     if Grant = '1' then
 
 					    Request(targetIndex) <= '0';
 
-					    currentState <= SwaitForControl;
+					    currentState <= StransmitHeader;
 
 				    else
-					    currentState <= StransmitHeader;
+					    currentState <= SwaitForGrant;
 
 				    end if;
 
@@ -224,9 +222,9 @@ begin
                 when StransmitHeader =>
                     
                     if CreditI = '1' and bufferAVFlag = '1' then
-                        currentState <= StransmitHeader;
-                    else
                         currentState <= StransmitSize;
+                    else
+                        currentState <= StransmitHeader;
                     end if;
 
                 when StransmitSize => 
@@ -234,9 +232,9 @@ begin
                     flitCounter <= unsigned(bufferDataOut);
 
                     if CreditI = '1' and bufferAVFlag = '1' then
-                        currentState <= StransmitSize;
-                    else
                         currentState <= StransmitPayload;
+                    else
+                        currentState <= StransmitSize;
                     end if;
 
 			    -- Sends message
@@ -251,7 +249,7 @@ begin
 					    currentState <= Sstandby;
 
 				    else
-					    currentState <= Stransmit;
+					    currentState <= StransmitPayload;
 
 				    end if;
 

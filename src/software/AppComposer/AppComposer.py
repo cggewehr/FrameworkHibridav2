@@ -347,8 +347,7 @@ class Application:
     
         ThreadsByID = [None] * len(self.Threads)
         
-        #for ThreadInApp in self.Threads:
-        for ThreadInApp in enumerate(self.Threads):
+        for ThreadInApp in self.Threads:
             ThreadsByID[ThreadInApp.ThreadID] = ThreadInApp
             
         return ThreadsByID
@@ -457,11 +456,12 @@ class Application:
             if ReturnThread is None:
                 print("Warning: ThreadName <" + str(ThreadName) + "> doesnt correspond to any Thread in App <" + str(self.AppName) + ">, returning None")
                 
-            return self.ThreadsByName.get(ThreadName)
+            return ReturnThread
             
         elif ThreadName is None and ThreadID is not None:
         
-            ReturnThread = self.ThreadsByID.get(ThreadID)
+            #ReturnThread = self.ThreadsByID.get(ThreadID)
+            ReturnThread = self.ThreadsByID[ThreadID]
 
             if ReturnThread is None:
                 print("Warning: ThreadID <" + str(ThreadID) + "> doesnt correspond to any Thread in App <" + str(self.AppName) + ">, returning None")

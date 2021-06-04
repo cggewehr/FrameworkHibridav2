@@ -17,7 +17,7 @@ class Packet:
         self.ParentLog = ParentLog
         self.TargetPEPos = int(TargetPEPos)
         self.Service = Service
-        self.Size = Size
+        self.Size = int(Size)
         self.Timestamp = int(Timestamp)
         self.Checksum = int(Checksum)
 
@@ -27,20 +27,37 @@ class Packet:
             return True
         else:
             return False
+        
+    # Factory design pattern method for generating service-specific Packet objects (DVFSPacket, SyntheticTrafficPacket, ...) 
+    @staticmethod
+    def makePacket(LogLine, ParentLog):
+        
+        try:
+            
+            lineList = LogLine.split()
 
-    # def __str__(self):
-        # try:
-            # return ("\nTargetID = " + str(self.TargetID) +
-                    # "\nSourceID = " + str(self.SourceID) +
-                    # "\nMessageSize = " + str(self.MessageSize) +
-                    # "\nOutputTimestamp = " + str(self.OutputTimestamp) +
-                    # "\nInputTimestamp = " + str(self.InputTimestamp))
+            TargetPEPos = lineList[0]
+            Size = lineList[1]
+            ServiceID = lineList[2]
+            Data = lineList[3:len(lineList) - 2]
+            Timestamp = lineList[-2]
+            Checksum = lineList[-1]
 
-        # except AttributeError:  # No InputTimestamp attribute
-            # return ("\nTargetID = " + str(self.TargetID) +
-                    # "\nSourceID = " + str(self.SourceID) +
-                    # "\nMessageSize = " + str(self.MessageSize) +
-                    # "\nOutputTimestamp = " + str(self.OutputTimestamp))
+        except KeyError:
+            print("Error: Incomplete message <" + line + "> in entry <" + str(i) + "> of input log of PE <" + str(PEPos) + ">")
+            exit(1)
+        
+        # Make service-specific objects based on Service entry field
+        if ServiceID == Packet.DVFSServiceID:
+            return DVFSPacket(ParentLog = ParentLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum)
+        elif ServiceID == Packet.SyntheticTrafficServiceID:
+            return SyntheticTrafficPacket(ParentLog = ParentLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum)
+        else:
+            print("Error: ServiceID <" + str(ServiceID) + "> not recognized for entry <" + str(i) + ": " + line + "> in input log of PE <" + str(PEPos) + ">")
+            exit(1)
+         
+    def __str__(self):
+        return "Target PEPos <" + str(self.TargetPEPos) + "> Size <" + str(self.Size) + "> Timestamp <" + str(self.Timestamp) + "> Checksum <" + str(self.Checksum) + ">"
 
 
 # A DVFS Packet log entry should look like: (| Target PEPos | Payload Size | <DVFSServiceID> | <DVFS config flit> | Timestamp | Checksum |)
@@ -77,10 +94,6 @@ class DVFSPacket(Packet):
         self.IsNoC = ConfigFlit[DVFSPacket.VoltageLevelFieldSize]
         self.N = int(ConfigFlit[2*DVFSPacket.CounterResolution : DVFSPacket.CounterResolution : -1], 2)
         self.M = int(ConfigFlit[DVFSPacket.CounterResolution : -1 : -1], 2)
-        
-    # Factory design pattern method for generating service-specific Packet objects (DVFSPacket, SyntheticTrafficPacket, ...) 
-    #@staticmethod
-    #def makePacket(logLine):
 
     @staticmethod
     def action(outEntry, matchingInEntry):
@@ -168,6 +181,7 @@ class SyntheticTrafficPacket(Packet):
         if matchingInEntry is not None:
         
             latency = matchingInEntry.Timestamp - outEntry.Timestamp
+            #print("Latency: " + str(latency) + " = " + str(matchingInEntry.Timestamp) + " - " + str(outEntry.Timestamp))
     
             # Incrementally updates average latency value for PE (https://blog.demofox.org/2016/08/23/incremental-averaging/)
             SourcePEPos = outEntry.ParentLog.PEPos
@@ -199,7 +213,7 @@ class SyntheticTrafficPacket(Packet):
             print(str(outEntry.TargetThreadID))
             SyntheticTrafficPacket.MissCountByPE[outEntry.ParentLog.PEPos][outEntry.TargetPEPos] += 1
             SyntheticTrafficPacket.MissCountByThread[outEntry.AppID][outEntry.SourceThreadID][outEntry.TargetThreadID] += 1
-           
+  
 
 class Log:
 
@@ -218,6 +232,7 @@ class Log:
 
     @property
     def Throughput(self):
+        # TODO: Convert to MBps
         return self.TotalAmountOfData / self.Entries[-1].Timestamp
 
     def __str__(self):
@@ -301,66 +316,18 @@ def loganalyser(args):
     for PEPos in range(0, AmountOfPEs):
 
         with open(LogDir + "PE " + str(PEPos) + "/InLog" + str(PEPos) + ".txt", "r") as InLogFile:
-        
-            InLog = InLogs[PEPos]
+
+            print("Parsing in log of PE " + str(PEPos))
             
             for i, line in enumerate(InLogFile.read().splitlines()):
-            
-                # Parse log entry into Packet constructor expected args 
-                lineList = line.split()
-                
-                try:
-                    TargetPEPos = lineList[0]
-                    Size = lineList[1]
-                    ServiceID = lineList[2]
-                    Data = lineList[3:len(lineList) - 2]
-                    Timestamp = lineList[-2]
-                    Checksum = lineList[-1]
-                except KeyError:
-                    print("Warning: Incomplete message <" + line + "> in entry <" + str(i) + "> of input log of PE <" + str(PEPos) + ">")
-                
-                # TODO: Use Factory design pattern from Packet class to make service-specific objects
-                if ServiceID == Packet.DVFSServiceID:
-                    InLog.addEntry(DVFSPacket(ParentLog = InLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum))
-                elif ServiceID == Packet.SyntheticTrafficServiceID:
-                    InLog.addEntry(SyntheticTrafficPacket(ParentLog = InLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum))
-                else:
-                    print("Error: ServiceID <" + str(ServiceID) + "> not recognized for entry <" + str(i) + ": " + line + "> in input log of PE <" + str(PEPos) + ">")
-                    exit(1)
+                InLogs[PEPos].addEntry(Packet.makePacket(LogLine = line, ParentLog = InLogs[PEPos]))
                     
         with open(LogDir + "PE " + str(PEPos) + "/OutLog" + str(PEPos) + ".txt", "r") as OutLogFile:
         
-            OutLog = OutLogs[PEPos]
-            
-            for i, line in enumerate(OutLogFile.read().splitlines()):
-            
-                # Parse log entry into Packet constructor expected args 
-                lineList = line.split()
-                
-                try:
-                    TargetPEPos = lineList[0]
-                    Size = lineList[1]
-                    ServiceID = lineList[2]
-                    Data = lineList[3:len(lineList) - 2]
-                    Timestamp = lineList[-2]
-                    Checksum = lineList[-1]
-                except KeyError:
-                    print("Warning: Incomplete message <" + line + "> in entry <" + str(i) + "> of output log of PE <" + str(PEPos) + ">")
+            print("Parsing out log of PE " + str(PEPos))
 
-                # Skip parsing this out entry if out of time bounds
-                if int(Timestamp) < args.MinimumOutputTimestamp:
-                    continue
-                elif args.MaximumOutputTimestamp is not None and int(Timestamp) > args.MaximumOutputTimestamp:
-                    break
-                
-                # TODO: Use Factory design pattern from Packet class to make service-specific objects
-                if ServiceID == Packet.DVFSServiceID:
-                    OutLog.addEntry(DVFSPacket(ParentLog = OutLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum))
-                elif ServiceID == Packet.SyntheticTrafficServiceID:
-                    OutLog.addEntry(SyntheticTrafficPacket(ParentLog = OutLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum))
-                else:
-                    print("Error: ServiceID <" + str(ServiceID) + "> not recognized for entry <" + str(i) + ": " + line + "> in output log of PE <" + str(PEPos) + ">")
-                    exit(1)
+            for i, line in enumerate(OutLogFile.read().splitlines()):
+                OutLogs[PEPos].addEntry(Packet.makePacket(LogLine = line, ParentLog = OutLogs[PEPos]))
     
     print("Done parsing log files")
 
@@ -390,6 +357,10 @@ def loganalyser(args):
             for currentInEntry in currentInLog.Entries:
                 if currentOutEntry == currentInEntry:
                     matchingInEntry = currentInEntry
+                    #print("Found match for entry " + str(outEntryNumber))
+                    #print(str(currentOutEntry))
+                    #print(str(matchingInEntry))
+                    currentInLog.Entries.remove(currentOutEntry)
                     break
             
             # Calls service-specific action()
@@ -416,17 +387,17 @@ def loganalyser(args):
         missCountByThread = SyntheticTrafficPacket.MissCountByThread
     
         #for AppID, Application in enumerate(hitCountByThread):
-        for AppID, Application in enumerate(Workload):
-            for SourceThreadID, SourceThread in enumerate(Application):
+        for AppID, Application in enumerate(Workload.ApplicationsByID):
+            for SourceThreadID, SourceThread in enumerate(Application.ThreadsByID):
                 #for TargetThreadID, TargetThread in enumerate(hitCountByThread[AppID][SourceThreadID]):
-                for TargetThreadID, TargetThread in enumerate(Application):
+                for TargetThreadID, TargetThread in enumerate(Application.ThreadsByID):
                 
                     AppName = Application.AppName
                     SourceThreadName = SourceThread.ThreadName
                     TargetThreadName = TargetThread.ThreadName
                     
                     if hitCountByThread[AppID][SourceThreadID][TargetThreadID] + missCountByThread[AppID][SourceThreadID][TargetThreadID] > 0:
-                        print("Messages successfully delivered from Thread <" + str(SourceThreadName) + "> to Thread <" + str(TargetThreadName) + ">: " +
+                        print("Messages successfully delivered from Thread <" + AppName + "." + str(SourceThreadName) + "> to Thread <" + AppName + "." + str(TargetThreadName) + ">: " +
                               str(hitCountByThread[AppID][SourceThreadID][TargetThreadID]) + "/" + str(hitCountByThread[AppID][SourceThreadID][TargetThreadID] + missCountByThread[AppID][SourceThreadID][TargetThreadID]))
 
     # Prints out average latency values
@@ -444,19 +415,21 @@ def loganalyser(args):
     
         avgLatenciesByThread = SyntheticTrafficPacket.AvgLatenciesByThread
         
-        #for AppID, Application in enumerate(hitCountByThread):
-        for AppID, Application in enumerate(Workload):
-            for SourceThreadID, SourceThread in enumerate(Application):
-                #for TargetThreadID, TargetThread in enumerate(hitCountByThread[AppID][SourceThreadID]):
-                for TargetThreadID, TargetThread in enumerate(Application):
+        for Application in Workload.Applications:
+            for SourceThread in Application.Threads:
+                for TargetThread in Application.Threads:
                 
                     AppName = Application.AppName
+                    AppID = Application.AppID
                     SourceThreadName = SourceThread.ThreadName
+                    SourceThreadID = SourceThread.ThreadID
                     TargetThreadName = TargetThread.ThreadName
+                    TargetThreadID = TargetThread.ThreadID
                     
-                    if avgLatenciesByThread[source][target] != 0:
-                            print("Average latency from Thread <" + str(SourceThreadName) + "> to Thread <" + str(TargetThreadName) + ">: " +
-                                  str(avgLatenciesByThread[source][target]) + " ns")
+                    #if avgLatenciesByThread[source][target] != 0:
+                    if avgLatenciesByThread[AppID][SourceThreadID][TargetThreadID] != 0:
+                            print("Average latency from Thread <" + AppName + "." + SourceThreadName + "> to Thread <" + AppName + "." + str(TargetThreadName) + ">: " +
+                                  str(avgLatenciesByThread[AppID][SourceThreadID][TargetThreadID]) + " ns")
 
     # Print out frequency info for Router/Bus/Crossbar from DVFS service packets
     if args.DVFS:
@@ -489,5 +462,7 @@ def loganalyser(args):
                 print("Frequency set to <" + str(freqTuple[1]) + "> MHz @ <" + str(freqTuple[0]) + "> ns")
                 
         # TODO: Latencies for DVFS messages
-    
+        print("ID of JUG2: " + str(Workload.Applications[0].getThread(ThreadName = "JUG2").ThreadID))
+        print("JUG2 from ID: " + str(Workload.Applications[0].getThread(ThreadID = 3).ThreadName))
+
     print("\nloganalyser ran successfully!")
