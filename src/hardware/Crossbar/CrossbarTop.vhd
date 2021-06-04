@@ -185,12 +185,16 @@ begin
 
 	Switch: for PE in 0 to AmountOfPEs - 1 generate
 
-		-- Makes data links
+		-- Makes data links, ignoring links to self
 		DataLinksGen: for Bridge in 0 to AmountOfPEs - 1 generate
 
-			PEInputs(PE).DataIn <= bridgeDataOut(Bridge) when switchSelect(PE)(Bridge) = '1' else (others => 'Z');
-			PEInputs(PE).Rx <= bridgeTx(Bridge) when switchSelect(PE)(Bridge) = '1' else 'Z';
-			bridgeCreditI(Bridge) <= PEOutputs(PE).CreditO when switchSelect(PE)(Bridge) = '1' else 'Z';
+            DataLinkMap: if PE /= Bridge generate
+
+			    PEInputs(PE).DataIn <= bridgeDataOut(Bridge) when switchSelect(PE)(Bridge) = '1' else (others => 'Z');
+			    PEInputs(PE).Rx <= bridgeTx(Bridge) when switchSelect(PE)(Bridge) = '1' else 'Z';
+			    bridgeCreditI(Bridge) <= PEOutputs(PE).CreditO when switchSelect(PE)(Bridge) = '1' else 'Z';
+
+            end generate DataLinkMap;
 
 		end generate DataLinksGen;
 
@@ -208,11 +212,12 @@ begin
 		end generate RequestGen;
 
 		-- Makes arbiter links
-		bridgeGrant(PE) <= switchEnable(PE);
+		--bridgeGrant(PE) <= orReduce(switchSelect(PE));
 
 		ACKLinkGen: for Bridge in 0 to AmountOfPEs - 1 generate
 
 			ACKMap: if PE /= Bridge generate
+			    bridgeGrant(Bridge) <= arbiterGrant(PE)(Bridge) when switchSelect(PE)(Bridge) = '1' else 'Z';
 				arbiterACK(PE) <= bridgeACK(Bridge) when switchSelect(PE)(Bridge) = '1' else 'Z';
 			end generate ACKMap;
 

@@ -67,7 +67,7 @@ begin
 			if ACK = '1' then
             	SwitchEnable <= '0';
 
-			elsif Grant /= (others => '0') then
+			elsif Grant /= (0 to AmountOfPEs - 1 => '0') then
 				SwitchEnable <= '1';
 
 			end if;
