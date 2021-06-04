@@ -61,11 +61,10 @@ end BusBridge;
 
 architecture RTL of BusBridge is
 
-	type state_t is (Sstandby, SwaitForGrant, Stransmit);
+    type state_t is (Sstandby, Srequest, SwaitForGrant, StransmitHeader, StransmitSize, StransmitPayload);
 	signal currentState: state_t;
 	
 	signal flitCounter: unsigned(DataWidth - 1 downto 0);
-    signal flitCounterFilled: std_logic;
 
 	signal bufferDataOut: DataWidth_t;
     signal bufferReadyFlag: std_logic;
@@ -95,7 +94,6 @@ begin
 			-- Bus interface (Output)
 			ClockOut            => Clock,
 			DataOut             => bufferDataOut,
-			--ReadConfirm         => CreditI,
             ReadConfirm         => bufferReadConfirm,
 			ReadACK             => open,
 			
@@ -103,7 +101,6 @@ begin
 			BufferEmptyFlag     => open,
 			BufferFullFlag      => open,
 			BufferReadyFlag     => CreditO,
-            --BufferReadyFlag     => bufferReadyFlag,
 			BufferAvailableFlag => bufferAVFlag
 
 		);
@@ -111,22 +108,19 @@ begin
 
 	-- Same as struct clock (clock domain crossing occurs at InjBuffer)
 	ClockTx <= ClockRx;
-	Tx <= bufferAVFlag when currentState = Stransmit else 'Z';
-	DataOut <= bufferDataOut when currentState = Stransmit else (others => 'Z');
-    --CreditO <= bufferReadyFlag when currentState = Stransmit else 'Z';
+	Tx <= bufferAVFlag when currentState = StransmitHeader or currentState = StransmitSize or currentState = StransmitPayload else 'Z';
+	DataOut <= bufferDataOut when currentState = StransmitHeader or currentState = StransmitSize or currentState = StransmitPayload else (others => 'Z');
+    bufferReadConfirm <= CreditI when currentState = StransmitHeader or currentState = StransmitSize or currentState = StransmitPayload else '0';
 
-    bufferReadConfirm <= CreditI when currentState = Stransmit else '0';
-
-	-- 
 	ControlFSM: process(Reset, ClockRx) begin
 
         if Reset = '1' then
 
+            -- Set default values
             ACK <= 'Z';
 			Request <= '0';
 
             flitCounter <= to_unsigned(0, DataWidth);
-            flitCounterFilled <= '0';
 
 			currentState <= Sstandby;
 
@@ -134,20 +128,13 @@ begin
 
 			case currentState is
 
-				-- Sets default values
-				--when Sreset => 
-
-					--ACK <= 'Z';
-					--Request <= '0';
-
 				-- Waits for a new message
 				when Sstandby => 
                     
                     ACK <= 'Z';
 			        Request <= '0';
 
-					if Rx = '1' then
-					--if bufferAVFlag = '1' then
+					if bufferAVFlag = '1' then
 
 						Request <= '1';
 
@@ -161,17 +148,12 @@ begin
 				-- Waits for arbiter grant signal
 				when SwaitForGrant => 
 
-                    if flitCounterFilled = '0' then
-					    flitCounter <= unsigned(DataIn) + 2;
-                        flitCounterFilled <= '1';
-                    end if;
-
 					if Grant = '1' then
 
 						ACK <= '0';
 						Request <= '0';
 
-						currentState <= Stransmit;
+						currentState <= StransmitHeader;
 
 					else
 
@@ -179,25 +161,40 @@ begin
 
 					end if;
 
-				-- Transmits message through bus
-				when Stransmit => 
+                -- Transmit ADDR header flit through bus
+                when StransmitHeader =>
+                    
+                    if CreditI = '1' and bufferAVFlag = '1' then
+                        currentState <= StransmitSize;
+                    else
+                        currentState <= StransmitHeader;
+                    end if;
 
-					--ACK <= 'Z';
-                    flitCounterFilled <= '0';
+                -- Transmit SIZE header flit through bus, and captures payload size to to count down from to time arbiter ACK signal
+                when StransmitSize => 
+
+                    flitCounter <= unsigned(bufferDataOut);
+
+                    if CreditI = '1' and bufferAVFlag = '1' then
+                        currentState <= StransmitPayload;
+                    else
+                        currentState <= StransmitSize;
+                    end if;
+
+				-- Transmits payload through bus
+				when StransmitPayload => 
 
 					if CreditI = '1' and bufferAVFlag = '1' then
 					    flitCounter <= flitCounter - 1;
 				    end if;
 
-					-- Determines if this is the last flit of msg
-					if flitCounter = 0 then
-					--if flitCounter = 0 and CreditI = '1' and bufferAVFlag = '1' then
-					--if bufferAVFlag = '0' then
+					-- Determines if this is the last flit of msg, frees arbiter if so
+					if flitCounter = 1 and CreditI = '1' and bufferAVFlag = '1' then
 						ACK <= '1';
 						currentState <= Sstandby;
 
 					else
-						currentState <= Stransmit;
+						currentState <= StransmitPayload;
 
 					end if;
 

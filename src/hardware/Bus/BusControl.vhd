@@ -56,7 +56,7 @@ end entity BusControl;
 architecture RTL of BusControl is
 
 	-- FSM states
-	type state_t is (Sstandby, SwaitForCredit, Ssize, Spayload, SwaitForACK);
+	type state_t is (Sstandby, StransmitHeader, StransmitSize, StransmitPayload, SwaitForACK);
 	signal currentState: state_t;
 
 	-- Contains size of current msg's payload. Decremented by one every time a flit is sent across the bus, until msg has been fully sent
@@ -119,54 +119,48 @@ begin
 					targetIndex <= GetIndexOfAddr(PEAddresses, targetAddr);
 					busBeingUsed <= '1';
 
-					currentState <= SwaitForCredit;
+					currentState <= StransmitHeader;
 				
 				else
 					currentState <= Sstandby;
 
 				end if;
     
-            elsif currentState = SwaitForCredit then
+    		-- Transmit ADDR header flit through bus
+            elsif currentState = StransmitHeader then
 
                 if BusCredit = '1' and BusTx = '1' then
-                    currentState <= Ssize;
+                    currentState <= StransmitSize;
                 else
-                    currentState <= SwaitForCredit;
+                    currentState <= StransmitHeader;
                 end if;
 
-			-- Initialize flitCounter from 2nd flit of msg (which contains payload size)
-			elsif currentState = Ssize then
+            -- Transmit SIZE header flit through bus, and captures payload size to to count down from to time arbiter ACK signal
+			elsif currentState = StransmitSize then
 
                 if BusCredit = '1' and BusTx = '1' then
 				    flitCounter <= to_integer(unsigned(BusData));
 
-				    currentState <= Spayload;
+				    currentState <= StransmitPayload;
                 else 
-                    currentState <= Ssize;
+                    currentState <= StransmitSize;
 
                 end if;
 
-			-- Remains in this state until all payload flits have been transmitted
-			elsif currentState = Spayload then
+			-- Transmits payload through bus
+			elsif currentState = StransmitPayload then
 
 				-- Checks if a flit was transmitted
-				--if PECredit(targetIndex) = '1' and BusTx = '1' then
 				if BusCredit = '1' and BusTx = '1' then
 					flitCounter <= flitCounter - 1;
 
 				end if;
 
 				-- Determines if this is the last flit of msg
-				--if flitCounter = 1 and PECredit(targetIndex) = '1' and BusTx = '1' then
-				--if flitCounter = 1 and BusCredit = '1' and BusTx = '1' then
-				if flitCounter = 2 and BusCredit = '1' and BusTx = '1' then  -- accounts for first payload Flit not causing a decrement in counter
-
-					--busBeingUsed <= '0';
-					--currentState <= Sstandby;
+				if flitCounter = 1 and BusCredit = '1' and BusTx = '1' then
 					currentState <= SwaitForACK;
-
 				else
-					currentState <= Spayload;
+					currentState <= StransmitPayload;
 
 				end if;
 
@@ -205,6 +199,5 @@ begin
 		end if;
 
 	end process;
-
 
 end architecture RTL;

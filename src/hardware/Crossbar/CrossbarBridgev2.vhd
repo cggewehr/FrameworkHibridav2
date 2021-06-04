@@ -51,14 +51,11 @@ entity CrossbarBridge is
 		ClockTx  : out std_logic;
 		Tx       : out std_logic;
 		DataOut  : out DataWidth_t;
-		--CreditI  : in std_logic_vector;
 		CreditI  : in std_logic;
 
 		-- Arbiters Interface
-		--ACK      : out std_logic_vector;
 		ACK      : out std_logic;
 		Request  : out std_logic_vector;
-		--Grant    : in std_logic_vector
 		Grant    : in std_logic
 
 	);
@@ -99,8 +96,6 @@ architecture RTL of CrossbarBridge is
 		
 	end function GetIndexOfAddr;
 
-	--constant selfIndex: integer := GetIndexOfAddr(PEAddresses, SelfAddress, 7);
-
 begin
 
 	-- Instantiates a bisynchronous FIFO
@@ -123,7 +118,6 @@ begin
 
 			-- Crossbar interface (Output)
 			ClockOut            => Clock,
-			--DataOut             => DataOut,
 			DataOut             => bufferDataOut,
 			ReadConfirm         => bufferReadConfirm,
 			ReadACK             => open,
@@ -131,8 +125,7 @@ begin
 			-- Status flags
 			BufferEmptyFlag     => open,
 			BufferFullFlag      => open,
-			--BufferReadyFlag     => CreditO,
-			BufferReadyFlag     => bufferReadyFlag,
+			BufferReadyFlag     => CreditO,
 			BufferAvailableFlag => bufferAVFlag
 
 		);
@@ -140,12 +133,9 @@ begin
     ClockTx <= Clock;
 	Tx <= bufferAVFlag when currentState = StransmitHeader or currentState = StransmitSize or currentState = StransmitPayload else '0';
     DataOut <= bufferDataOut;
-	--bufferReadConfirm <= CreditI(targetIndex) when currentState = Stransmit else '0';
 	bufferReadConfirm <= CreditI when currentState = StransmitHeader or currentState = StransmitSize or currentState = StransmitPayload else '0';
-    --CreditO <= bufferReadyFlag when currentState /= SwaitForControl else '0';
-    CreditO <= bufferReadyFlag;
     
-    --ACK(SelfIndex) <= '0';
+    -- Makes requests to self impossible
     Request(SelfIndex) <= '0';
 
 	ControlFSM: process(Clock, Reset) begin
@@ -153,7 +143,6 @@ begin
         if Reset = '1' then
 
             -- Set default values
-            --ACK <= (others => '0');
             ACK <='0';
 			Request <= (others => '0');
 
@@ -165,27 +154,16 @@ begin
 
 		    case currentState is
 
-			    -- Set default values
-			    --when Sreset =>
-
-				    --ACK <= (others => '0');
-				    --Request <= (others => '0');
-
 			    -- Wait for a new message to be sent
 			    when Sstandby =>
 
-                    --ACK <= (others => '0');
                     ACK <= '0';
                     Request <= (others => '0');
 
-				    --if Rx = '1' then
 				    if bufferAVFlag = '1' then
 
                         --assert false report "targetIndex = <" & integer'image(GetIndexOfAddr(PEAddresses, DataIn(DataWidth - 1 downto HalfDataWidth), SelfIndex)) & "> for PEPos <" & integer'image(PEPosFromXY(DataIn(DataWidth - 1 downto HalfDataWidth), 5)) & ">" severity note;
-                        --targetIndex <= GetIndexOfAddr(PEAddresses, DataIn(DataWidth - 1 downto HalfDataWidth), SelfIndex);
                         targetIndex <= GetIndexOfAddr(PEAddresses, bufferDataOut(DataWidth - 1 downto HalfDataWidth), SelfIndex);
-                       
-				        --flitCounter <= unsigned(DataIn) + 2;
 
 					    currentState <= Srequest;
 
@@ -198,7 +176,6 @@ begin
                 when Srequest =>
 
                     Request(targetIndex) <= '1';
-                    --flitCounter <= unsigned(DataIn) + 2;
 
                     assert targetIndex /= selfIndex report "Crossbar bridge <" & integer'image(selfIndex) & "> trying to transmit to itself" severity error;
 
@@ -218,7 +195,7 @@ begin
 
 				    end if;
 
-                -- Wait for CrossbarControl to recognize new Grant
+                -- Transmit ADDR header flit through crossbar
                 when StransmitHeader =>
                     
                     if CreditI = '1' and bufferAVFlag = '1' then
@@ -227,6 +204,7 @@ begin
                         currentState <= StransmitHeader;
                     end if;
 
+                -- Transmit SIZE header flit through crossbar, and captures payload size to to count down from to time arbiter ACK signal
                 when StransmitSize => 
 
                     flitCounter <= unsigned(bufferDataOut);
@@ -237,13 +215,14 @@ begin
                         currentState <= StransmitSize;
                     end if;
 
-			    -- Sends message
+				-- Transmits payload through crossbar
 			    when StransmitPayload => 
 
 				    if CreditI = '1' and bufferAVFlag = '1' then
 					    flitCounter <= flitCounter - 1;
 				    end if;
 
+					-- Determines if this is the last flit of msg, frees arbiter if so
 				    if flitCounter = 1 and CreditI = '1' and bufferAVFlag = '1' then
 					    ACK <= '1';
 					    currentState <= Sstandby;
