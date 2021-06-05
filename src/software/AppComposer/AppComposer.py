@@ -51,6 +51,25 @@ class Flow:
         self.Payload = Payload
 
 
+    def toJSON(self):
+    
+        flowDict = dict()
+        
+        flowDict["SourceThread"] = OutgoingFlow.SourceThread.ThreadName
+        flowDict["TargetThread"] = OutgoingFlow.TargetThread.ThreadName
+        flowDict["Bandwidth"] = OutgoingFlow.Bandwidth
+        flowDict["StartTime"] = OutgoingFlow.StartTime
+        flowDict["StopTime"] = OutgoingFlow.StopTime
+        flowDict["Periodic"] = OutgoingFlow.Periodic  # WIP, doesnt do anything
+        flowDict["MSGAmount"] = OutgoingFlow.MSGAmount
+        flowDict["ControlFlowFlag"] = OutgoingFlow.ControlFlowFlag  # WIP, doesnt do anything
+
+        flowDict["Header"] = OutgoingFlow.Header
+        flowDict["Payload"] = OutgoingFlow.Payload
+        
+        return json.dumps(flowDict, sort_keys=False, indent=4))
+    
+    
     def __str__(self):
     
         returnString = ""
@@ -220,17 +239,10 @@ class Thread:
     
     def renameThread(self, ThreadName):
         
-        try:
-            if isinstance(ThreadName, str):
-                self.ThreadName = ThreadName
-            else:
-                print("Warning: New given Thread name is not a string, maintaining old Thread name")
-                
-        except NameError:
-            if isinstance(ThreadName, basestring):
-                self.ThreadName = ThreadName
-            else:
-                print("Warning: New given Thread name is not a string, maintaining old Thread name")
+        if isinstance(ThreadName, str):
+            self.ThreadName = ThreadName
+        else:
+            print("Warning: New given Thread name is not a string, maintaining old Thread name")
                 
                 
     # WIP: Merges ThreadToMerge into self
@@ -243,9 +255,9 @@ class Thread:
         # Appends ThreadToMerge Flows to self's
         self.OutgoingFlows += ThreadToMerge.OutgoingFlows
         
-        if ThreadA.ParentApplication is None:
+        if ThreadToMerge.ParentApplication is None:
         
-            print("Warning: Thread:\n" + str(ThreadA) + "has no ParentApplication. Aborting mergeThreads().")
+            print("Warning: Thread:\n" + str(ThreadToMerge) + "has no ParentApplication. Aborting mergeThreads().")
             return self
         
         # Updates ThreadToMerge references to self
@@ -265,6 +277,48 @@ class Thread:
         return self
         
         
+    def toJSON(self):
+    
+        threadDict = dict()
+        
+        threadDict["ThreadName"] = self.ThreadName
+        threadDict["ThreadID"] = self.ThreadID
+        threadDict["OutgoingFlows"] = [OutgoingFlow.toJSON() for OutgoingFlow in self.OutgoingFlows]
+        threadDict["AmountOfOutgoingFlows"] = len(self.OutgoingFlows)
+        threadDict["AmountOfIncomingFlows"] = len(self.IncomingFlows)
+        
+        return json.dumps(threadDict, sort_keys = False, indent = 4)
+
+
+    def fromJSON(self, JSONString):
+        
+        # Check if new Thread has a non-default ThreadID assigned
+        if Thread.ThreadID is not None:
+            print("Warning: Overriding ThreadID <" + str(Application.ThreadID) + "> of Application <" + str(Application.ThreadName) + "> to <" + str(len(self.Threads)) + "> (from JSON)")
+            
+        # Checks if dict conversion already happened, such as when called hierarchically from Application.fromJSON()
+        if isinstance(JSONString, dict):
+            JSONDict = JSONString
+        else:
+            JSONDict = JSON.loads(JSONString)
+            
+        self.ThreadName = JSONDict["ThreadName"]
+        self.ThreadID = int(JSONDict["ThreadID"])
+        
+        # Add Flows to Thread
+        for FlowAsJSON in JSONDict["OutgoingFlows"]:
+            
+            SourceThread = self.getThread(ThreadName = FlowAsJSON["SourceThread"])
+            if SourceThread is not self:
+                print("Error: Mismatching SourceThread while adding Flow from JSON")
+                exit(1)
+                
+            TargetThread = self.getThread(ThreadName = FlowAsJSON["TargetThread"])
+            
+            # Ignores Periodic and ControlFlowFlag attributes, currently unsupported
+            self.addFlow(Flow(SourceThread = SourceThread, TargetThread = TargetThread, Bandwidth = FlowAsJSON["Bandwidth"], StartTime = FlowAsJSON["StartTime"], StopTime = FlowAsJSON["StopTime"], MSGAmount = FlowAsJSON["MSGAmount"], Header = FlowAsJSON["Header"], Payload = FlowAsJSON["Payload"]))
+        
+    
     def __str__(self):
 
         returnString = ""
@@ -355,6 +409,10 @@ class Application:
 
     def addThread(self, Thread, autoSetStartStop = True):
         
+        # Check if new Thread has a non-default ThreadID assigned
+        if Thread.ThreadID is not None and Thread.ThreadID != len(self.Threads):
+            print("Warning: Overriding ThreadID <" + str(Application.ThreadID) + "> of Application <" + str(Application.ThreadName) + "> to <" + str(len(self.Threads)) + ">")
+            
         # If in this App there already is a Thread with given Thread's name, rename it, else, add it to App
         if Thread.ThreadName in self.ThreadsByName.keys():
         
@@ -488,37 +546,9 @@ class Application:
         appDict["AppName"] = self.AppName
         appDict["StartTime"] = self.StartTime
         appDict["StopTime"] = self.StopTime
+        appDict["AmountOfThreads"] = len(self.Threads)
+        appDict["Threads"] = [ThreadInApp.toJSON() for ThreadInApp in self.Threads]
         
-        for Thread in self.Threads:
-        
-            threadDict = dict()
-            
-            #threadDict["ThreadName"] = Thread.ThreadName
-            
-            # Write to JSON only flows that have this Thread as source. Flows that have this Thread as target will update this Thread when they are added in their source Thread
-            OutgoingFlows = []
-            for OutgoingFlow in Thread.OutgoingFlows:
-                
-                flowDict = dict()
-                
-                flowDict["SourceThread"] = OutgoingFlow.SourceThread.ThreadName
-                flowDict["TargetThread"] = OutgoingFlow.TargetThread.ThreadName
-                flowDict["Bandwidth"] = OutgoingFlow.Bandwidth
-                flowDict["StartTime"] = OutgoingFlow.StartTime
-                flowDict["StopTime"] = OutgoingFlow.StopTime
-                flowDict["Periodic"] = OutgoingFlow.Periodic
-                flowDict["MSGAmount"] = OutgoingFlow.MSGAmount
-                flowDict["ControlFlowFlag"] = OutgoingFlow.ControlFlowFlag
-
-                flowDict["Header"] = OutgoingFlow.Header
-                flowDict["Payload"] = OutgoingFlow.Payload
-                
-                OutgoingFlows.append(flowDict)
-
-            threadDict["Flows"] = OutgoingFlows
-            
-            appDict[Thread.ThreadName] = threadDict
-            
         #print(appDict)
         
         # Converts appDict to a JSON-formatted string (sort_keys must be False so ThreadIDs are the same in original and reconstructed-from-JSON objects)
@@ -539,40 +569,30 @@ class Application:
 
     def fromJSON(self, JSONString):
     
-        JSONDict = JSON.loads(JSONString)
+        # To be set when Workload.addApplication(self) is called
+        self.ParentWorkload = None
+        
+        # Check if new Application has a non-default AppID assigned
+        if self.AppID is not None:
+            print("Warning: Overriding AppID <" + str(Application.AppID) + "> of Application <" + str(Application.AppName) + "> to <" + JSONDict["AppID"] + "> (from JSON)")
+        
+        # Checks if dict conversion already happened, such as when called hierarchically from Workload.fromJSON()
+        if isinstance(JSONString, dict):
+            JSONDict = JSONString
+        else:
+            JSONDict = JSON.loads(JSONString)
         
         self.AppName = JSONDict["AppName"]
+        self.AppID = int(JSONDict["AppID"]) 
         self.StartTime = JSONDict["StartTime"]
         self.StopTime = JSONDict["StopTime"]
         
         self.Threads = []
-        #self.ThreadsByName = dict()
-        
-        # To be set when Workload.addApplication(self) is called
-        self.AppID = None
-        self.ParentWorkload = None
-        
-        # Remove keys that arent associated with thread names
-        JSONDict.pop("AppName", None)
-        JSONDict.pop("StartTime", None)
-        JSONDict.pop("StopTime", None)
-        
-        # Create Threads
-        for ThreadName in JSONDict:
-            self.addThread(Thread(ThreadName))
+        for ThreadAsJSON in JSONDict["Threads"]:
+            newThread = Thread()
+            self.addThread(newThread)
+            newThread.fromJSON(ThreadAsJSON)
             
-        # Add Flows to Threads
-        for ThreadInApp in self.Threads:
-        
-            # Creates Flow with SourceThread and TargetThread as strings
-            for FlowInThread in JSONDict[ThreadInApp.ThreadName]["Flows"]:
-            
-                #ThreadInApp.addFlow(Flow(Bandwidth = FlowInThread["Bandwidth"], SourceThread = FlowInThread["SourceThread"], TargetThread = FlowInThread["TargetThread"]))
-
-                SourceThread = self.getThread(ThreadName = FlowInThread["SourceThread"])
-                TargetThread = self.getThread(ThreadName = FlowInThread["TargetThread"])
-                ThreadInApp.addFlow(Flow(Bandwidth = FlowInThread["Bandwidth"], SourceThread = SourceThread, TargetThread = TargetThread, StartTime = FlowInThread["StartTime"], StopTime = FlowInThread["StopTime"], Periodic = FlowInThread["Periodic"], MSGAmount = FlowInThread["MSGAmount"], ControlFlowFlag = FlowInThread["ControlFlowFlag"], Header = FlowInThread["Header"], Payload = FlowInThread["Payload"]))
-
         return self
 
 
@@ -658,7 +678,11 @@ class Workload:
         
         
     def addApplication(self, Application):
-    
+        
+        # Check if new Application has a non-default AppID assigned
+        if Application.AppID is not None and Application.AppID != len(self.Applications):
+            print("Warning: Overriding AppID <" + str(Application.AppID) + "> of Application <" + str(Application.AppName) + "> to <" + str(len(self.Applications)) + ">")
+        
         # If in this Workload there already is an App with given App's name, rename it, else, add it to Workload
         if Application.AppName in self.ApplicationsByName.keys():
         
@@ -718,7 +742,8 @@ class Workload:
             
         elif AppName is None and AppID is not None:
         
-            AppByID = self.ApplicationsByID.get(AppID)
+            #AppByID = self.ApplicationsByID.get(AppID)
+            AppByID = self.ApplicationsByID[AppID]
             
             if AppByID is None:
                 print("Warning: AppID <" + str(ThreadName) + "> doesnt correspond to any Application in Workload <" + str(self.WorkloadName) + ">, returning None")
@@ -728,7 +753,7 @@ class Workload:
         elif AppName is not None and AppID is not None:
         
             AppByName = self.ApplicationsByName.get(AppName)
-            AppByID = self.ApplicationsByID.get(AppID)
+            AppByID = self.ApplicationsByID.[AppID]
             
             if AppByName is not AppByID:
                 print("Error: <AppID: " + str(ThreadID) + "> and <AppName: " + str(ThreadName) + "> correspond to different Applications")
@@ -796,9 +821,8 @@ class Workload:
         workloadDict = dict()
         
         workloadDict["WorkloadName"] = self.WorkloadName
-        
-        for App in self.Applications:
-            workloadDict[App.AppName] = JSON.loads(App.toJSON())
+        workloadDict["AmountOfApplications"] = len(self.Applications)
+        workloadDict["Applications"] = [AppInWorkload.toJSON() for AppInWorkload in self.Applications]
             
         # Converts workloadDict to a JSON-formatted string (sort_keys must be False so AppIDs are the same in original and reconstructed-from-JSON objects)
         JSONString = JSON.dumps(workloadDict, sort_keys = False, indent = 4)
@@ -818,25 +842,19 @@ class Workload:
     
     def fromJSON(self, JSONString):
     
+        # To be set when Platform.setWorkload(self) is called
+        self.ParentPlatform = None
+        
         JSONDict = JSON.loads(JSONString)
         
         self.WorkloadName = JSONDict["WorkloadName"]
         
+        # Add Applications and sort them by their AppID values. 
         self.Applications = []
-        #self.ApplicationsByName = dict()
-        
-        # To be set when Platform.setWorkload(self) is called
-        self.ParentPlatform = None
-
-        # Pop keys unrelated to App names
-        JSONDict.pop("WorkloadName")
-        
-        for AppName in JSONDict:
-            #self.addApplication(Application(AppName = AppName).fromJSON(JSON.dumps(JSONDict[AppName])))
-            newApp = Application(AppName = AppName)
-            appJSONString = JSON.dumps(JSONDict[AppName], sort_keys=False, indent=4)
-            newApp.fromJSON(appJSONString)
+        for AppAsJSON in JSONDict["Applications"]:
+            newApp = Application()
             self.addApplication(newApp)
+            newApp.fromJSON(AppAsJSON)
 
         return self
 
