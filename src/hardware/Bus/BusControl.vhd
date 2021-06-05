@@ -36,17 +36,18 @@ entity BusControl is
 	port (
 
 		-- Basic
-		Clock      : in std_logic;
-		Reset      : in std_logic;
+		Clock    : in std_logic;
+		Reset    : in std_logic;
 
 		-- Bus interface
-		BusTx      : in std_logic;
-		BusData    : in DataWidth_t;
-		BusCredit  : inout std_logic;
+		BusTx    : in std_logic;
+		BusData  : in DataWidth_t;
 
-		-- PE interface
-		PERx       : out std_logic_vector(0 to AmountOfPEs - 1);
-		PECredit   : in std_logic_vector(0 to AmountOfPEs - 1)
+        -- Arbiter interface
+        ACK      : in std_logic;
+
+		-- PE rx-side control interface
+		RXEnable : out std_logic_vector(0 to AmountOfPEs - 1)
 
 	);
 	
@@ -56,17 +57,12 @@ end entity BusControl;
 architecture RTL of BusControl is
 
 	-- FSM states
-	type state_t is (Sstandby, StransmitHeader, StransmitSize, StransmitPayload, SwaitForACK);
+	--type state_t is (Sstandby, SsetControl, SwaitForACK);
+	type state_t is (Sstandby, SwaitForACK);
 	signal currentState: state_t;
 
-	-- Contains size of current msg's payload. Decremented by one every time a flit is sent across the bus, until msg has been fully sent
-	signal flitCounter: integer;
-
 	-- Contains index of current message target PE's address in PEAddresses generic
-	signal targetIndex: integer;
-
-	-- Flags there is a message being sent through the bus. Used in switching PERx and BusCredit  
-	signal busBeingUsed: std_logic;
+	signal targetIndex: integer range 0 to AmountOfPEs - 1;
 
 	-- Returns index of a given element in a given array
 	function GetIndexOfAddr(Addresses: HalfDataWidth_vector; AddressOfInterest: HalfDataWidth_t) return integer is begin
@@ -100,102 +96,53 @@ begin
         -- Sets default values
         if Reset = '1' then
 
-			busBeingUsed <= '0';
-
             targetIndex <= 0;
-			flitCounter <= 0;
+			RXEnable <= (others => '0');
 
 			currentState <= Sstandby;
 		
         elsif rising_edge(Clock) then
 				
 			-- Checks for a new transmission. If so, determine targetIndex from 1st flit of msg and proceed, else, wait for transmission
-			if currentState = Sstandby then
+			case currentState is
 
-				if BusTx = '1' then
+                 when Sstandby =>
 
-                    -- PE ID @ most significative bits of first flit
-					targetAddr := BusData(DataWidth - 1 downto HalfDataWidth);
-					targetIndex <= GetIndexOfAddr(PEAddresses, targetAddr);
-					busBeingUsed <= '1';
+			        RXEnable <= (others => '0');
 
-					currentState <= StransmitHeader;
+				    if BusTx = '1' then
+
+                        -- PE ID @ most significative bits of first flit
+					    targetAddr := BusData(DataWidth - 1 downto HalfDataWidth);
+					    --targetIndex <= GetIndexOfAddr(PEAddresses, targetAddr);
+					    RXEnable(GetIndexOfAddr(PEAddresses, targetAddr)) <= '1';
+
+					    --currentState <= SsetControl;
+					    currentState <= SwaitForACK;
 				
-				else
-					currentState <= Sstandby;
+				    else
+					    currentState <= Sstandby;
+				    end if;
 
-				end if;
-    
-    		-- Transmit ADDR header flit through bus
-            elsif currentState = StransmitHeader then
+                -- Sets tristate enables for Credit signal on RX side
+                --when SsetControl =>
+     
+			        --RXEnable(targetIndex) <= '1';
+                    
+                    --currentState <= SwaitForACK;
+        
+                -- Wait for packet to be fully transmited through the Bus
+                when SwaitForACK =>
 
-                if BusCredit = '1' and BusTx = '1' then
-                    currentState <= StransmitSize;
-                else
-                    currentState <= StransmitHeader;
-                end if;
+                    if ACK = '1' then
+			            RXEnable <= (others => '0');
+                        currentState <= Sstandby;
+                    else
+                        currentState <= SwaitForACK;
+                    end if;
 
-            -- Transmit SIZE header flit through bus, and captures payload size to to count down from to time arbiter ACK signal
-			elsif currentState = StransmitSize then
+			end case;
 
-                if BusCredit = '1' and BusTx = '1' then
-				    flitCounter <= to_integer(unsigned(BusData));
-
-				    currentState <= StransmitPayload;
-                else 
-                    currentState <= StransmitSize;
-
-                end if;
-
-			-- Transmits payload through bus
-			elsif currentState = StransmitPayload then
-
-				-- Checks if a flit was transmitted
-				if BusCredit = '1' and BusTx = '1' then
-					flitCounter <= flitCounter - 1;
-
-				end if;
-
-				-- Determines if this is the last flit of msg
-				if flitCounter = 1 and BusCredit = '1' and BusTx = '1' then
-					currentState <= SwaitForACK;
-				else
-					currentState <= StransmitPayload;
-
-				end if;
-
-            -- Wait for ACK to be processed by the Arbiter
-            elsif currentState = SwaitForACK then
-
-                busBeingUsed <= '0';
-
-                currentState <= Sstandby;
-
-			end if;
-
-		end if;
-
-	end process;
-
-	-- Active only after 1st flit of current messages (containing ADDR of target) is known
-	--PERx <= (targetIndex => BusTx, others => '0') when busBeingUsed = '1' else (others => '0');
-
-	-- BusCredit gets Credit_o of msg target PE
-	--BusCredit <= PECredit(targetIndex) when busBeingUsed = '1' else '0';
-
-	process(busBeingUsed, targetIndex, PECredit) begin
-
-		PERx <= (others => '0');
-
-		if busBeingUsed = '1' then
-			PERx(targetIndex) <= BusTx;
-
-		end if;
-
-		if busBeingUsed = '1' then
-			BusCredit <= PECredit(targetIndex);
-		else
-			BusCredit <= '0';
 		end if;
 
 	end process;

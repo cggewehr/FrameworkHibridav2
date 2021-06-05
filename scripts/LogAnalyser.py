@@ -367,6 +367,12 @@ def loganalyser(args):
             currentOutEntry.action(currentOutEntry, matchingInEntry)
                 
         print("Done working on out log of PE " + str(SourcePEPos))
+
+    # Checks if there are any unprocessed entries left on In logs
+    print("Checking for unprocessed In log entries")
+    for InLog in InLogs:
+        print("Found " + str(len(InLog.Entries)) + " unprocessed entries in In log of PE " + str(InLog.PEPos))
+    print("Done checking for unprocessed In log entries")
         
     # Prints out amount of successfully delivered messages
     print("\n\tSuccessfully Delivered Messages:")
@@ -462,7 +468,5 @@ def loganalyser(args):
                 print("Frequency set to <" + str(freqTuple[1]) + "> MHz @ <" + str(freqTuple[0]) + "> ns")
                 
         # TODO: Latencies for DVFS messages
-        print("ID of JUG2: " + str(Workload.Applications[0].getThread(ThreadName = "JUG2").ThreadID))
-        print("JUG2 from ID: " + str(Workload.Applications[0].getThread(ThreadID = 3).ThreadName))
 
     print("\nloganalyser ran successfully!")

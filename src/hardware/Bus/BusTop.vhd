@@ -48,22 +48,24 @@ end entity HyBus;
 
 architecture RTL of HyBus is
 
-	-- Set PEAddresses
-	--constant PEAddresses: HalfDataWidth_vector := SetPEAddresses(PEAddressesFromTop, UseDefaultPEAddresses, AmountOfPEs);
-
-	-- Arbiter signals
+	-- Arbiter interface signals
 	signal arbiterACK: std_logic;
 	signal arbiterGrant: std_logic_vector(0 to AmountOfPEs - 1);
 	signal arbiterRequest: std_logic_vector(0 to AmountOfPEs - 1);
 
-	-- Bus signals
+    -- Bridge interface signals
+    signal bridgeDataOut: DataWidth_vector(0 to AmountOfPEs - 1);
+    signal bridgeTx: std_logic_vector(0 to AmountOfPEs - 1);
+    signal bridgeCreditI: std_logic_vector(0 to AmountOfPEs - 1);
+    signal bridgeACK: std_logic_vector(0 to AmountOfPEs - 1);
+
+	-- Bus data link signals
 	signal busData: DataWidth_t;
 	signal busTx: std_logic;
 	signal busCredit: std_logic;
 
-	-- Bus control signals
-	signal controlRx: std_logic_vector(0 to AmountOfPEs - 1);
-	signal controlCredit: std_logic_vector(0 to AmountOfPEs - 1);
+	-- Control signals
+	signal RXEnable: std_logic_vector(0 to AmountOfPEs - 1);
 
 begin
 
@@ -89,12 +91,13 @@ begin
 
 				-- Bus interface (Bridge output)
 				ClockTx => open,
-				Tx      => busTx,
-				DataOut => busData,
-				CreditI => busCredit,
+				Tx      => bridgeTx(i),
+				DataOut => bridgeDataOut(i),
+				CreditI => bridgeCreditI(i),
+				--CreditI => busCredit,
 
 				-- Arbiter interface
-				Ack     => arbiterACK,
+				Ack     => bridgeACK(i),
 				Request => arbiterRequest(i),
 				Grant   => arbiterGrant(i)
 
@@ -102,7 +105,6 @@ begin
 
 	end generate BusBridgeGen;
 	
-
 	-- Controls Rx of PEs based on what PE is currently using the bus
 	BusControl: entity work.BusControl
 
@@ -119,14 +121,14 @@ begin
 			-- Bus interface
 			BusData => busData,
 			BusTx => busTx,
-			BusCredit => busCredit,
+
+            -- Arbiter interface
+            ACK => arbiterACK,
 
 			-- PE interface
-			PERx => controlRx,
-			PECredit => controlCredit
+            RXEnable => RXEnable
 
 		);
-
 
 	-- Instantiates arbiter as given by "Arbiter" generic
 	ArbiterFactory: entity work.ArbiterFactory
@@ -147,15 +149,19 @@ begin
 
 			);
 
-
 	-- Connects PE input interfaces to bus 
-	PEConnectGen: for i in 0 to AmountOfPEs - 1 generate
+	LinkGen: for i in 0 to AmountOfPEs - 1 generate
+
+        busData <= bridgeDataOut(i) when arbiterGrant(i) = '1' else (others => 'Z'); 
+        busTx <= bridgeTx(i) when arbiterGrant(i) = '1' else 'Z';  
+        arbiterACK <= bridgeACK(i) when arbiterGrant(i) = '1' else 'Z';
+        bridgeCreditI(i) <= busCredit when arbiterGrant(i) = '1' else '0';
 	
 		PEInputs(i).DataIn <= busData;
 		PEInputs(i).ClockRx <= Clock;
-		PEInputs(i).Rx <= controlRx(i);
-		controlCredit(i) <= PEOutputs(i).CreditO;
+		PEInputs(i).Rx <= busTx when RXEnable(i) = '1' else '0';
+		busCredit <= PEOutputs(i).CreditO when RXEnable(i) = '1' else 'Z';
 		
-	end generate PEConnectGen;
+	end generate LinkGen;
 
 end architecture RTL;

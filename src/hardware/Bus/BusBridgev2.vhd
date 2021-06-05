@@ -61,13 +61,13 @@ end BusBridge;
 
 architecture RTL of BusBridge is
 
-    type state_t is (Sstandby, Srequest, SwaitForGrant, StransmitHeader, StransmitSize, StransmitPayload);
+    --type state_t is (Sstandby, SwaitForGrant, StransmitHeader, StransmitSize, StransmitPayload);
+    type state_t is (Sstandby, StransmitHeader, StransmitSize, StransmitPayload);
 	signal currentState: state_t;
 	
 	signal flitCounter: unsigned(DataWidth - 1 downto 0);
 
 	signal bufferDataOut: DataWidth_t;
-    signal bufferReadyFlag: std_logic;
 	signal bufferAVFlag: std_logic;
     signal bufferReadConfirm: std_logic;
 
@@ -105,66 +105,62 @@ begin
 
 		);
 
-
 	-- Same as struct clock (clock domain crossing occurs at InjBuffer)
 	ClockTx <= ClockRx;
-	Tx <= bufferAVFlag when currentState = StransmitHeader or currentState = StransmitSize or currentState = StransmitPayload else 'Z';
-	DataOut <= bufferDataOut when currentState = StransmitHeader or currentState = StransmitSize or currentState = StransmitPayload else (others => 'Z');
+	Tx <= bufferAVFlag;
+	DataOut <= bufferDataOut;
     bufferReadConfirm <= CreditI when currentState = StransmitHeader or currentState = StransmitSize or currentState = StransmitPayload else '0';
 
-	ControlFSM: process(Reset, ClockRx) begin
+	ControlFSM: process(Clock, Reset) begin
 
         if Reset = '1' then
 
             -- Set default values
-            ACK <= 'Z';
+            ACK <= '0';
 			Request <= '0';
 
             flitCounter <= to_unsigned(0, DataWidth);
 
 			currentState <= Sstandby;
 
-		elsif rising_edge(ClockRx) then
+		elsif rising_edge(Clock) then
 
 			case currentState is
 
 				-- Waits for a new message
 				when Sstandby => 
                     
-                    ACK <= 'Z';
+                    ACK <= '0';
 			        Request <= '0';
 
 					if bufferAVFlag = '1' then
 
 						Request <= '1';
 
-						currentState <= SwaitForGrant;
-
-					else
-						currentState <= Sstandby;
-
-					end if;
-
-				-- Waits for arbiter grant signal
-				when SwaitForGrant => 
-
-					if Grant = '1' then
-
-						ACK <= '0';
-						Request <= '0';
-
 						currentState <= StransmitHeader;
 
 					else
-
-						currentState <= SwaitForGrant;
-
+						currentState <= Sstandby;
 					end if;
+
+				-- Waits for arbiter grant signal
+				--when SwaitForGrant => 
+
+					--if Grant = '1' then
+
+						--Request <= '0';
+
+						--currentState <= StransmitHeader;
+
+					--else
+					--	currentState <= SwaitForGrant;
+					--end if;
 
                 -- Transmit ADDR header flit through bus
                 when StransmitHeader =>
                     
-                    if CreditI = '1' and bufferAVFlag = '1' then
+                    if Grant = '1' and CreditI = '1' and bufferAVFlag = '1' then
+						Request <= '0';
                         currentState <= StransmitSize;
                     else
                         currentState <= StransmitHeader;
@@ -195,7 +191,6 @@ begin
 
 					else
 						currentState <= StransmitPayload;
-
 					end if;
 
 			end case;

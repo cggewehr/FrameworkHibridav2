@@ -74,7 +74,6 @@ architecture RTL of CrossbarBridge is
     signal bufferDataOut: DataWidth_t;
 	signal bufferAVFlag: std_logic;
 	signal bufferReadConfirm: std_logic;
-    signal bufferReadyFlag: std_logic;
 
 	-- Searches through a given list of addresses of PEs contained in this crossbar, and returns index of a given address in given list of addresses,
     -- which matches the MUX selector value which produces the data value associated with the given address
