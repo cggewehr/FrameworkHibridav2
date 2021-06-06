@@ -5,6 +5,11 @@ def comp(args):
 
     ConfigFile = open(os.environ["HIBRIDA_CONFIG_FILE"], "r")
     ConfigDict = json.loads(ConfigFile.read())
+    
+    if args.ProjectName is None:
+        print("Warning: No project passed as target, using <" + ConfigDict["MostRecentProject"] + " as default")
+        args.ProjectName = ConfigDict["MostRecentProject"]
+        
     ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
     
     # Check if given project path exists
@@ -36,6 +41,9 @@ def comp(args):
         print("Error: Tool <" + args.Tool + "> is not recognized")
         exit(1)
     
-    print("compile ran successfully!")
+    ConfigDict["MostRecentProject"] = args.ProjectName
+    ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     ConfigFile.close()
+    
+    print("compile ran successfully!")
     

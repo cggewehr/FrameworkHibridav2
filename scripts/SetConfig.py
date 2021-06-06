@@ -7,9 +7,9 @@ def setConfig(args):
     ConfigFile = open(os.getenv("HIBRIDA_CONFIG_FILE"), "r")
     ConfigDict = json.loads(ConfigFile.read())
     
-    if not args.ProjectName:
-        print("Error: ProjectName not provided. Aborting setConfig")
-        exit(1)
+    if args.ProjectName is None:
+        print("Warning: No project passed as target, using <" + ConfigDict["MostRecentProject"] + " as default")
+        args.ProjectName = ConfigDict["MostRecentProject"]
         
     if args.ProjectName not in ConfigDict["Projects"].keys():
         print("Error: Project <" + args.ProjectName + "> doesnt exist")
@@ -366,9 +366,9 @@ def setConfig(args):
     
     # TODO: Only print this if a file has been set
     print("Writing modifications to config file")
+    ConfigDict["MostRecentProject"] = args.ProjectName
+    ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     ConfigFile.close()
-    with open(os.getenv("HIBRIDA_CONFIG_FILE"), "w") as ConfigFile:
-        ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     
     print("setConfig ran successfully!")
     

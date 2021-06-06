@@ -8,18 +8,14 @@ def flowgen(args):
     import PlatformComposer
     import AppComposer
 
-    # Defines FileNotFoundError exception for Python 2 compatibility
-    # try:
-        # FileNotFoundError
-    # except NameError:
-        # FileNotFoundError = IOError
-        # pass
-    # except FileNotFoundError:
-        # pass
-        
     # Gets framework configs
     ConfigFile = open(os.getenv("HIBRIDA_CONFIG_FILE"), "r")
     ConfigDict = json.loads(ConfigFile.read())
+    
+    if args.ProjectName is None:
+        print("Warning: No project passed as target, using <" + ConfigDict["MostRecentProject"] + " as default")
+        args.ProjectName = ConfigDict["MostRecentProject"]
+        
     ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
 
     # Opens Allocation Map JSON file
@@ -203,7 +199,10 @@ def flowgen(args):
 
     #ProjectInfo.close()
     
+    ConfigDict["MostRecentProject"] = args.ProjectName
+    ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     ConfigFile.close()
+    
     AllocMapFile.close()
     ClusterClocksFile.close()
     TopologyFile.close()

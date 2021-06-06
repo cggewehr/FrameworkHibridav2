@@ -36,6 +36,9 @@ def sim(args):
         print("Error: Tool <" + args.Tool + "> is not recognized")
         exit(1)
     
-    print("sim ran successfully!")
+    ConfigDict["MostRecentProject"] = args.ProjectName
+    ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     ConfigFile.close()
+    
+    print("sim ran successfully!")
     

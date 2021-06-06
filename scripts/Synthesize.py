@@ -41,6 +41,9 @@ def synthesize(args):
         #exit(1)
         NotImplementedError
     
-    print("synthesize ran successfully!")
+    ConfigDict["MostRecentProject"] = args.ProjectName
+    ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     ConfigFile.close()
+    
+    print("synthesize ran successfully!")
     

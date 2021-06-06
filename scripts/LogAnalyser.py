@@ -252,7 +252,13 @@ def loganalyser(args):
     # Gets framework & project info
     ConfigFile = open(os.getenv("HIBRIDA_CONFIG_FILE"), "r")
     ConfigDict = json.loads(ConfigFile.read())
+    
+    if args.ProjectName is None:
+        print("Warning: No project passed as target, using <" + ConfigDict["MostRecentProject"] + " as default")
+        args.ProjectName = ConfigDict["MostRecentProject"]
+        
     ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
+    
     LogDir = ProjectDir + "/log/"
     WorkloadFile = open(ProjectDir + "/src_json/Workload.json", "r")
     Workload = AppComposer.Workload().fromJSON(WorkloadFile.read())
@@ -468,5 +474,9 @@ def loganalyser(args):
                 print("Frequency set to <" + str(freqTuple[1]) + "> MHz @ <" + str(freqTuple[0]) + "> ns")
                 
         # TODO: Latencies for DVFS messages
-
+    
+    ConfigDict["MostRecentProject"] = args.ProjectName
+    ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
+    ConfigFile.close()
+    
     print("\nloganalyser ran successfully!")

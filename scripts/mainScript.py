@@ -55,7 +55,7 @@ parser_projgen.add_argument("-t", "--Tool", "--tool", choices = supportedTools, 
 # setConfig args
 parser_setConfig = subparsers.add_parser("setConfig", help = "Sets AllocationMap/ClusterClocks/Topology/Workloads config files for a given project")
 parser_setConfig.set_defaults(func=SetConfig.setConfig)
-parser_setConfig.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, required = True)
+parser_setConfig.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, default = None)
 parser_setConfig.add_argument("-a", "-alo", "--AllocationMapFile", "--allocationmapfile", help = "Allocation Map json file to be assotiated to given project", type = str)
 parser_setConfig.add_argument("-c", "-clk", "--ClusterClocksFile", "--clusterclocksfile", help = "Cluster Clocks json file to be assotiated to given project", type = str)
 parser_setConfig.add_argument("-t", "-top", "--TopologyFile", "--topologyfile", help = "Topology json file to be assotiated to given project", type = str)
@@ -65,12 +65,12 @@ parser_setConfig.add_argument("-s", "--state", help = "Displays which Allocation
 # flowgen args
 parser_flowgen = subparsers.add_parser("flowgen", help = "Generates injector JSON config files, implementing a given workload in a given topology running at given clocks frequencies")
 parser_flowgen.set_defaults(func=Flowgen.flowgen)
-parser_flowgen.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, required = True, help = "Name of target project")
+parser_flowgen.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, default = None, help = "Name of target project")
 
 # compile args
 parser_compile = subparsers.add_parser("compile", help = "Compiles HDL source files with a given tool")
 parser_compile.set_defaults(func=Comp.comp)
-parser_compile.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be compiled", required = True)
+parser_compile.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be compiled", default = None)
 supportedTools = ["cadence", "vivado"]
 parser_compile.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
 # TODO: Make default tcl compilation scripts for each supported tool
@@ -79,7 +79,7 @@ parser_compile.add_argument("-t", "--Tool", "--tool", choices = supportedTools, 
 # elab args
 parser_elab = subparsers.add_parser("elab", help = "Elaborates top level entity after compilation step")
 parser_elab.set_defaults(func=Elab.elab)
-parser_elab.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be elaborated", required = True)
+parser_elab.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be elaborated", default = None)
 supportedTools = ["cadence", "vivado"]
 parser_elab.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
 #parser_elab.add_argument("-f", "--file", help = "Custom script file to be executed")
@@ -87,7 +87,7 @@ parser_elab.add_argument("-t", "--Tool", "--tool", choices = supportedTools, typ
 # sim args
 parser_sim = subparsers.add_parser("sim", help = "Simulates project with waveform viewer")
 parser_sim.set_defaults(func=Sim.sim)
-parser_sim.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be simulated", required = True)
+parser_sim.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be simulated", default = None)
 supportedTools = ["cadence", "vivado"]
 parser_sim.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
 #parser_sim.add_argument("-f", "--file", help = "Custom script file to be executed")
@@ -95,7 +95,7 @@ parser_sim.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type
 # simnogui args
 parser_simnogui = subparsers.add_parser("simnogui", help = "Simulates project without waveform viewer")
 parser_simnogui.set_defaults(func=SimNoGUI.simNoGUI)
-parser_simnogui.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be simulated", required = True)
+parser_simnogui.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be simulated", default = None)
 supportedTools = ["cadence", "vivado"]
 parser_simnogui.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
 #parser_simnogui.add_argument("-f", "--file", help = "Custom script file to be executed")
@@ -103,7 +103,7 @@ parser_simnogui.add_argument("-t", "--Tool", "--tool", choices = supportedTools,
 # run args
 parser_run = subparsers.add_parser("run", help = "Compiles, elaborates and simulates project with waveform viewer")
 parser_run.set_defaults(func=Run.run)
-parser_run.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be simulated", required = True)
+parser_run.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be simulated", default = None)
 supportedTools = ["cadence", "vivado"]
 parser_run.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
 #parser_simnogui.add_argument("-f", "--file", help = "Custom script file to be executed")
@@ -111,7 +111,7 @@ parser_run.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type
 # synthesize args
 parser_synthesize = subparsers.add_parser("synthesize", help = "Synthesizes project")
 parser_synthesize.set_defaults(func=Synthesize.synthesize)
-parser_synthesize.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be synthesized", required = True)
+parser_synthesize.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be synthesized", default = None)
 supportedTools = ["RTLCompiler", "Genus", "Vivado"]
 parser_synthesize.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for synthesizing project", default = "Genus")
 parser_synthesize.add_argument("-ve", "--Version", "--version", choices = supportedTools, type = str, help = "Version of tool used for synthesizing project", default = "181")
@@ -122,7 +122,7 @@ parser_synthesize.add_argument("-te", "--Temperature", "--temperature", help = "
 # loganalyzer args
 parser_loganalyzer = subparsers.add_parser("loganalyzer", help = "Analyzes log generated by simulation and informs performance parameters such as average latency")
 parser_loganalyzer.set_defaults(func=LogAnalyser.loganalyser)
-parser_loganalyzer.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project whose logs will be analyzed", required = True)
+parser_loganalyzer.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project whose logs will be analyzed", default = None)
 parser_loganalyzer.add_argument("-PE", action = "store_true", help = "Perform analysis at PE level")
 parser_loganalyzer.add_argument("-t", "--Thread", "--thread", action = "store_true", help = "Perform analysis at Thread level")
 parser_loganalyzer.add_argument("-DVFS", action = "store_true", help = "Perform operating frequency analysis from DVFS service packets")
