@@ -690,6 +690,8 @@ class Platform:
         
         # Sets PEPos values for Threads in Workload
         for PEPos, ThreadInAllocMap in enumerate(AllocationMap[0:self.AmountOfPEs]):
+
+            print(ThreadInAllocMap)
             
             if isinstance(ThreadInAllocMap, Thread):
 

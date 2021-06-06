@@ -9,7 +9,7 @@ def flowgen(args):
     import AppComposer
 
     # Gets framework configs
-    ConfigFile = open(os.getenv("HIBRIDA_CONFIG_FILE"), "r")
+    ConfigFile = open(os.getenv("HIBRIDA_CONFIG_FILE"), "r+")
     ConfigDict = json.loads(ConfigFile.read())
     
     if args.ProjectName is None:
@@ -200,6 +200,7 @@ def flowgen(args):
     #ProjectInfo.close()
     
     ConfigDict["MostRecentProject"] = args.ProjectName
+    ConfigFile.seek(0)
     ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     ConfigFile.close()
     

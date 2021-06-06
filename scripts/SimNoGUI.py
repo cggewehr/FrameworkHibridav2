@@ -3,7 +3,7 @@ import os
 
 def simNoGUI(args):
 
-    ConfigFile = open(os.environ["HIBRIDA_CONFIG_FILE"], "r")
+    ConfigFile = open(os.environ["HIBRIDA_CONFIG_FILE"], "r+")
     ConfigDict = json.loads(ConfigFile.read())
     ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
     
@@ -37,6 +37,7 @@ def simNoGUI(args):
         exit(1)
     
     ConfigDict["MostRecentProject"] = args.ProjectName
+    ConfigFile.seek(0)
     ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     ConfigFile.close()
     

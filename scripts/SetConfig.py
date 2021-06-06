@@ -4,7 +4,7 @@ import json
 def setConfig(args):
 
     # Gets framework configs
-    ConfigFile = open(os.getenv("HIBRIDA_CONFIG_FILE"), "r")
+    ConfigFile = open(os.getenv("HIBRIDA_CONFIG_FILE"), "r+")
     ConfigDict = json.loads(ConfigFile.read())
     
     if args.ProjectName is None:
@@ -366,7 +366,9 @@ def setConfig(args):
     
     # TODO: Only print this if a file has been set
     print("Writing modifications to config file")
+
     ConfigDict["MostRecentProject"] = args.ProjectName
+    ConfigFile.seek(0)
     ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     ConfigFile.close()
     

@@ -24,14 +24,14 @@ PIP.addThread(MEM)
 PIP.addThread(OpDisp)
 
 # Add Flows to Threads (Bandwidth parameter must be in Megabytes/second)
-InpMemA.addFlow(AppComposer.Flow(TargetThread = HS, Bandwidth = 128))       # InpMemA -- 128 -> HS
-InpMemA.addFlow(AppComposer.Flow(TargetThread = InpMemB, Bandwidth = 64))   # InpMemA -- 64 -> InpMemB
-HS.addFlow(AppComposer.Flow(TargetThread = VS, Bandwidth = 64))             # HS -- 64 -> VS
-VS.addFlow(AppComposer.Flow(TargetThread = JUG1, Bandwidth = 64))           # VS -- 64 -> JUG1
-JUG1.addFlow(AppComposer.Flow(TargetThread = MEM, Bandwidth = 64))          # JUG1 -- 64 -> MEM
-InpMemB.addFlow(AppComposer.Flow(TargetThread = JUG2, Bandwidth = 64))      # InpMemB -- 64 -> JUG2
-JUG2.addFlow(AppComposer.Flow(TargetThread = MEM, Bandwidth = 64))          # JUG2 -- 64 -> MEM
-MEM.addFlow(AppComposer.Flow(TargetThread = OpDisp, Bandwidth = 64))        # MEM -- 64 -> OpDisp
+InpMemA.addFlow(AppComposer.CBRFlow(TargetThread = HS, Bandwidth = 128))       # InpMemA -- 128 -> HS
+InpMemA.addFlow(AppComposer.CBRFlow(TargetThread = InpMemB, Bandwidth = 64))   # InpMemA -- 64 -> InpMemB
+HS.addFlow(AppComposer.CBRFlow(TargetThread = VS, Bandwidth = 64))             # HS -- 64 -> VS
+VS.addFlow(AppComposer.CBRFlow(TargetThread = JUG1, Bandwidth = 64))           # VS -- 64 -> JUG1
+JUG1.addFlow(AppComposer.CBRFlow(TargetThread = MEM, Bandwidth = 64))          # JUG1 -- 64 -> MEM
+InpMemB.addFlow(AppComposer.CBRFlow(TargetThread = JUG2, Bandwidth = 64))      # InpMemB -- 64 -> JUG2
+JUG2.addFlow(AppComposer.CBRFlow(TargetThread = MEM, Bandwidth = 64))          # JUG2 -- 64 -> MEM
+MEM.addFlow(AppComposer.CBRFlow(TargetThread = OpDisp, Bandwidth = 64))        # MEM -- 64 -> OpDisp
 
 # Save App to JSON
 PIP.toJSON(SaveToFile = True, FileName = "PIP")
