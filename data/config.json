@@ -1,30 +1,30 @@
 {
-    "HibridaName": "hibrida",
+    "TopologiesPaths": [
+        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies"
+    ],
+    "HibridaConfigFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/config.json",
     "WorkloadsPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads"
     ],
-    "HibridaConfigFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/config.json",
     "Projects": {
         "newtest": {
-            "ClusterClocksFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks/36_250MHz.json",
-            "ProjectDir": "/home/usr/cgewehr/Desktop/HibridaProjects/newtest",
-            "AllocationMapFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps/ExampleAllocMap.json",
             "TopologyFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies/ExampleTopology.json",
-            "WorkloadFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads/PIP_WL.json"
+            "ProjectDir": "/home/usr/cgewehr/Desktop/HibridaProjects/newtest",
+            "WorkloadFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads/PIP_WL.json",
+            "ClusterClocksFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks/36_250MHz.json",
+            "AllocationMapFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps/ExampleAllocMap.json"
         }
     },
+    "HibridaPath": "/home/usr/cgewehr/Desktop/FrameworkHibrida",
     "AllocationMapsPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps"
     ],
+    "MostRecentProject": "newtest",
     "ClusterClocksPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks"
     ],
     "DefaultProjDir": "/home/usr/cgewehr/Desktop/HibridaProjects",
-    "TopologiesPaths": [
-        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies"
-    ],
-    "HibridaPath": "/home/usr/cgewehr/Desktop/FrameworkHibrida",
-    "MostRecentProject": "newtest",
+    "HibridaName": "hibrida",
     "ApplicationsPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/applications"
     ]

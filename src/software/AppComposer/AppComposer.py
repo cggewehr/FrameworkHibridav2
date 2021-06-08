@@ -509,6 +509,7 @@ class Application:
         if self.AppID is not None:
             print("Warning: Overriding AppID <" + str(Application.AppID) + "> of Application <" + str(Application.AppName) + "> to <" + JSONDict["AppID"] + "> (from JSON)")
         
+        #print(JSONDict["AppName"])
         if JSONDict["AppID"] is not None:
             self.AppID = int(JSONDict["AppID"])
         else:

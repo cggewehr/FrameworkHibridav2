@@ -1,1269 +1,1363 @@
 {
-    "Slave35": {
-        "Flows": []
-    },
-    "Slave5": {
-        "Flows": []
-    },
-    "Slave0": {
-        "Flows": []
-    },
-    "Slave6": {
-        "Flows": []
-    },
-    "Slave10": {
-        "Flows": []
-    },
-    "Slave13": {
-        "Flows": []
-    },
-    "Slave19": {
-        "Flows": []
-    },
-    "Slave26": {
-        "Flows": []
-    },
-    "Slave4": {
-        "Flows": []
-    },
-    "Master": {
-        "Flows": [
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "4001800A"
-                ],
-                "TargetThread": "Slave0",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "4001800A"
-                ],
-                "TargetThread": "Slave1",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "4001800A"
-                ],
-                "TargetThread": "Slave2",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "0001800A"
-                ],
-                "TargetThread": "Slave3",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "4001800A"
-                ],
-                "TargetThread": "Slave6",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "4001800A"
-                ],
-                "TargetThread": "Slave7",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "4001800A"
-                ],
-                "TargetThread": "Slave8",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "4001800A"
-                ],
-                "TargetThread": "Slave9",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "4001800A"
-                ],
-                "TargetThread": "Slave12",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "4001800A"
-                ],
-                "TargetThread": "Slave13",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "4001800A"
-                ],
-                "TargetThread": "Slave14",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "4001800A"
-                ],
-                "TargetThread": "Slave15",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "0001800A"
-                ],
-                "TargetThread": "Slave18",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "4001800A"
-                ],
-                "TargetThread": "Slave19",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "4001800A"
-                ],
-                "TargetThread": "Slave20",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "0001800A"
-                ],
-                "TargetThread": "Slave21",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 0,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C0018005"
-                ],
-                "TargetThread": "Slave0",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C0018005"
-                ],
-                "TargetThread": "Slave1",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C0018005"
-                ],
-                "TargetThread": "Slave2",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "80018005"
-                ],
-                "TargetThread": "Slave3",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C0018005"
-                ],
-                "TargetThread": "Slave6",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C0018005"
-                ],
-                "TargetThread": "Slave7",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C0018005"
-                ],
-                "TargetThread": "Slave8",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C0018005"
-                ],
-                "TargetThread": "Slave9",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C0018005"
-                ],
-                "TargetThread": "Slave12",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C0018005"
-                ],
-                "TargetThread": "Slave13",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C0018005"
-                ],
-                "TargetThread": "Slave14",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C0018005"
-                ],
-                "TargetThread": "Slave15",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "80018005"
-                ],
-                "TargetThread": "Slave18",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C0018005"
-                ],
-                "TargetThread": "Slave19",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C0018005"
-                ],
-                "TargetThread": "Slave20",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "80018005"
-                ],
-                "TargetThread": "Slave21",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 1000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave0",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave1",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave2",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "839987D0"
-                ],
-                "TargetThread": "Slave3",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave6",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave7",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave8",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave9",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave12",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave13",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave14",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave15",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "839987D0"
-                ],
-                "TargetThread": "Slave18",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave19",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave20",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "839987D0"
-                ],
-                "TargetThread": "Slave21",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 2000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave0",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave1",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave2",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "839987D0"
-                ],
-                "TargetThread": "Slave3",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave6",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave7",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave8",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave9",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave12",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave13",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave14",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave15",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "839987D0"
-                ],
-                "TargetThread": "Slave18",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave19",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "C39987D0"
-                ],
-                "TargetThread": "Slave20",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            },
-            {
-                "Periodic": false,
-                "Payload": [
-                    "0000FFFF",
-                    "839987D0"
-                ],
-                "TargetThread": "Slave21",
-                "ControlFlowFlag": false,
-                "SourceThread": "Master",
-                "StartTime": 3000000,
-                "StopTime": 0,
-                "MSGAmount": 1,
-                "Header": [
-                    "ADDR",
-                    "SIZE"
-                ],
-                "Bandwidth": 128000
-            }
-        ]
-    },
-    "Slave9": {
-        "Flows": []
-    },
-    "Slave34": {
-        "Flows": []
-    },
-    "Slave30": {
-        "Flows": []
-    },
-    "Slave18": {
-        "Flows": []
-    },
-    "Slave2": {
-        "Flows": []
-    },
-    "Slave3": {
-        "Flows": []
-    },
-    "StartTime": 0,
-    "StopTime": 0,
-    "Slave28": {
-        "Flows": []
-    },
-    "Slave31": {
-        "Flows": []
-    },
+    "Threads": [
+        {
+            "AmountOfIncomingFlows": 60,
+            "OutgoingFlows": [],
+            "ThreadName": "Master",
+            "ThreadID": 0,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source0",
+            "ThreadID": 1,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "4001800A"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source1",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 0,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C0018005"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source1",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 1000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source1",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 2000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source1",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 3000000,
+                    "Periodic": false
+                }
+            ],
+            "ThreadName": "Source1",
+            "ThreadID": 2,
+            "AmountOfOutgoingFlows": 4
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "4001800A"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source2",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 0,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C0018005"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source2",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 1000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source2",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 2000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source2",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 3000000,
+                    "Periodic": false
+                }
+            ],
+            "ThreadName": "Source2",
+            "ThreadID": 3,
+            "AmountOfOutgoingFlows": 4
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "0001800A"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source3",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 0,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "80018005"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source3",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 1000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "839987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source3",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 2000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "839987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source3",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 3000000,
+                    "Periodic": false
+                }
+            ],
+            "ThreadName": "Source3",
+            "ThreadID": 4,
+            "AmountOfOutgoingFlows": 4
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source4",
+            "ThreadID": 5,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source5",
+            "ThreadID": 6,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "4001800A"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source6",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 0,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C0018005"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source6",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 1000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source6",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 2000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source6",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 3000000,
+                    "Periodic": false
+                }
+            ],
+            "ThreadName": "Source6",
+            "ThreadID": 7,
+            "AmountOfOutgoingFlows": 4
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "4001800A"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source7",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 0,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C0018005"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source7",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 1000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source7",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 2000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source7",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 3000000,
+                    "Periodic": false
+                }
+            ],
+            "ThreadName": "Source7",
+            "ThreadID": 8,
+            "AmountOfOutgoingFlows": 4
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "4001800A"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source8",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 0,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C0018005"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source8",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 1000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source8",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 2000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source8",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 3000000,
+                    "Periodic": false
+                }
+            ],
+            "ThreadName": "Source8",
+            "ThreadID": 9,
+            "AmountOfOutgoingFlows": 4
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "4001800A"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source9",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 0,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C0018005"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source9",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 1000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source9",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 2000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source9",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 3000000,
+                    "Periodic": false
+                }
+            ],
+            "ThreadName": "Source9",
+            "ThreadID": 10,
+            "AmountOfOutgoingFlows": 4
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source10",
+            "ThreadID": 11,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source11",
+            "ThreadID": 12,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "4001800A"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source12",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 0,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C0018005"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source12",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 1000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source12",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 2000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source12",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 3000000,
+                    "Periodic": false
+                }
+            ],
+            "ThreadName": "Source12",
+            "ThreadID": 13,
+            "AmountOfOutgoingFlows": 4
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "4001800A"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source13",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 0,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C0018005"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source13",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 1000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source13",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 2000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source13",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 3000000,
+                    "Periodic": false
+                }
+            ],
+            "ThreadName": "Source13",
+            "ThreadID": 14,
+            "AmountOfOutgoingFlows": 4
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "4001800A"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source14",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 0,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C0018005"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source14",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 1000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source14",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 2000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source14",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 3000000,
+                    "Periodic": false
+                }
+            ],
+            "ThreadName": "Source14",
+            "ThreadID": 15,
+            "AmountOfOutgoingFlows": 4
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "4001800A"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source15",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 0,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C0018005"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source15",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 1000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source15",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 2000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source15",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 3000000,
+                    "Periodic": false
+                }
+            ],
+            "ThreadName": "Source15",
+            "ThreadID": 16,
+            "AmountOfOutgoingFlows": 4
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source16",
+            "ThreadID": 17,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source17",
+            "ThreadID": 18,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "0001800A"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source18",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 0,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "80018005"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source18",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 1000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "839987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source18",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 2000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "839987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source18",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 3000000,
+                    "Periodic": false
+                }
+            ],
+            "ThreadName": "Source18",
+            "ThreadID": 19,
+            "AmountOfOutgoingFlows": 4
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "4001800A"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source19",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 0,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C0018005"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source19",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 1000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source19",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 2000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source19",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 3000000,
+                    "Periodic": false
+                }
+            ],
+            "ThreadName": "Source19",
+            "ThreadID": 20,
+            "AmountOfOutgoingFlows": 4
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "4001800A"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source20",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 0,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C0018005"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source20",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 1000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source20",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 2000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "C39987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source20",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 3000000,
+                    "Periodic": false
+                }
+            ],
+            "ThreadName": "Source20",
+            "ThreadID": 21,
+            "AmountOfOutgoingFlows": 4
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "0001800A"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source21",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 0,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "80018005"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source21",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 1000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "839987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source21",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 2000000,
+                    "Periodic": false
+                },
+                {
+                    "Payload": [
+                        "0000FFFF",
+                        "839987D0"
+                    ],
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "SourceThread": "Source21",
+                    "FlowType": "CBR",
+                    "Header": [
+                        "ADDR",
+                        "SIZE"
+                    ],
+                    "TargetThread": "Master",
+                    "StopTime": 0,
+                    "StartTime": 3000000,
+                    "Periodic": false
+                }
+            ],
+            "ThreadName": "Source21",
+            "ThreadID": 22,
+            "AmountOfOutgoingFlows": 4
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source22",
+            "ThreadID": 23,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source23",
+            "ThreadID": 24,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source24",
+            "ThreadID": 25,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source25",
+            "ThreadID": 26,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source26",
+            "ThreadID": 27,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source27",
+            "ThreadID": 28,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source28",
+            "ThreadID": 29,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source29",
+            "ThreadID": 30,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source30",
+            "ThreadID": 31,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source31",
+            "ThreadID": 32,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source32",
+            "ThreadID": 33,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source33",
+            "ThreadID": 34,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source34",
+            "ThreadID": 35,
+            "AmountOfOutgoingFlows": 0
+        },
+        {
+            "AmountOfIncomingFlows": 0,
+            "OutgoingFlows": [],
+            "ThreadName": "Source35",
+            "ThreadID": 36,
+            "AmountOfOutgoingFlows": 0
+        }
+    ],
     "AppName": "DVFSApp",
-    "Slave7": {
-        "Flows": []
-    },
-    "Slave24": {
-        "Flows": []
-    },
-    "Slave15": {
-        "Flows": []
-    },
-    "Slave27": {
-        "Flows": []
-    },
-    "Slave29": {
-        "Flows": []
-    },
-    "Slave8": {
-        "Flows": []
-    },
-    "Slave21": {
-        "Flows": []
-    },
-    "Slave12": {
-        "Flows": []
-    },
-    "Slave17": {
-        "Flows": []
-    },
-    "Slave16": {
-        "Flows": []
-    },
-    "Slave33": {
-        "Flows": []
-    },
-    "Slave32": {
-        "Flows": []
-    },
-    "Slave1": {
-        "Flows": []
-    },
-    "Slave20": {
-        "Flows": []
-    },
-    "Slave22": {
-        "Flows": []
-    },
-    "Slave11": {
-        "Flows": []
-    },
-    "Slave25": {
-        "Flows": []
-    },
-    "Slave23": {
-        "Flows": []
-    },
-    "Slave14": {
-        "Flows": []
-    }
+    "StopTime": 0,
+    "AppID": null,
+    "StartTime": 0,
+    "AmountOfThreads": 37
 }

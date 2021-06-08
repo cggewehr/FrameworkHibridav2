@@ -161,9 +161,9 @@ HHWorkload[35] = "HH_MPEG4.MedCPU"
 # AllocMap[PEPos] = $App.$Thread
 AllocMap = [None] * 36
 
-# Merges workload specific allocations into one and adds DVFS slave threads
+# Merges workload specific allocations into one and adds DVFS source threads
 for i in range(0, 36):
-    AllocMap[i] = ["DVFSApp.Slave" + str(i), BBWorkload[i], MMWorkload[i], AAWorkload[i], HHWorkload[i]]
+    AllocMap[i] = ["DVFSApp.Source" + str(i), BBWorkload[i], MMWorkload[i], AAWorkload[i], HHWorkload[i]]
     
     # Removes all None values from list
     while True:
@@ -172,8 +172,8 @@ for i in range(0, 36):
         except ValueError:
             break
             
-# Adds DVFS master thread (moves "DVFSMaster" to the front)
-AllocMap[DVFSMasterPEPos] = ["DVFSApp.Master"] + AllocMap[DVFSMasterPEPos]
+# Adds DVFS master thread (moves "DVFS.Sink" to the front)
+AllocMap[DVFSMasterPEPos] = ["DVFSApp.Sink"] + AllocMap[DVFSMasterPEPos]
 
 # Saves Alocation Map to JSON file
 with open("Hermes36.json", "w") as JSONFile:
