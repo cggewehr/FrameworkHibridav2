@@ -7,7 +7,7 @@ def comp(args):
     ConfigDict = json.loads(ConfigFile.read())
     
     if args.ProjectName is None:
-        print("Warning: No project passed as target, using <" + ConfigDict["MostRecentProject"] + " as default")
+        print("Warning: No project passed as target, using <" + ConfigDict["MostRecentProject"] + "> as default")
         args.ProjectName = ConfigDict["MostRecentProject"]
         
     ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
@@ -27,7 +27,7 @@ def comp(args):
             print("Did you run projgen for another tool? To compile/elab/sim with with Cadence tools you must run projgen with Tool set as \"cadence\".")
         
         # Runs makefile with compile rule
-        os.system("make -f " + os.path.join(ProjectDir, "makefile") + " compile")
+        os.system("make -f " + os.path.join(ProjectDir, "makefile") + " -C " + ProjectDir + " compile " + "NCVHDL_CMD_OPTS=" + args.opt)
         
     elif args.Tool == "vivado":
         
@@ -43,8 +43,9 @@ def comp(args):
     
     ConfigDict["MostRecentProject"] = args.ProjectName
     ConfigFile.seek(0)
+    ConfigFile.truncate(0)
     ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     ConfigFile.close()
     
-    print("compile ran successfully!")
+    print("compile executed successfully!")
     

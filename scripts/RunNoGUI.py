@@ -1,7 +1,7 @@
 import json
 import os
 
-def run(args):
+def runnogui(args):
 
     ConfigFile = open(os.environ["HIBRIDA_CONFIG_FILE"], "r+")
     ConfigDict = json.loads(ConfigFile.read())
@@ -26,13 +26,13 @@ def run(args):
             print("Error: Makefile does not exist for project <" + args.ProjectName + ">")
             print("Did you run projgen for another tool? To compile/elab/sim with with Cadence tools you must run projgen with Tool set as \"cadence\".")
         
-        # Runs makefile with "run" rule
-        os.system("make -f " + os.path.join(ProjectDir, "makefile") + " run " + "NCVHDL_CMD_OPTS=" + args.compopt + " NCELAB_CMD_OPTS=" + args.elabopt + " NCSIM_CMD_OPTS=" + args.simopt)
+        # Runs makefile with "runnogui" rule
+        os.system("make -f " + os.path.join(ProjectDir, "makefile") + " runnogui " + "NCVHDL_CMD_OPTS=" + args.compopt + " NCELAB_CMD_OPTS=" + args.elabopt + " NCSIM_CMD_OPTS=" + args.simopt)
         
     elif args.Tool == "vivado":
         
-        # Runs vivado with "run" script
-        TCLScript = os.path.join(ConfigDict["HibridaPath"], "scripts", "vivado", "run.tcl")
+        # Runs vivado with "runnogui" script
+        TCLScript = os.path.join(ConfigDict["HibridaPath"], "scripts", "vivado", "runnogui.tcl")
         TCLArgs = args.ProjectName + " " + ProjectDir
         os.system("vivado -mode batch -source " + TCLScript + " -tclargs " + TCLArgs)
         
@@ -47,5 +47,5 @@ def run(args):
     ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     ConfigFile.close()
     
-    print("run executed successfully!")
+    print("runnogui executed successfully!")
     

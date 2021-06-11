@@ -14,8 +14,9 @@ import Elab
 import Sim
 import SimNoGUI
 import Run
+import RunNoGUI
 import Synthesize
-import LogAnalyser
+import LogParser
 
 if os.getenv("HIBRIDA_NAME") is None:
     print("Error: Environment variable $HIBRIDA_NAME doesnt exist. Did you source/call the .source/.bat file created by the setup script?")
@@ -73,8 +74,7 @@ parser_compile.set_defaults(func=Comp.comp)
 parser_compile.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be compiled", default = None)
 supportedTools = ["cadence", "vivado"]
 parser_compile.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
-# TODO: Make default tcl compilation scripts for each supported tool
-#parser_compile.add_argument("-f", "--file", help = "Custom script file to be executed")
+parser_compile.add_argument("-opt", type = str, help = "Additional options to VHDL compiler", default = "")
 
 # elab args
 parser_elab = subparsers.add_parser("elab", help = "Elaborates top level entity after compilation step")
@@ -82,7 +82,7 @@ parser_elab.set_defaults(func=Elab.elab)
 parser_elab.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be elaborated", default = None)
 supportedTools = ["cadence", "vivado"]
 parser_elab.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
-#parser_elab.add_argument("-f", "--file", help = "Custom script file to be executed")
+parser_elab.add_argument("-opt", type = str, help = "Additional options to elaborator", default = "")
 
 # sim args
 parser_sim = subparsers.add_parser("sim", help = "Simulates project with waveform viewer")
@@ -90,7 +90,7 @@ parser_sim.set_defaults(func=Sim.sim)
 parser_sim.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be simulated", default = None)
 supportedTools = ["cadence", "vivado"]
 parser_sim.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
-#parser_sim.add_argument("-f", "--file", help = "Custom script file to be executed")
+parser_sim.add_argument("-opt", type = str, help = "Additional options to simulator", default = "")
 
 # simnogui args
 parser_simnogui = subparsers.add_parser("simnogui", help = "Simulates project without waveform viewer")
@@ -98,7 +98,7 @@ parser_simnogui.set_defaults(func=SimNoGUI.simNoGUI)
 parser_simnogui.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be simulated", default = None)
 supportedTools = ["cadence", "vivado"]
 parser_simnogui.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
-#parser_simnogui.add_argument("-f", "--file", help = "Custom script file to be executed")
+parser_simnogui.add_argument("-opt", type = str, help = "Additional options to simulator", default = "")
 
 # run args
 parser_run = subparsers.add_parser("run", help = "Compiles, elaborates and simulates project with waveform viewer")
@@ -106,7 +106,19 @@ parser_run.set_defaults(func=Run.run)
 parser_run.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be simulated", default = None)
 supportedTools = ["cadence", "vivado"]
 parser_run.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
-#parser_simnogui.add_argument("-f", "--file", help = "Custom script file to be executed")
+parser_run.add_argument("-compopt", type = str, help = "Additional options to VHDL compiler", default = "")
+parser_run.add_argument("-elabopt", type = str, help = "Additional options to elaborator", default = "")
+parser_run.add_argument("-simopt", type = str, help = "Additional options to simulator", default = "")
+
+# runnogui args
+parser_runnogui = subparsers.add_parser("runnogui", help = "Compiles, elaborates and simulates project without waveform viewer")
+parser_runnogui.set_defaults(func=RunNoGUI.runnogui)
+parser_runnogui.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project to be simulated", default = None)
+supportedTools = ["cadence", "vivado"]
+parser_runnogui.add_argument("-t", "--Tool", "--tool", choices = supportedTools, type = str, help = "Tool used for compiling, elaborating and simulating project", default = "cadence")
+parser_runnogui.add_argument("-compopt", type = str, help = "Additional options to VHDL compiler", default = "")
+parser_runnogui.add_argument("-elabopt", type = str, help = "Additional options to elaborator", default = "")
+parser_runnogui.add_argument("-simopt", type = str, help = "Additional options to simulator", default = "")
 
 # synthesize args
 parser_synthesize = subparsers.add_parser("synthesize", help = "Synthesizes project")
@@ -119,15 +131,15 @@ parser_synthesize.add_argument("-pr", "--Process", "--process", help = "Process 
 parser_synthesize.add_argument("-vo", "--Voltage", "--voltage", help = "Voltage corner", required = True)
 parser_synthesize.add_argument("-te", "--Temperature", "--temperature", help = "Temperature corner", required = True)
 
-# loganalyzer args
-parser_loganalyzer = subparsers.add_parser("loganalyzer", help = "Analyzes log generated by simulation and informs performance parameters such as average latency")
-parser_loganalyzer.set_defaults(func=LogAnalyser.loganalyser)
-parser_loganalyzer.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project whose logs will be analyzed", default = None)
-parser_loganalyzer.add_argument("-PE", action = "store_true", help = "Perform analysis at PE level")
-parser_loganalyzer.add_argument("-t", "--Thread", "--thread", action = "store_true", help = "Perform analysis at Thread level")
-parser_loganalyzer.add_argument("-DVFS", action = "store_true", help = "Perform operating frequency analysis from DVFS service packets")
-parser_loganalyzer.add_argument("-min", "--MinimumOutputTimestamp", type = int, help = "Minimum output timestamp time (in ns)", default = 0)
-parser_loganalyzer.add_argument("-max", "--MaximumOutputTimestamp", type = int, help = "Maximum output timestamp time (in ns)", default = None)
+# logparser args
+parser_logparser = subparsers.add_parser("logparser", help = "Analyzes log generated by simulation and informs performance parameters such as average latency")
+parser_logparser.set_defaults(func=LogParser.logparser)
+parser_logparser.add_argument("-p", "-pn", "--ProjectName", "--projname", type = str, help = "Name of project whose logs will be analyzed", default = None)
+parser_logparser.add_argument("-PE", action = "store_true", help = "Perform analysis at PE level")
+parser_logparser.add_argument("-t", "--Thread", "--thread", action = "store_true", help = "Perform analysis at Thread level")
+parser_logparser.add_argument("-DVFS", action = "store_true", help = "Perform operating frequency analysis from DVFS service packets")
+parser_logparser.add_argument("-min", "--MinimumOutputTimestamp", type = int, help = "Minimum output timestamp time (in ns)", default = 0)
+parser_logparser.add_argument("-max", "--MaximumOutputTimestamp", type = int, help = "Maximum output timestamp time (in ns)", default = None)
 
 # Parse args and execute given command
 args = parser.parse_args()

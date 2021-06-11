@@ -146,23 +146,20 @@ begin
 
 	--	);
 
-	-- Instantiates Round Robin arbiter
-	RoundRobinArbiterGen: if Arbiter = "RR" generate
+	-- Instantiates arbiter
+	RoundRobinArbiter: entity work.ArbiterFactory
 
-		RoundRobinArbiter: entity work.BusRRArbiter
-
-			generic map(
-				AmountOfPEs => AmountOfInjectors
-			)
-			port map (
-				Clock => Clock,
-				Reset => Reset,
-				Ack   => arbiterACK,
-				Grant => arbiterGrant,
-				Req   => arbiterRequest
-			);
-
-	end generate RoundRobinArbiterGen;
+		generic map(
+			AmountOfPEs => AmountOfInjectors,
+            ArbiterType => Arbiter
+		)
+		port map (
+			Clock => Clock,
+			Reset => Reset,
+			Ack   => arbiterACK,
+			Grant => arbiterGrant,
+			Req   => arbiterRequest
+		);
 
  
 	-- Instantiates Daisy Chain arbiter

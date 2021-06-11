@@ -7,7 +7,7 @@ def elab(args):
     ConfigDict = json.loads(ConfigFile.read())
     
     if args.ProjectName is None:
-        print("Warning: No project passed as target, using <" + ConfigDict["MostRecentProject"] + " as default")
+        print("Warning: No project passed as target, using <" + ConfigDict["MostRecentProject"] + "> as default")
         args.ProjectName = ConfigDict["MostRecentProject"]
         
     ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
@@ -27,7 +27,7 @@ def elab(args):
             print("Did you run projgen for another tool? To compile/elab/sim with with Cadence tools you must run projgen with Tool set as \"cadence\".")
         
         # Runs makefile with elab rule
-        os.system("make -f " + os.path.join(ProjectDir, "makefile") + " elab")
+        os.system("make -f " + os.path.join(ProjectDir, "makefile") + " -C " + ProjectDir + " elab " + "NCELAB_CMD_OPTS=" + args.opt)
         
     elif args.Tool == "vivado":
         
@@ -43,8 +43,9 @@ def elab(args):
     
     ConfigDict["MostRecentProject"] = args.ProjectName
     ConfigFile.seek(0)
+    ConfigFile.truncate(0)
     ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     ConfigFile.close()
     
-    print("elab ran successfully!")
+    print("elab executed successfully!")
     

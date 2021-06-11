@@ -1,31 +1,45 @@
 {
-    "TopologiesPaths": [
-        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies"
-    ],
     "HibridaConfigFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/config.json",
-    "WorkloadsPaths": [
-        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads"
+    "MostRecentProject": "ExampleProject",
+    "ApplicationsPaths": [
+        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/applications"
     ],
-    "Projects": {
-        "newtest": {
-            "TopologyFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies/ExampleTopology.json",
-            "ProjectDir": "/home/usr/cgewehr/Desktop/HibridaProjects/newtest",
-            "WorkloadFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads/PIP_WL.json",
-            "ClusterClocksFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks/36_250MHz.json",
-            "AllocationMapFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps/ExampleAllocMap.json"
-        }
-    },
-    "HibridaPath": "/home/usr/cgewehr/Desktop/FrameworkHibrida",
     "AllocationMapsPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps"
     ],
-    "MostRecentProject": "newtest",
+    "WorkloadsPaths": [
+        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads"
+    ],
+    "HibridaName": "hibrida",
+    "Projects": {
+        "ExampleProject": {
+            "AllocationMapFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps/ExampleAllocMap.json",
+            "WorkloadFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads/PIP_WL.json",
+            "ProjectDir": "/home/usr/cgewehr/Desktop/HibridaProjects/ExampleProject",
+            "ClusterClocksFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks/36_250MHz.json",
+            "TopologyFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies/ExampleTopology.json"
+        },
+        "mktest": {
+            "AllocationMapFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps/Hermes36.json",
+            "WorkloadFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads/DVFSWorkloadRouterGrainedHermes36.json",
+            "ProjectDir": "/home/usr/cgewehr/Desktop/HibridaProjects/mktest",
+            "ClusterClocksFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks/36_250MHz.json",
+            "TopologyFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies/Hermes36.json"
+        },
+        "newtest": {
+            "AllocationMapFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps/ExampleAllocMap.json",
+            "WorkloadFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads/PIP_WL.json",
+            "ProjectDir": "/home/usr/cgewehr/Desktop/HibridaProjects/newtest",
+            "ClusterClocksFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks/36_250MHz.json",
+            "TopologyFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies/ExampleTopology.json"
+        }
+    },
+    "DefaultProjDir": "/home/usr/cgewehr/Desktop/HibridaProjects",
     "ClusterClocksPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks"
     ],
-    "DefaultProjDir": "/home/usr/cgewehr/Desktop/HibridaProjects",
-    "HibridaName": "hibrida",
-    "ApplicationsPaths": [
-        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/applications"
-    ]
+    "TopologiesPaths": [
+        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies"
+    ],
+    "HibridaPath": "/home/usr/cgewehr/Desktop/FrameworkHibrida"
 }

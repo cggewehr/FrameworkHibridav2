@@ -5,8 +5,13 @@ def sim(args):
 
     ConfigFile = open(os.environ["HIBRIDA_CONFIG_FILE"], "r+")
     ConfigDict = json.loads(ConfigFile.read())
+
+    if args.ProjectName is None:
+        print("Warning: No project passed as target, using <" + ConfigDict["MostRecentProject"] + "> as default")
+        args.ProjectName = ConfigDict["MostRecentProject"]
+        
     ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
-    
+        
     # Check if given project path exists
     if not os.path.isdir(ProjectDir):
         
@@ -22,7 +27,7 @@ def sim(args):
             print("Did you run projgen for another tool? To compile/elab/sim with with Cadence tools you must run projgen with Tool set as \"cadence\".")
         
         # Runs makefile with sim rule
-        os.system("make -f " + os.path.join(ProjectDir, "makefile") + " sim")
+        os.system("make -f " + os.path.join(ProjectDir, "makefile") + " -C " + ProjectDir + " sim " + "NCSIM_CMD_OPTS=" + args.opt)
         
     elif args.Tool == "vivado":
         
@@ -38,8 +43,9 @@ def sim(args):
     
     ConfigDict["MostRecentProject"] = args.ProjectName
     ConfigFile.seek(0)
+    ConfigFile.truncate(0)
     ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     ConfigFile.close()
     
-    print("sim ran successfully!")
+    print("sim executed successfully!")
     

@@ -8,7 +8,7 @@ def setConfig(args):
     ConfigDict = json.loads(ConfigFile.read())
     
     if args.ProjectName is None:
-        print("Warning: No project passed as target, using <" + ConfigDict["MostRecentProject"] + " as default")
+        print("Warning: No project passed as target, using <" + ConfigDict["MostRecentProject"] + "> as default")
         args.ProjectName = ConfigDict["MostRecentProject"]
         
     if args.ProjectName not in ConfigDict["Projects"].keys():
@@ -369,6 +369,7 @@ def setConfig(args):
 
     ConfigDict["MostRecentProject"] = args.ProjectName
     ConfigFile.seek(0)
+    ConfigFile.truncate(0)
     ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     ConfigFile.close()
     

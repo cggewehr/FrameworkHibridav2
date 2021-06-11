@@ -201,6 +201,7 @@ def flowgen(args):
     
     ConfigDict["MostRecentProject"] = args.ProjectName
     ConfigFile.seek(0)
+    ConfigFile.truncate(0)
     ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     ConfigFile.close()
     
@@ -209,4 +210,4 @@ def flowgen(args):
     TopologyFile.close()
     WorkloadFile.close()
 
-    print("flowgen ran successfully!")
+    print("flowgen executed successfully!")
