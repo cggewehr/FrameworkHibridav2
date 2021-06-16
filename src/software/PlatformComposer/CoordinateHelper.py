@@ -6,7 +6,23 @@ class CoordinateHelper:
         self.BaseNoCDimensions = BaseNoCDimensions
         self.SquareNoCBound = SquareNoCBound
         
-        # TODO: Set stack of PEPos values, according to the square NoC algorithm
+        self.PEPosStack = []
+        self.setPEPosStack()
+        
+    @staticmethod
+    def sequentialToXY(PEPos):
+
+        return PEPos % self.BaseNoCDimensions[0], PEPos / self.BaseNoCDimensions[0]
+
+    @staticmethod
+    def XYtoSequential(x, y, xMax = self.BaseNoCDimensions[0]):
+    
+        return (y * xMax) + x
+    
+    # WIP: Sets PEPos stack
+    def setPEPosStack(self):
+    
+        self.PEPosStack = []
         
         # xSquare and ySquare represent current position in square NoC, ranging from 0 to SquareNoCBound - 1.
         xSquare = 0
@@ -40,19 +56,17 @@ class CoordinateHelper:
             xSquareLimit = self.BaseNoCDimensions[0]
             ySquareLimit = self.BaseNoCDimensions[1]
         
-        def updateSquareXY():
+        while True:
         
-            nonlocal xSquare
-            nonlocal xSquareLimit
-            nonlocal ySquare
-            nonlocal ySquareLimit
+            # Push PEPos value to stack
+            self.PEPosStack.append(self.XYtoSequential(x = xSquare, y = ySquare, xMax = self.SquareNoCBound))
             
-            # print("Before update: ")
-            # print("xSquare: " + str(xSquare))
-            # print("ySquare: " + str(ySquare))
-            # print("xSquareLimit: " + str(xSquareLimit))
-            # print("ySquareLimit: " + str(ySquareLimit))
-        
+            # If computed PEPos values (for Bus/Crossbars) + base NoC PEs == 
+            if len(self.PEPosStack) + (self.BaseNoCDimensions[0] * self.BaseNoCDimensions[1]) == self.SquareNoCBound * self.SquareNoCBound:
+                self.PEPosStack = reversed(self.PEPosStack)
+                break
+            
+            # Increment XY coordinates on square NoC
             if xSquare < xSquareLimit:
                 xSquare += 1
                 
@@ -76,63 +90,15 @@ class CoordinateHelper:
                         ySquare = ySquareLimit + 1
                         xSquareLimit += 1
                         ySquareLimit += 1
-            
-            # DEBUG 
-            # print("After update: ")
-            # print("xSquare: " + str(xSquare))
-            # print("ySquare: " + str(ySquare))
-            # print("xSquareLimit" + str(xSquareLimit))
-            # print("ySquareLimit" + str(ySquareLimit) + "\n")    
-            
-        # Loop through every Bus
-        for Bus in self.Buses:
-        
-            # Loop through PEs in this Bus, except for the first, which has already been updated
-            for PEinBus in Bus.PEs[1:]:
-
-                # Assigns unique network addresses according to the square NoC algorithm
-                PEPos = int((ySquare * squareNoCBound) + xSquare)
-                
-                # Update PEPos value at current PE object
-                PEinBus.PEPos = PEPos
-                
-                # Updates reference to current PE object at master PE dictionary
-                PEs[PEPos] = PEinBus
-
-                # Update square NoC X & Y indexes
-                updateSquareXY()
-
-        # Loop through every crossbar
-        for Crossbar in self.Crossbars:
-
-            # Loop through PEs in this Bus, except for the first, which has already been updated
-            for PEinCrossbar in Crossbar.PEs[1:]:
-
-                # Assigns unique network addresses according to the square NoC algorithm
-                PEPos = int((ySquare * squareNoCBound) + xSquare)
-                
-                # Update PEPos value at current PE object
-                PEinCrossbar.PEPos = PEPos
-
-                # Updates reference to current PE object at master PE dictionary
-                PEs[PEPos] = PEinCrossbar
-
-                # Update square NoC X & Y indexes
-                updateSquareXY()
-                
-        
-    
-        
-    @staticmethod
-    def sequentialToXY(PEPos):
-
-        return PEPos % self.BaseNoCDimensions[0], PEPos / self.BaseNoCDimensions[0]
-
-    @staticmethod
-    def XYtoSequential(x, y, xMax = self.BaseNoCDimensions[0]):
-    
-        return (y * xMax) + x
     
     # Returns a stack of PEPos values
-    def popPEPos(self):
+    def popPEPosStack(self):
+        
+        value = self.PEPosStack.pop()
+        
+        if value is None:
+            print("Error: No PEPos value left to give")
+            exit(1)
+        else:
+            return value
         
