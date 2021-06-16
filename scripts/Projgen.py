@@ -1,13 +1,10 @@
 
+import os
+import json
+
 def projgen(args):
     
-    import os
-    import json
-    
-    #print(args)
-    
     if args.AppendName is not None:
-    #if args.appendname is not None:
         ProjectDir = args.ProjectDirectory + "/" + args.ProjectName
     else:
         ProjectDir = args.ProjectDirectory
@@ -28,16 +25,20 @@ def projgen(args):
             elif ipt == "N" or ipt == "n":
                 exit(0)
         
-    ConfigFile = open(os.environ["HIBRIDA_CONFIG_FILE"], "r")
-    ConfigDict = json.loads(ConfigFile.read())
+    # Open framework config file
+    with open(os.environ["HIBRIDA_CONFIG_FILE"], "r") as ConfigFile:
+        ConfigDict = json.loads(ConfigFile.read())
+        
+    # Open framework project index
+    with open(ConfigDict["HibridaPath"] + "/projectIndex.json", "r") as ProjectIndexFile:
+        ProjectIndexDict = json.loads(ProjectIndexFile.read())
     
     # Check if project name already exists
-    if args.ProjectName in ConfigDict["Projects"].keys():
+    if args.ProjectName in ProjectIndexDict.keys():
     
         while True:
     
             print("Warning: Project <" + args.ProjectName + "> already exists. Do you wish to proceed (Y/N)?")
-            #ipt = raw_input()
             ipt = input()
             
             if ipt == "Y" or ipt == "y":
@@ -46,44 +47,35 @@ def projgen(args):
             elif ipt == "N" or ipt == "n":
                 exit(0)
             
-    # Makes main project dir
-    os.makedirs(ProjectDir, exist_ok = True)
+    # Updates framework project index with newly created project
+    with open(ConfigDict["HibridaPath"] + "/projectIndex.json", "w") as ProjectIndexFile:
         
-    # Updates framework config file
-    ProjectDict = dict()
-    ProjectDict["ProjectDir"] = ProjectDir
-    
-    ProjectDict["AllocationMapFile"] = None
-    ProjectDict["ClusterClocksFile"] = None
-    ProjectDict["TopologyFile"] = None
-    ProjectDict["WorkloadFile"] = None
-    
-    #ProjectDict["CustomHardware"] = args.CustomHardware
-    #ProjectDict["Makefile"] = args.Makefile
-    
-    ConfigDict["Projects"][args.ProjectName] = ProjectDict
-    ConfigDict["MostRecentProject"] = args.ProjectName
-    
-    ConfigFile.close()
+        ProjectDict = dict()
+        
+        ProjectDict["ProjectName"] = args.ProjectName
+        ProjectDict["ProjectDir"] = ProjectDir
+        ProjectDict["AllocationMapFile"] = None
+        ProjectDict["ClusterClocksFile"] = None
+        ProjectDict["TopologyFile"] = None
+        ProjectDict["WorkloadFile"] = None
+        
+        ProjectConfigFile.write(json.dumps(ProjectDict, sort_keys = False, indent = 4))
+        
+    # Updates framework config file with newly created project as MRU project
     with open(os.environ["HIBRIDA_CONFIG_FILE"], "w") as ConfigFile:
+    
+        ConfigDict["MostRecentProject"] = args.ProjectName
+        
         ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
         
-    # Makes "log", "flow" and "platform" dirs
-    os.makedirs(ProjectDir + "/flow", exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
-    os.makedirs(ProjectDir + "/log", exist_ok = True) 
-    os.makedirs(ProjectDir + "/platform", exist_ok = True) 
+    # Makes project dirs
+    os.makedirs(ProjectDir, exist_ok = True)  # exist_ok argument to makedirs() only works for Python3.2+
+    os.makedirs(ProjectDir + "/flow", exist_ok = True)
+    os.makedirs(ProjectDir + "/log", exist_ok = True)
+    os.makedirs(ProjectDir + "/platform", exist_ok = True)
     os.makedirs(ProjectDir + "/src_json", exist_ok = True)
 
-    # Makes custom hardware dicts
-    if args.HardwareDirs:
-    
-        os.makedirs(ProjectDir + "/hardware/Bus", exist_ok = True)
-        os.makedirs(ProjectDir + "/hardware/Crossbar", exist_ok = True)
-        os.makedirs(ProjectDir + "/hardware/Hermes", exist_ok = True)
-        os.makedirs(ProjectDir + "/hardware/Injector", exist_ok = True)
-        os.makedirs(ProjectDir + "/hardware/Misc", exist_ok = True)
-        os.makedirs(ProjectDir + "/hardware/Top", exist_ok = True)
-	    		
+    # Tool-specific behaviour
     if args.Tool is not None:
 		
         if args.Tool == "cadence" or args.Tool == "Genus" or args.Tool == "RTLCompiler":
@@ -100,11 +92,11 @@ def projgen(args):
 
             # TODO: Copy UPF file
             
-            # Create hdl.var file
+            # Create hdl.var file for NCSIM
             with open(ProjectDir + "/hdl.var", 'w') as hdl_var:
                 hdl_var.write("DEFINE WORK worklib\n")
             
-            # Create cds.lib file
+            # Create cds.lib file for NCSIM
             with open(ProjectDir + "/cds.lib", 'w') as cds_file:
                 cds_file.write("define worklib " + ProjectDir + "/INCA_libs/worklib\n")
                 cds_file.write("define json " + ProjectDir + "/INCA_libs/JSON\n")
@@ -113,104 +105,104 @@ def projgen(args):
                 cds_file.write("include $CDS_INST_DIR/tools/inca/files/cds.lib\n")
 				
             # Create Makefile
-            with open(ProjectDir + "/makefile", 'w') as make_file:
-                make_file.write("########################################################################\n")
-                make_file.write("# HyHeMPS Cadence tools makefile\n")
-                make_file.write("########################################################################\n")
-                make_file.write("# Obs:\n")
-                make_file.write("# Alter $(HIBRIDA_HARDWARE_PATH) for custom sources\n")
-                make_file.write("#\n")
-                make_file.write("########################################################################\n")
-                make_file.write("\n")
-                make_file.write("########################## Command options #############################\n")
-                make_file.write("PROJECT_DIR=" + ProjectDir + "\n")
-                make_file.write("HIBRIDA_HARDWARE_PATH=" + ConfigDict["HibridaPath"] + "/src/hardware\n")
-                make_file.write("# $NCVHDL_CMD_OPTS, $NCELAB_CMD_OPTS and $NCSIM_CMD_OPTS should be defined from command line or calling script\n")
-                make_file.write("NCVHDL_BASE_OPTS=-smartlib -cdslib cds.lib -logfile log/cadence/ncvhdl.log -errormax 15 -update -v93 -linedebug -status\n")
-                make_file.write("NCVHDL_OPTS=$(NCVHDL_BASE_OPTS) $(NCVHDL_CMD_OPTS)\n")
-                make_file.write("NCELAB_BASE_OPTS=-work worklib -cdslib cds.lib -logfile log/cadence/ncelab.log -errormax 15 -update -status\n")
-                make_file.write("NCELAB_OPTS=$(NCELAB_BASE_OPTS) $(NCELAB_CMD_OPTS)\n")
-                make_file.write("NCSIM_BASE_OPTS=-cdslib cds.lib -logfile log/cadence/ncsim.log -errormax 15\n")
-                make_file.write("NCSIM_OPTS=$(NCSIM_BASE_OPTS) $(NCSIM_CMD_OPTS)\n")
-                make_file.write("\n")
-                make_file.write("echo:\n")
-                make_file.write('	@echo "ECHO MAKEFILE @ $(PROJECT_DIR)"\n')
-                make_file.write("\n")
-                make_file.write("compile:\n")
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write('	@echo "################# Compiling VHDL files #####################"\n')
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/JSON.vhd -work JSON\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Misc/BufferCircular.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/HeMPS_defaults.vhd -work Hermes\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/Hermes_crossbar.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/Hermes_buffer.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/Hermes_switchcontrol.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/RouterCC.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/HyHeMPS_PKG.vhd -work HyHeMPS\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Arbiter/RoundRobinArbiter.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Arbiter/ArbiterFactory.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/HermesTop.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Crossbar/CrossbarBridgev2.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Crossbar/CrossbarTop.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Bus/BusControl.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Bus/BusBridgev2.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Bus/BusTop.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Injector_PKG.vhd -work HyHeMPS\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Injector.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Trigger.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Logger.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/InjBuffer.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/PEBus.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/PE.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/DVFS/ClockDivider.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/DVFS/DVFSController.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/HyHeMPS.vhd\n")
-                make_file.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/HyHeMPS_TB.vhd\n")
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write('	@echo "################ Done compiling VHDL files #################"\n')
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write("\n")
-                make_file.write("elab:\n")
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write('	@echo "############### Elaborating top-level entity ###############"\n')
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write("	ncelab $(NCELAB_OPTS) worklib.hyhemps_tb -generic \":ProjectDir => \\\"$(PROJECT_DIR)\\\"\" \n")
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write('	@echo "############# Done elaborating top-level entity ############"\n')
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write("\n")
-                make_file.write("sim:\n")
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write('	@echo "############### Beginning simulation with GUI ##############"\n')
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write("	ncsim $(NCSIM_OPTS) -gui worklib.hyhemps_tb:rtl\n")
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write('	@echo "################## GUI simulation ended ####################"\n')
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write("\n")
-                make_file.write("simnogui:\n")
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write('	@echo "############## Beginning simulation w/o GUI ################"\n')
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write("	ncsim $(NCSIM_OPTS) worklib.hyhemps_tb:rtl\n")
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write('	@echo "################# No-GUI simulation ended ##################"\n')
-                make_file.write('	@echo "############################################################"\n')
-                make_file.write("\n")
-                make_file.write("run:\n")
-                make_file.write("	make -C $(PROJECT_DIR) all\n")
-                make_file.write("\n")
-                make_file.write("runnogui:\n")
-                make_file.write("	make -C $(PROJECT_DIR) compile\n")
-                make_file.write("	make -C $(PROJECT_DIR) elab\n")
-                make_file.write("	make -C $(PROJECT_DIR) simnogui\n")
-                make_file.write("\n")
-                make_file.write("all:\n")
-                make_file.write("	make -C $(PROJECT_DIR) compile\n")
-                make_file.write("	make -C $(PROJECT_DIR) elab\n")
-                make_file.write("	make -C $(PROJECT_DIR) sim\n")
-                make_file.write("\n")
+            with open(ProjectDir + "/makefile", 'w') as makefile:
+                makefile.write("########################################################################\n")
+                makefile.write("# HyHeMPS Cadence tools makefile\n")
+                makefile.write("########################################################################\n")
+                makefile.write("# Obs:\n")
+                makefile.write("# Alter $(HIBRIDA_HARDWARE_PATH) for custom sources\n")
+                makefile.write("#\n")
+                makefile.write("########################################################################\n")
+                makefile.write("\n")
+                makefile.write("########################## Command options #############################\n")
+                makefile.write("PROJECT_DIR=" + ProjectDir + "\n")
+                makefile.write("HIBRIDA_HARDWARE_PATH=" + ConfigDict["HibridaPath"] + "/src/hardware\n")
+                makefile.write("# $NCVHDL_CMD_OPTS, $NCELAB_CMD_OPTS and $NCSIM_CMD_OPTS should be defined from command line or calling script\n")
+                makefile.write("NCVHDL_BASE_OPTS=-smartlib -cdslib cds.lib -logfile log/cadence/ncvhdl.log -errormax 15 -update -v93 -linedebug -status\n")
+                makefile.write("NCVHDL_OPTS=$(NCVHDL_BASE_OPTS) $(NCVHDL_CMD_OPTS)\n")
+                makefile.write("NCELAB_BASE_OPTS=-work worklib -cdslib cds.lib -logfile log/cadence/ncelab.log -errormax 15 -update -status\n")
+                makefile.write("NCELAB_OPTS=$(NCELAB_BASE_OPTS) $(NCELAB_CMD_OPTS)\n")
+                makefile.write("NCSIM_BASE_OPTS=-cdslib cds.lib -logfile log/cadence/ncsim.log -errormax 15\n")
+                makefile.write("NCSIM_OPTS=$(NCSIM_BASE_OPTS) $(NCSIM_CMD_OPTS)\n")
+                makefile.write("\n")
+                makefile.write("echo:\n")
+                makefile.write('	@echo "ECHO MAKEFILE @ $(PROJECT_DIR)"\n')
+                makefile.write("\n")
+                makefile.write("compile:\n")
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write('	@echo "################# Compiling VHDL files #####################"\n')
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/JSON.vhd -work JSON\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Misc/BufferCircular.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/HeMPS_defaults.vhd -work Hermes\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/Hermes_crossbar.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/Hermes_buffer.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/Hermes_switchcontrol.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/RouterCC.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/HyHeMPS_PKG.vhd -work HyHeMPS\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Arbiter/RoundRobinArbiter.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Arbiter/ArbiterFactory.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Hermes/HermesTop.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Crossbar/CrossbarBridgev2.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Crossbar/CrossbarTop.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Bus/BusControl.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Bus/BusBridgev2.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Bus/BusTop.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Injector_PKG.vhd -work HyHeMPS\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Injector.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Trigger.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/Logger.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/InjBuffer.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/PEBus.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Injector/PE.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/DVFS/ClockDivider.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/DVFS/DVFSController.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/HyHeMPS.vhd\n")
+                makefile.write("	ncvhdl $(NCVHDL_OPTS) $(HIBRIDA_HARDWARE_PATH)/Top/HyHeMPS_TB.vhd\n")
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write('	@echo "################ Done compiling VHDL files #################"\n')
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write("\n")
+                makefile.write("elab:\n")
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write('	@echo "############### Elaborating top-level entity ###############"\n')
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write("	ncelab $(NCELAB_OPTS) worklib.hyhemps_tb -generic \":ProjectDir => \\\"$(PROJECT_DIR)\\\"\" \n")
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write('	@echo "############# Done elaborating top-level entity ############"\n')
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write("\n")
+                makefile.write("sim:\n")
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write('	@echo "############### Beginning simulation with GUI ##############"\n')
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write("	ncsim $(NCSIM_OPTS) -gui worklib.hyhemps_tb:rtl\n")
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write('	@echo "################## GUI simulation ended ####################"\n')
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write("\n")
+                makefile.write("simnogui:\n")
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write('	@echo "############## Beginning simulation w/o GUI ################"\n')
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write("	ncsim $(NCSIM_OPTS) worklib.hyhemps_tb:rtl\n")
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write('	@echo "################# No-GUI simulation ended ##################"\n')
+                makefile.write('	@echo "############################################################"\n')
+                makefile.write("\n")
+                makefile.write("run:\n")
+                makefile.write("	make -C $(PROJECT_DIR) all\n")
+                makefile.write("\n")
+                makefile.write("runnogui:\n")
+                makefile.write("	make -C $(PROJECT_DIR) compile\n")
+                makefile.write("	make -C $(PROJECT_DIR) elab\n")
+                makefile.write("	make -C $(PROJECT_DIR) simnogui\n")
+                makefile.write("\n")
+                makefile.write("all:\n")
+                makefile.write("	make -C $(PROJECT_DIR) compile\n")
+                makefile.write("	make -C $(PROJECT_DIR) elab\n")
+                makefile.write("	make -C $(PROJECT_DIR) sim\n")
+                makefile.write("\n")
                 
                 # TODO: make clean
                 # waves.shm
@@ -230,6 +222,7 @@ def projgen(args):
                     scriptsSourcePath = os.path.join(ConfigDict["HibridaPath"], "scripts", "cadence", "Genus")
                 elif args.Tool == "RTLCompiler":
                     scriptsSourcePath = os.path.join(ConfigDict["HibridaPath"], "scripts", "cadence", "RTLCompiler")
+                    
                 scriptsTargetPath = os.path.join(ProjectDir, "synthesis", "scripts")
                 
                 from shutil import copy
@@ -270,7 +263,7 @@ def projgen(args):
         
             # Runs vivado with create project script
             TCLScript = os.path.join(ConfigDict["HibridaPath"], "scripts", "vivado", "projgen.tcl")
-            FPGA = "xcku040-ffva1156-2-e"
+            FPGA = "xcku040-ffva1156-2-e"  # Default value, to be changed later with Vivado GUI
             HardwarePath = os.path.join(ConfigDict["HibridaPath"], "src", "hardware")
             TCLArgs = args.ProjectName + " " + ProjectDir + " " + FPGA + " " + HardwarePath
             os.system("vivado -mode batch -source " + TCLScript + " -tclargs " + TCLArgs)
@@ -280,6 +273,4 @@ def projgen(args):
             print("Error: Tool <" + args.Tool + "> is not recognized")
             exit(1)
 			
-    # TODO: Copy testbench HDL to project directory, in order to have project directory as reference directory in simulation tool
-    
     print("Created project <" + args.ProjectName + "> at <" + os.path.abspath(ProjectDir) + ">")

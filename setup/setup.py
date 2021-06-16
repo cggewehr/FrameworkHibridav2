@@ -171,6 +171,26 @@ with open("../data/config.json", "w") as ConfigFile:
     import json
     ConfigFile.write(json.dumps(dataDict, sort_keys = False, indent = 4))
     
+# Verify if project list already exists, and if so, ask user if it should be replaced
+if os.path.exists("../data/projectIndex.json"):
+    
+    while True:
+            
+        print("Warning: Config file <" + os.path.abspath("../data/projectIndex.json") + "> already exists. Do you wish to proceed (Y/N)?")
+        #ipt = raw_input()
+        ipt = input()
+        
+        if ipt == "Y" or ipt == "y":
+            break
+            
+        elif ipt == "N" or ipt == "n":
+            exit(0)
+            
+# Write empty dict as JSON to projectIndex
+with open("../data/projectIndex.json", "w") as ConfigFile:
+    import json
+    ConfigFile.write(json.dumps(dict(), sort_keys = False, indent = 4))
+            
 print("Created config file at " + os.path.abspath("../data/config.json"))
 
 print("Setup script ran successfully!")

@@ -3,14 +3,26 @@ import os
 
 def run(args):
 
-    ConfigFile = open(os.environ["HIBRIDA_CONFIG_FILE"], "r+")
-    ConfigDict = json.loads(ConfigFile.read())
+    # Gets framework configs
+    with open(os.getenv("HIBRIDA_CONFIG_FILE"), "r") as ConfigFile:
+        ConfigDict = json.loads(ConfigFile.read())
+        
+    # Gets framework project index
+    with open(ConfigDict["HibridaPath"] + "/projectIndex.json", "r") as ProjectIndexFile:
+        ProjectIndexDict = json.loads(ProjectIndexFile.read())
     
+    # Sets default project as MRU project
     if args.ProjectName is None:
         print("Warning: No project passed as target, using <" + ConfigDict["MostRecentProject"] + "> as default")
         args.ProjectName = ConfigDict["MostRecentProject"]
         
-    ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
+    # Checks if project exists
+    if args.ProjectName not in ProjectIndexDict.keys():
+        print("Error: Project <" + args.ProjectName + "> doesnt exist")
+        exit(1)
+        
+    # Gets project dir
+    ProjectDir = ProjectIndexDict[args.ProjectName]
     
     # Check if given project path exists
     if not os.path.isdir(ProjectDir):

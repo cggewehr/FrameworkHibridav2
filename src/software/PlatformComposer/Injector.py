@@ -57,7 +57,7 @@ class Injector:
         # TODO: 
         self.Header = Flow.Header  # Default = ["ADDR", "SIZE"]
         #self.Payload = Flow.Payload  # Default = ["PEPOS", "TMSTP"] + (["RANDO"] * 126 - 2)
-        self.Payload = [flit.ljust(int(DataWidth / 4), " ") for flit in Flow.Payload]  # Pad each flit description to DataWidth/4 chars
+        self.Payload = [flit.ljust(int(DataWidth / 4), " ") for flit in Flow.Payload]  # Pad each flit description to <DataWidth/4> chars
         #print(self.Payload)
         self.HeaderSize = len(self.Header)
         self.PayloadSize = len(self.Payload)

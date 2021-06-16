@@ -4,26 +4,35 @@ import json
 def setConfig(args):
 
     # Gets framework configs
-    ConfigFile = open(os.getenv("HIBRIDA_CONFIG_FILE"), "r+")
-    ConfigDict = json.loads(ConfigFile.read())
+    with open(os.getenv("HIBRIDA_CONFIG_FILE"), "r") as ConfigFile:
+        ConfigDict = json.loads(ConfigFile.read())
+        
+    # Gets framework project index
+    with open(ConfigDict["HibridaPath"] + "/projectIndex.json", "r") as ProjectIndexFile:
+        ProjectIndexDict = json.loads(ProjectIndexFile.read())
     
+    # Sets default project as MRU project
     if args.ProjectName is None:
         print("Warning: No project passed as target, using <" + ConfigDict["MostRecentProject"] + "> as default")
         args.ProjectName = ConfigDict["MostRecentProject"]
         
-    if args.ProjectName not in ConfigDict["Projects"].keys():
+    # Checks if project exists
+    if args.ProjectName not in ProjectIndexDict.keys():
         print("Error: Project <" + args.ProjectName + "> doesnt exist")
         exit(1)
         
+    # Gets project dir
+    ProjectDir = ProjectIndexDict[args.ProjectName]
+    
+    # Set project's Allocation Map file
     if args.AllocationMapFile:
     
         # Verifies if an Allocation Map file has already been set for this project
-        if ConfigDict["Projects"][args.ProjectName]["AllocationMapFile"] is not None:
+        if os.path.isfile(ProjectDir + "/src_json/AllocationMap.json"):
         
             while True:
         
-                print("Warning: Project <" + args.ProjectName + "> already has <" + os.path.abspath(ConfigDict["Projects"][args.ProjectName]["AllocationMapFile"]) + "> set as its Allocation Map file. Replace it? (Y/N)")
-                #ipt = raw_input()
+                print("Warning: Project <" + args.ProjectName + "> already has <" + os.path.abspath(ProjectDict["AllocationMapFile"]) + "> set as its Allocation Map file. Replace it? (Y/N)")
                 ipt = input()
                 
                 if ipt == "Y" or ipt == "y":
@@ -98,18 +107,19 @@ def setConfig(args):
             print("Error: AllocationMapFile <" + os.path.abspath(AllocationMapFile) + "> cant be opened")
             exit(1)
 
-        ConfigDict["Projects"][args.ProjectName]["AllocationMapFile"] = AllocationMapFile
+        #ConfigDict["Projects"][args.ProjectName]["AllocationMapFile"] = AllocationMapFile
+        copy(AllocationMapFile, os.path.join(ProjectDir, "src_json", "AllocationMap.json"))
+        ProjectDict["AllocationMapFile"] = AllocationMapFile
         print("Project <" + args.ProjectName + "> Allocation Map File set as <" + os.path.abspath(AllocationMapFile) + ">")
     
     if args.ClusterClocksFile:
     
         # Verifies if a Cluster Clocks file has already been set for this project
-        if ConfigDict["Projects"][args.ProjectName]["ClusterClocksFile"] is not None:
+        if os.path.isfile(ProjectDir + "/src_json/ClusterClocks.json"):
         
             while True:
         
-                print("Warning: Project <" + args.ProjectName + "> already has <" + os.path.abspath(ConfigDict["Projects"][args.ProjectName]["ClusterClocksFile"]) + "> set as its Cluster Clocks file. Replace it? (Y/N)")
-                #ipt = raw_input()
+                print("Warning: Project <" + args.ProjectName + "> already has <" + os.path.abspath(ProjectDict["ClusterClocksFile"]) + "> set as its Cluster Clocks file. Replace it? (Y/N)")
                 ipt = input()
                 
                 if ipt == "Y" or ipt == "y":
@@ -160,7 +170,6 @@ def setConfig(args):
                 for i, pathIndex in enumerate(FoundIndexes):
                     print("\t" + str(i) + ": " + ConfigDict["ClusterClocksPaths"][pathIndex])
                     
-                #ipt = raw_input()
                 ipt = input()
                 
                 if int(ipt) in range(FoundIndexes):
@@ -183,17 +192,20 @@ def setConfig(args):
             print("Error: Given ClusterClocksFile <" + args.ClusterClocksFile + "> cant be opened")
             exit(1)
 
-        ConfigDict["Projects"][args.ProjectName]["ClusterClocksFile"] = ClusterClocksFile
+        #ConfigDict["Projects"][args.ProjectName]["ClusterClocksFile"] = ClusterClocksFile
+        copy(ClusterClocksFile, os.path.join(ProjectDir, "src_json", "AllocationMap.json"))
+        ProjectDict["ClusterClocksFile"] = ClusterClocksFile
         print("Project <" + args.ProjectName + "> Cluster Clocks file set as <" + os.path.abspath(ClusterClocksFile) + ">")
     
     if args.TopologyFile:
     
-        if ConfigDict["Projects"][args.ProjectName]["TopologyFile"] is not None:
+        #if ConfigDict["Projects"][args.ProjectName]["TopologyFile"] is not None:
+        if os.path.isfile(ProjectDir + "/src_json/Topology.json"):
         
             while True:
         
-                print("Warning: Project <" + args.ProjectName + "> already has <" + os.path.abspath(ConfigDict["Projects"][args.ProjectName]["TopologyFile"]) + "> set as its Topology file. Replace it? (Y/N)")
-                #ipt = raw_input()
+                print("Warning: Project <" + args.ProjectName + "> already has <" + os.path.abspath(ProjectDict["TopologyFile"]) + "> set as its Topology file. Replace it? (Y/N)")
+
                 ipt = input()
                 
                 if ipt == "Y" or ipt == "y":
@@ -268,17 +280,20 @@ def setConfig(args):
             print("Error: Given TopologyFile <" + TopologyFile + "> cant be opened")
             exit(1)
         
-        ConfigDict["Projects"][args.ProjectName]["TopologyFile"] = TopologyFile
+        #ConfigDict["Projects"][args.ProjectName]["TopologyFile"] = TopologyFile
+        copy(TopologyFile, os.path.join(ProjectDir, "src_json", "Topology.json"))
+        ProjectDict["TopologyFile"] = TopologyFile
         print("Project <" + args.ProjectName + "> Topology file set as <" + TopologyFile + ">")
             
     if args.WorkloadFile:
     
-        if ConfigDict["Projects"][args.ProjectName]["WorkloadFile"] is not None:
+        #if ConfigDict["Projects"][args.ProjectName]["WorkloadFile"] is not None:
+        if os.path.isfile(ProjectDir + "/src_json/Workload.json"):
         
             while True:
         
-                print("Warning: Project <" + args.ProjectName + "> already has <" + os.path.abspath(ConfigDict["Projects"][args.ProjectName]["WorkloadFile"]) + "> set as its Workload file. Replace it? (Y/N)")
-                #ipt = raw_input()
+                print("Warning: Project <" + args.ProjectName + "> already has <" + os.path.abspath(ProjectDict["WorkloadFile"]) + "> set as its Workload file. Replace it? (Y/N)")
+
                 ipt = input()
                 
                 if ipt == "Y" or ipt == "y":
@@ -353,25 +368,31 @@ def setConfig(args):
             print("Error: Given WorkloadFile <" + args.WorkloadFile + "> cant be opened")
             exit(1)
 
-        ConfigDict["Projects"][args.ProjectName]["WorkloadFile"] = WorkloadFile
+        #ConfigDict["Projects"][args.ProjectName]["WorkloadFile"] = WorkloadFile
+        copy(WorkloadFile, os.path.join(ProjectDir, "src_json", "Workload.json"))
+        ProjectDict["WorkloadFile"] = WorkloadFile
         print("Project <" + args.ProjectName + "> Workload file set as <" + WorkloadFile + ">")
             
     # Displays which AllocationMap/ClusterClocks/Topology/Workloads config files have been associated to current project
     if args.state:
     
-        print("\nAllocation Map file: " + str(ConfigDict["Projects"][args.ProjectName]["AllocationMapFile"]))
-        print("ClusterClocks file: " + str(ConfigDict["Projects"][args.ProjectName]["ClusterClocksFile"]))
-        print("Topology file: " + str(ConfigDict["Projects"][args.ProjectName]["TopologyFile"]))
-        print("Workload file: " + str(ConfigDict["Projects"][args.ProjectName]["WorkloadFile"]) + "\n")
+        print("\nProject Name: " + str(ProjectDict["ProjectName"]))
+        print("Project Directory: " + str(ProjectDict["ProjectDir"]))
+        print("Allocation Map file: " + str(ProjectDict["AllocationMapFile"]))
+        print("Cluster Clocks file: " + str(ProjectDict["ClusterClocksFile"]))
+        print("Topology file: " + str(ProjectDict["TopologyFile"]))
+        print("Workload file: " + str(ProjectDict["WorkloadFile"]) + "\n")
     
-    # TODO: Only print this if a file has been set
-    print("Writing modifications to config file")
-
-    ConfigDict["MostRecentProject"] = args.ProjectName
-    ConfigFile.seek(0)
-    ConfigFile.truncate(0)
-    ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
-    ConfigFile.close()
+    if args.AllocationMapFile is not None or args.ClusterClocksFile is not None or args.TopologyFile is not None or args.WorkloadFile is not None:
     
+        print("Writing modifications to config file")
+        
+        with open(ProjectDir + "/projectInfo.json", "w") as ProjectInfoFile:
+            ProjectInfoFile.write(json.dumps(ProjectDict, sort_keys = False, indent = 4))
+            
+        with open(os.getenv("HIBRIDA_CONFIG_FILE"), "w") as ConfigFile:
+            ConfigDict["MostRecentProject"] = args.ProjectName
+            ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
+        
     print("setConfig ran successfully!")
     

@@ -3,7 +3,8 @@ import AppComposer
 
 class PE:
 
-    def __init__(self, PEPos, BaseNoCPos, ThreadSet = None, StructPos = None, CommStructure = "NoC", DataWidth = 32, BridgeBufferSize = 4, BusArbiter = "RR"):
+    #def __init__(self, PEPos, BaseNoCPos, ThreadSet = None, StructPos = None, CommStructure = "NoC", DataWidth = 32, BridgeBufferSize = 4, BusArbiter = "RR"):
+    def __init__(self, PEPos, BaseNoCPos, ThreadSet = [], StructPos = None, CommStructure = "NoC", DataWidth = 32, BridgeBufferSize = 4, BusArbiter = "RR"):
 
         self.PEPos = PEPos
         self.CommStructure = CommStructure
@@ -13,20 +14,22 @@ class PE:
         self.BridgeBufferSize = BridgeBufferSize
         self.BusArbiter = BusArbiter
         
-        if isinstance(ThreadSet, list) or isinstance(ThreadSet, dict):
+        #if isinstance(ThreadSet, list) or isinstance(ThreadSet, dict):
+        if len(ThreadSet):
             self.AmountOfThreads = len(ThreadSet)
             import functools
             self.AmountOfFlows = functools.reduce(lambda a,b : a+b, [len(Thread.OutgoingFlows) for Thread in ThreadSet])
             self.AmountOfFlowsInThread = [len(Thread.OutgoingFlows) for Thread in ThreadSet]
             self.LargestAmountOfFlows = max([len(Thread.OutgoingFlows) for Thread in ThreadSet])
             
-        elif isinstance(ThreadSet, AppComposer.Thread):
-            self.AmountOfThreads = 1
-            self.AmountOfFlows = len(ThreadSet.OutgoingFlows)
-            self.AmountOfFlowsInThread = [self.AmountOfFlows]
-            self.LargestAmountOfFlows = self.AmountOfFlows
+        # elif isinstance(ThreadSet, AppComposer.Thread):
+            # self.AmountOfThreads = 1
+            # self.AmountOfFlows = len(ThreadSet.OutgoingFlows)
+            # self.AmountOfFlowsInThread = [self.AmountOfFlows]
+            # self.LargestAmountOfFlows = self.AmountOfFlows
         
-        elif ThreadSet is None:
+        #elif ThreadSet is None:
+        else:
         
             #print("Warning: PE <" + str(PEPos) + "> instantiated with no associated Thread object. This is to be expected if no Workload has been defined, or PE.__init__() is called from Platform.__init().")
             
@@ -41,11 +44,6 @@ class PE:
             self.WorkloadName = ["IDLE"]
             
             return
-        
-        else:
-            
-            print("Error: Unrecognized type <" + str(type(ThreadSet)) + "> for argument ThreadSet")
-            exit(1)
         
         # Determines each injector's clock frequency so that emulated bandwidth matches Flow bandwidth
         # Bandwidth (in MBps) = DataWidth (in bytes) / Period (in seconds)
