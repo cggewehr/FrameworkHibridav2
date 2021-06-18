@@ -1,12 +1,10 @@
 
 import AppComposer
 
-# Implements an AppComposer.Flow object
+# Implements (in hardware) an AppComposer.Flow object
 class Injector:
 
-    # Default message is ["ADDR", "SIZE", "PEPOS", "TMSTP", "RANDO", "RANDO", ..., "RANDO"] of length of 128 flits
-    #def __init__(self, Flow, Header = ["ADDR", "SIZE"], Payload = ["PEPOS", "TMSTP"] + (["RANDO"] * (126 - 2)), DataWidth = 32):
-    def __init__(self, Flow, DataWidth = 32):
+    def __init__(self, Flow, SourcePEPos, SourceBaseNoCPos, TargetPEPos, TargetBaseNoCPos, DataWidth = 32):
         
         # Checks if Flow argument is of AppComposser.Flow class
         if not isinstance(Flow, AppComposer.Flow):
@@ -27,6 +25,12 @@ class Injector:
             print("Error: Given Flow <" + str(Flow) + "> TargetThread is not a AppComposer.Thread object")
             exit(1)
         
+        # Thread info
+        self.SourcePEPos = SourcePEPos
+        self.SourceBaseNoCPos = SourceBaseNoCPos
+        self.TargetPEPos = TargetPEPos
+        self.TargetBaseNoCPos = TargetBaseNoCPos
+
         # TODO: Adjust clock period definition so that bandwidth value represents payload flits only
         # Flow info
         self.FlowType = Flow.FlowType  # Default = "CBR"
@@ -37,12 +41,6 @@ class Injector:
         self.StopTime = float(Flow.StopTime)  # in nanoseconds
         self.Periodic = Flow.Periodic
         self.MSGAmount = Flow.MSGAmount
-        
-        # Thread info
-        self.SourcePEPos = SourceThread.PEPos
-        self.SourceBaseNoCPos = SourceThread.ParentApplication.ParentWorkload.ParentPlatform.WrapperAddresses[self.SourcePEPos]
-        self.TargetPEPos = TargetThread.PEPos
-        self.TargetBaseNoCPos = TargetThread.ParentApplication.ParentWorkload.ParentPlatform.WrapperAddresses[self.TargetPEPos]
         
         # Workload Info
         self.SourceThreadID = SourceThread.ThreadID
@@ -58,7 +56,6 @@ class Injector:
         self.Header = Flow.Header  # Default = ["ADDR", "SIZE"]
         #self.Payload = Flow.Payload  # Default = ["PEPOS", "TMSTP"] + (["RANDO"] * 126 - 2)
         self.Payload = [flit.ljust(int(DataWidth / 4), " ") for flit in Flow.Payload]  # Pad each flit description to <DataWidth/4> chars
-        #print(self.Payload)
         self.HeaderSize = len(self.Header)
         self.PayloadSize = len(self.Payload)
         self.MessageSize = len(self.Header) + len(self.Payload)

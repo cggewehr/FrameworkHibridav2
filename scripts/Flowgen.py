@@ -14,7 +14,7 @@ def flowgen(args):
         ConfigDict = json.loads(ConfigFile.read())
         
     # Gets framework project index
-    with open(ConfigDict["HibridaPath"] + "/projectIndex.json", "r") as ProjectIndexFile:
+    with open(ConfigDict["HibridaPath"] + "/data/projectIndex.json", "r") as ProjectIndexFile:
         ProjectIndexDict = json.loads(ProjectIndexFile.read())
     
     # Sets default project as MRU project
@@ -71,7 +71,7 @@ def flowgen(args):
         exit(1)
 
     # Reconstructs objects from given JSON files
-    print("Reading Cluster Clocks file <" + ClusterClocksFileName + ">")
+    print("Reading Cluster Clocks file")
     ClusterClocks = json.loads(ClusterClocksFile.read())
     print("Done reading Cluster Clocks file")
     
@@ -96,13 +96,13 @@ def flowgen(args):
     if len(AllocMap) > Topology.AmountOfPEs:
         print("Warning: Allocation Map size greater than expected <" + str(len(AllocMap)) + ">, truncating it to <" + str(Topology.AmountOfPEs) + ">")
     
-    for PEPos, AllocMapItem in enumerate(AllocationMap[0:Topology.AmountOfPEs]):
+    for PEPos, AllocMapItem in enumerate(AllocMap[0:Topology.AmountOfPEs]):
         
         # Single Thread allocated to this PE
         if isinstance(AllocMapItem, str):
         
             # Get Thread object from thread name in Allocation Map
-            ThreadInWorkload = self.Workload.getThread(ThreadName = AllocMapItem)
+            ThreadInWorkload = Workload.getThread(ThreadName = AllocMapItem)
             
             # Checks if Thread, as defined in Allocation Map, exists in Workload
             if ThreadInWorkload is None:
@@ -121,7 +121,7 @@ def flowgen(args):
         # Multiple Threads allocated to this PE    
         elif isinstance(AllocMapItem, list):
             
-            ThreadSet = [self.Workload.getThread(ThreadName = ThreadName) for ThreadName in AllocMapItem]
+            ThreadSet = [Workload.getThread(ThreadName = ThreadName) for ThreadName in AllocMapItem]
             
             #ThreadInWorkload.PEPos = PEPos
             for ThreadInSet in ThreadSet:
@@ -158,7 +158,7 @@ def flowgen(args):
     # Check if any Thread was left unallocated
     for App in Workload.Applications:
         for Thread in App.Threads:
-            if AllocDict.get(Thread.ThreadName) is None:
+            if AllocDict.get(App.AppName + "." + Thread.ThreadName) is None:
                 print("Error: Thread <" + Thread.ParentApplication.AppName + "." + Thread.ThreadName + "> was not allocated, aborting flowgen")
                 exit(1)
     
@@ -166,6 +166,7 @@ def flowgen(args):
     
     # Generates PE JSON config files at "flow/PE */PE *.json"
     for PEPos, PE in enumerate(Topology.PEs):
+        os.makedirs(ProjectDir + "/flow/PE " + str(PEPos), exist_ok = True)
         with open(ProjectDir + "/flow/PE " + str(PEPos) + "/PE " + str(PEPos) + ".json", 'w') as PEFile:
             print("Generating config file for PE <" + str(PEPos) + ">")
             PE.updateWorkloadInfo(ThreadSet = ThreadRefAllocMap[PEPos])
@@ -175,16 +176,24 @@ def flowgen(args):
     for PEPos, ThreadSet in enumerate(ThreadRefAllocMap):
         for ThreadNum, ThreadInSet in enumerate(ThreadSet):
             for FlowNum, OutgoingFlow in enumerate(ThreadInSet.OutgoingFlows):
+                os.makedirs(ProjectDir + "/flow/PE " + str(PEPos) + "/Thread " + str(ThreadNum), exist_ok = True)
                 with open(ProjectDir + "/flow/PE " + str(PEPos) + "/Thread " + str(ThreadNum) + "/Flow " + str(FlowNum) + ".json", 'w') as InjectorFile:
+
                     print("Generating config file for Flow <" + str(OutgoingFlow) + ">")
-                    InjectorFile.write(Injector(Flow = OutgoingFlow, DataWidth = Topology.DataWidth).toJSON())
+                
+                    SourcePEPos = AllocDict[OutgoingFlow.SourceThread.ParentApplication.AppName + "." + OutgoingFlow.SourceThread.ThreadName]
+                    SourceBaseNoCPos = Topology.PEs[SourcePEPos].BaseNoCPos
+                    TargetPEPos = AllocDict[OutgoingFlow.TargetThread.ParentApplication.AppName + "." + OutgoingFlow.TargetThread.ThreadName]
+                    TargetBaseNoCPos = Topology.PEs[TargetPEPos].BaseNoCPos
+
+                    InjectorFile.write(PlatformComposer.Injector(Flow = OutgoingFlow, SourcePEPos = SourcePEPos, SourceBaseNoCPos = SourceBaseNoCPos, TargetPEPos = TargetPEPos, TargetBaseNoCPos = TargetBaseNoCPos, DataWidth = Topology.DataWidth).toJSON())
                     
     # Generates Platform config file
     print("Generating Platform config file")
     shutil.copy(ProjectDir + "/src_json/Topology.json", ProjectDir + "/platform/PlatformConfig.json")
     
     # Generates Cluster Clocks config file
-    print("Generating Cluster Clocks config file")
+    print("Generating ClusterClocks config file")
     with open(ProjectDir + "/platform/ClusterClocks.json", "w") as ClusterClocksFile:
     
         if len(ClusterClocks) < Topology.BaseNoCDimensions[0]*Topology.BaseNoCDimensions[1]:
@@ -200,9 +209,9 @@ def flowgen(args):
             ClusterClocks = [float(1000/ClusterClocks["ClusterClockPeriods"][Cluster]) for Cluster in ClusterClocks["ClusterClockPeriods"][0:Topology.BaseNoCDimensions[0]*Topology.BaseNoCDimensions[1]]]  # MHz -> ns
 
         else:  # Assumes values are periods (in nanoseconds)
-            self.ClusterClocks = ClusterClocks[0:self.BaseNoCDimensions[0]*self.BaseNoCDimensions[1]]
+            ClusterClocks = ClusterClocks[0:Topology.BaseNoCDimensions[0]*Topology.BaseNoCDimensions[1]]
             
-        ClusterClocksFile.write(json.dumps(ClusterClocks))
+        ClusterClocksFile.write(json.dumps({"ClusterClockPeriods" : ClusterClocks}, indent = 4))
     
     with open(os.getenv("HIBRIDA_CONFIG_FILE"), "w") as ConfigFile:
         ConfigDict["MostRecentProject"] = args.ProjectName

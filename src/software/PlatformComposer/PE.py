@@ -1,4 +1,6 @@
 
+import json
+
 import AppComposer
 
 class PE:
@@ -65,22 +67,24 @@ class PE:
     
     def updateWorkloadInfo(self, ThreadSet, DataWidth = 32):
     
-        if isinstance(ThreadSet, list) or isinstance(ThreadSet, dict):
+        #if isinstance(ThreadSet, list) or isinstance(ThreadSet, dict):
+        if len(ThreadSet):
             self.AmountOfThreads = len(ThreadSet)
             import functools
             self.AmountOfFlows = functools.reduce(lambda a,b : a+b, [len(Thread.OutgoingFlows) for Thread in ThreadSet])
             self.AmountOfFlowsInThread = [len(Thread.OutgoingFlows) for Thread in ThreadSet]
             self.LargestAmountOfFlows = max([len(Thread.OutgoingFlows) for Thread in ThreadSet])
             
-        elif isinstance(ThreadSet, AppComposer.Thread):
-            self.AmountOfThreads = 1
-            self.AmountOfFlows = len(ThreadSet.OutgoingFlows)
-            self.AmountOfFlowsInThread = [self.AmountOfFlows]
-            self.LargestAmountOfFlows = self.AmountOfFlows
+        # elif isinstance(ThreadSet, AppComposer.Thread):
+            # self.AmountOfThreads = 1
+            # self.AmountOfFlows = len(ThreadSet.OutgoingFlows)
+            # self.AmountOfFlowsInThread = [self.AmountOfFlows]
+            # self.LargestAmountOfFlows = self.AmountOfFlows
         
-        elif ThreadSet is None:
+        #elif ThreadSet is None:
+        else:
         
-            #print("Warning: PE <" + str(self.PEPos) + "> instantiated with no associated Thread object. This is to be expected if no Workload has been defined, or PE.__init__() is called from Platform.__init().")
+            #print("Warning: PE <" + str(PEPos) + "> instantiated with no associated Thread object. This is to be expected if no Workload has been defined, or PE.__init__() is called from Platform.__init().")
             
             self.AmountOfThreads = 1
             self.AmountOfFlows = 1
@@ -93,11 +97,6 @@ class PE:
             self.WorkloadName = ["IDLE"]
             
             return
-        
-        else:
-            
-            print("Error: Unrecognized type <" + str(type(ThreadSet)) + "> for argument ThreadSet")
-            exit(1)
         
         # DEBUG
         #print(str(ThreadSet))
@@ -121,11 +120,15 @@ class PE:
         self.WorkloadName = [ThreadSet.ParentApplication.ParentWorkload.WorkloadName] if isinstance(ThreadSet, AppComposer.Thread) else [Thread.ParentApplication.ParentWorkload.WorkloadName for Thread in ThreadSet]
         
         return self
-        
     
     def toJSON(self):
-
-        import json
-
         return json.dumps(self.__dict__, sort_keys = True, indent = 4)
+
+    def __eq__(self, other):
+
+        if self.PEPos == other.PEPos and self.BaseNoCPos == other.BaseNoCPos and self.StructPos == other.StructPos and self.CommStructure == other.CommStructure:
+            return True
+        else:
+            return False
+
 

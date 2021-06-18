@@ -10,14 +10,14 @@ class CoordinateHelper:
         self.setPEPosStack()
         
     @staticmethod
-    def sequentialToXY(PEPos):
+    def sequentialToXY(sequentialPos, xMax):
 
-        return PEPos % self.BaseNoCDimensions[0], PEPos / self.BaseNoCDimensions[0]
+        return int(sequentialPos % xMax), int(sequentialPos / xMax)
 
     @staticmethod
-    def XYtoSequential(x, y, xMax = self.BaseNoCDimensions[0]):
+    def XYToSequential(x, y, xMax):
     
-        return (y * xMax) + x
+        return int((y * xMax) + x)
     
     # WIP: Sets PEPos stack
     def setPEPosStack(self):
@@ -31,7 +31,7 @@ class CoordinateHelper:
         ySquareLimit = 0
         
         # If Base NoC X dimension == Square NoC X dimension, init Square NoC X value at first X above base NoC (X = 0, Y = Base NoC Y dimension)
-        if self.BaseNoCDimensions[0] == squareNoCBound:
+        if self.BaseNoCDimensions[0] == self.SquareNoCBound:
             
             xSquare = 0
             ySquare = self.BaseNoCDimensions[1]
@@ -40,7 +40,7 @@ class CoordinateHelper:
             ySquareLimit = self.BaseNoCDimensions[1]
             
         # If Base NoC Y dimension == Square NoC Y dimension, 
-        elif self.BaseNoCDimensions[1] == squareNoCBound:
+        elif self.BaseNoCDimensions[1] == self.SquareNoCBound:
         
             xSquare = self.BaseNoCDimensions[0]
             ySquare = self.BaseNoCDimensions[1] - 1
@@ -59,11 +59,11 @@ class CoordinateHelper:
         while True:
         
             # Push PEPos value to stack
-            self.PEPosStack.append(self.XYtoSequential(x = xSquare, y = ySquare, xMax = self.SquareNoCBound))
+            self.PEPosStack.append(self.XYToSequential(x = xSquare, y = ySquare, xMax = self.SquareNoCBound))
             
             # If computed PEPos values (for Bus/Crossbars) + base NoC PEs == 
             if len(self.PEPosStack) + (self.BaseNoCDimensions[0] * self.BaseNoCDimensions[1]) == self.SquareNoCBound * self.SquareNoCBound:
-                self.PEPosStack = reversed(self.PEPosStack)
+                self.PEPosStack.reverse()
                 break
             
             # Increment XY coordinates on square NoC
@@ -77,11 +77,11 @@ class CoordinateHelper:
                     
                 else:
                 
-                    if self.BaseNoCDimensions[0] == squareNoCBound:
+                    if self.BaseNoCDimensions[0] == self.SquareNoCBound:
                         xSquare = 0
                         xSquareLimit += 1
                         
-                    elif self.BaseNoCDimensions[1] == squareNoCBound:
+                    elif self.BaseNoCDimensions[1] == self.SquareNoCBound:
                         ySquare = ySquareLimit + 1
                         ySquareLimit += 1
                         

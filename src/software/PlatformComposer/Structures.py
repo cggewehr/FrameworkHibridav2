@@ -10,7 +10,6 @@ class Structure:
         self.AmountOfPEs = AmountOfPEs
 
         if str(StructureType).casefold() == "crossbar":
-            #self.PEs = [PE(PEPos=i, AppID=None, ThreadID=None, InjectorClockFrequency=None) for i in range(AmountOfPEs)]
             self.PEs = [PE(PEPos = i, BaseNoCPos = None, StructPos = i, CommStructure = "Crossbar") for i in range(self.AmountOfPEs)]
         elif str(StructureType).casefold() == "bus":
             self.PEs = [PE(PEPos = i, BaseNoCPos = None, StructPos = i, CommStructure = "Bus") for i in range(self.AmountOfPEs)]
@@ -30,6 +29,11 @@ class Structure:
         
         return returnString
 
+    def __eq__(self, other):
+        if self.StructureType == other.StructureType and self.BaseNoCPos == other.BaseNoCPos and self.AmountOfPEs == other.AmountOfPEs and reduce(lambda s,o: True if s.PEPos == o.PEPos else False, zip(self.PÈs, other.PEs)):
+            return True
+        else:
+            return False
 
 class Bus(Structure):
 

@@ -149,8 +149,6 @@ dataDict["HibridaConfigFile"] = args.InstallPath + "/data/config.json"
 dataDict["HibridaName"] = args.InstallName
 dataDict["HibridaPath"] = args.InstallPath
 
-dataDict["Projects"] = dict()
-
 # Verify if config file already exists, and if so, ask user if it should be replaced
 if os.path.exists("../data/config.json"):
 

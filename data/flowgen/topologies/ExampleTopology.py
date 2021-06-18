@@ -5,15 +5,15 @@ Setup = PlatformComposer.Platform(BaseNoCDimensions=(3, 3))
 
 # Adds crossbar containing 7 PEs @ base NoC position (2, 0)
 CrossbarA = PlatformComposer.Crossbar(AmountOfPEs = 7)
-Setup.addStructure(NewStructure=CrossbarA, WrapperLocationInBaseNoC=(2, 0))
+Setup.addStructure(NewStructure=CrossbarA, BaseNoCPos=(2, 0))
 
 # Adds bus containing 6 PEs @ base NoC position (2, 1)
 BusA = PlatformComposer.Bus(AmountOfPEs = 6)
-Setup.addStructure(NewStructure=BusA, WrapperLocationInBaseNoC=(2, 1))
+Setup.addStructure(NewStructure=BusA, BaseNoCPos=(2, 1))
 
 # Adds bus containing 6 PEs @ base NoC position (2, 2)
 BusB = PlatformComposer.Bus(AmountOfPEs = 6)
-Setup.addStructure(NewStructure=BusB, WrapperLocationInBaseNoC=(2, 2))
+Setup.addStructure(NewStructure=BusB, BaseNoCPos=(2, 2))
 
 Setup.toJSON(SaveToFile = True, FileName = "ExampleTopology")
 

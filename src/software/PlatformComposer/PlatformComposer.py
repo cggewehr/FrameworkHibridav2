@@ -6,6 +6,7 @@ import sys
 from AppComposer import *
 from Structures import *
 from PE import PE
+from Injector import Injector
 
 from CoordinateHelper import CoordinateHelper
 
@@ -62,9 +63,8 @@ class Platform:
             exit(1)
     
         # Checks if BaseNoCPos is a 2 dimensonal tuple/list, containing XY coordinates for Bus/Crossbar to be added to Platform
-        coordHelper = CoordinateHelper(BaseNoCDimensions = self.BaseNoCDimensions, SquareNoCBound = SquareNoCBound)
         if isinstance(BaseNoCPos, int):
-            BaseNoCPos = coordHelper.sequentialToXY()
+            BaseNoCPos = CoordinateHelper.sequentialToXY(BaseNoCPos, self.BaseNoCDimensions[0])
         elif len(tuple(BaseNoCPos)) != 2:
             print("Error: Unexpected BaseNoCPos <" + str(BaseNoCPos) + "> (must be a tuple/list of length = 2: (XSize, YSize))")
             exit(1)
@@ -88,11 +88,9 @@ class Platform:
         # Inserts given structure into base NoC
         if str(NewStructure.StructureType).casefold() == "bus":
             self.Buses.append(NewStructure)
-            #print("Added Bus containing " + str(NewStructure.AmountOfPEs) + " elements @ base NoC " + str(BaseNoCPos))
 
         elif str(NewStructure.StructureType).casefold() == "crossbar":
             self.Crossbars.append(NewStructure)
-            #print("Added Crossbar containing " + str(NewStructure.AmountOfPEs) + " elements @ base NoC " + str(BaseNoCPos))
             
         else:
             print("Error: Given StructureType <" + str(NewStructure.StructureType) + "> not recognized")
@@ -302,7 +300,7 @@ class Platform:
         
         self.BaseNoCDimensions = tuple(JSONDict["BaseNoCDimensions"])
         #self.BaseNoC = [[None for y in range(self.BaseNoCDimensions[1])] for x in range(self.BaseNoCDimensions[0])]
-        self.BaseNoC = [[PE(PEPos = y * BaseNoCDimensions[0] + x, BaseNoCPos = y * BaseNoCDimensions[1] + x, StructPos = y * BaseNoCDimensions[1] + x, CommStructure = "NoC") for y in range(BaseNoCDimensions[1])] for x in range(BaseNoCDimensions[0])]
+        self.BaseNoC = [[PE(PEPos = y * self.BaseNoCDimensions[0] + x, BaseNoCPos = y * self.BaseNoCDimensions[1] + x, StructPos = y * self.BaseNoCDimensions[1] + x, CommStructure = "NoC") for y in range(self.BaseNoCDimensions[1])] for x in range(self.BaseNoCDimensions[0])]
         
         self.StandaloneFlag = True if JSONDict["IsStandaloneBus"] or JSONDict["IsStandaloneCrossbar"] else False
         self.BridgeBufferSize = JSONDict["BridgeBufferSize"]        
@@ -357,8 +355,8 @@ class Platform:
         self.IsStandaloneCrossbar = True if isinstance(self.BaseNoC[0][0], Crossbar) and self.BaseNoCDimensions == (1,1) else False 
     
         # Finds total amount of PEs, and struct-related parameters
-        for y in self.BaseNoCDimensions[1]:
-            for x in self.BaseNoCDimensions[0]:
+        for y in range(self.BaseNoCDimensions[1]):
+            for x in range(self.BaseNoCDimensions[0]):
             
                 if isinstance(self.BaseNoC[x][y], PE):
                     self.AmountOfPEs += 1
@@ -395,13 +393,14 @@ class Platform:
             
         # Get stack of XY coordinates from square NoC algorithm from coordHelper
         coordHelper = CoordinateHelper(BaseNoCDimensions = self.BaseNoCDimensions, SquareNoCBound = self.SquareNoCBound)
+        coordHelper.setPEPosStack()
            
-        self.PEs = [None for PE in self.AmountOfPEs]
-        self.WrapperAddresses = [None for PE in self.AmountOfPEs]
+        self.PEs = [None for PEPos in range(self.SquareNoCBound**2)]
+        self.WrapperAddresses = [None for PEPos in range(self.SquareNoCBound**2)]
         
         # Update PEPos values for base NoC and first-of-struct PEs
-        for y in self.BaseNoCDimensions[1]:
-            for x in self.BaseNoCDimensions[0]:
+        for y in range(self.BaseNoCDimensions[1]):
+            for x in range(self.BaseNoCDimensions[0]):
                 
                 if isinstance(self.BaseNoC[x][y], PE):
                 
@@ -409,7 +408,8 @@ class Platform:
                     BaseNoCPos = coordHelper.XYToSequential(x = x, y = y, xMax = self.BaseNoCDimensions[0])
                     
                     self.BaseNoC[x][y].PEPos = PEPos
-                    
+                    self.BaseNoC[x][y].BaseNoCPos = BaseNoCPos
+
                     self.WrapperAddresses[PEPos] = BaseNoCPos
                     self.PEs[PEPos] = self.BaseNoC[x][y]
                     
@@ -419,48 +419,49 @@ class Platform:
                     BaseNoCPos = coordHelper.XYToSequential(x = x, y = y, xMax = self.BaseNoCDimensions[0])
                     
                     self.BaseNoC[x][y].PEs[0].PEPos = PEPos
+                    self.BaseNoC[x][y].PEs[0].BaseNoCPos = BaseNoCPos
                     
-                    self.PEs[PEPos] = self.BaseNoC[x][y]
+                    self.PEs[PEPos] = self.BaseNoC[x][y].PEs[0]
                     self.WrapperAddresses[PEPos] = BaseNoCPos
                 
         # Update PEPos values for Bus
-        for y in self.BaseNoCDimensions[1]:
-            for x in self.BaseNoCDimensions[0]:
+        for y in range(self.BaseNoCDimensions[1]):
+            for x in range(self.BaseNoCDimensions[0]):
                 if isinstance(self.BaseNoC[x][y], Bus):
-                    for PE in self.BaseNoC[x][y].PEs[1:]:
+                    for PEInBus in self.BaseNoC[x][y].PEs[1:]:
                     
-                        PEPos = coordHelper.popPEPos()
+                        PEPos = coordHelper.popPEPosStack()
                         BaseNoCPos = coordHelper.XYToSequential(x = x, y = y, xMax = self.BaseNoCDimensions[0])
                         
-                        PE.PEPos = PEPos
+                        PEInBus.PEPos = PEPos
+                        PEInBus.BaseNoCPos = BaseNoCPos
                         
-                        self.PEs[PEPos] = self.BaseNoC[x][y]
+                        self.PEs[PEPos] = PEInBus
                         self.WrapperAddresses[PEPos] = BaseNoCPos
         
         # Update PEPos values for Crossbar
-        for y in self.BaseNoCDimensions[1]:
-            for x in self.BaseNoCDimensions[0]:
+        for y in range(self.BaseNoCDimensions[1]):
+            for x in range(self.BaseNoCDimensions[0]):
                 if isinstance(self.BaseNoC[x][y], Crossbar):
-                    for PE in self.BaseNoC[x][y].PEs[1:]:
+                    for PEInCrossbar in self.BaseNoC[x][y].PEs[1:]:
                     
-                        PEPos = coordHelper.popPEPos()
+                        PEPos = coordHelper.popPEPosStack()
                         BaseNoCPos = coordHelper.XYToSequential(x = x, y = y, xMax = self.BaseNoCDimensions[0])
                         
-                        PE.PEPos = PEPos
+                        PEInCrossbar.PEPos = PEPos
+                        PEInCrossbar.BaseNoCPos = BaseNoCPos
                         
-                        self.PEs[PEPos] = self.BaseNoC[x][y]
+                        self.PEs[PEPos] = PEInCrossbar
                         self.WrapperAddresses[PEPos] = BaseNoCPos
                         
         # Makes sure no default values are left
-        for PEPos, PE in self.PEs:
-            if PE is None:
-                print("Error: Something went wrong in making PEs list, PEPos <" + str(PEPos) + "> is set as None")
-                exit(1)
+        for PEPos, PEsElement in enumerate(self.PEs):
+            if PEsElement is None:
+                print("Warning: PE <" + str(PEPos) + "> is set as None")
                 
-        for PEPos, PE in self.WrapperAddresses:
-            if PE is None:
-                print("Error: Something went wrong in making WrapperAddresses list, PEPos <" + str(PEPos) + "> is set as None")
-                exit(1)
+        for PEPos, PEsElement in enumerate(self.WrapperAddresses):
+            if PEsElement is None:
+                print("Warning: WrapperAddress of PE <" + str(PEPos) + "> is set as None")
     
     
     # TODO: Print out info for debug
@@ -470,7 +471,6 @@ class Platform:
         
         returnString += "Amount of PEs: " + str(self.AmountOfPEs) + "\n"
         returnString += "Base NoC Dimensions: " + str(self.BaseNoCDimensions) + "\n"
-        #returnString += "ReferenceClock: " + str(self.ReferenceClock) + " MHz \n"
         returnString += "SquareNoCBound: " + str(self.SquareNoCBound) + "\n\n"
         
         returnString += "Amount of Buses: " + str(self.AmountOfBuses) + "\n"
@@ -484,9 +484,18 @@ class Platform:
         return returnString
         
         
-    # TODO: Implement automated comparison between 2 Platform objects for debug
-    def __eq__(self):
-    
-        return NotImplemented
+    # Automated comparison between 2 Platform objects for debug
+    def __eq__(self, other):
+
+        if not (self.BaseNoCDimensions[0] == other.BaseNoCDimensions[0] and self.BaseNoCDimensions[1] == other.BaseNoCDimensions[1]):
+            return False
+        
+        for y in range(self.BaseNoCDimensions[1]):
+            for x in range(self.BaseNoCDimensions[0]):
+                if not self.BaseNoC[x][y] == other.BaseNoC[x][y]:
+                    return False   
+        else:
+            return True
+
         
         

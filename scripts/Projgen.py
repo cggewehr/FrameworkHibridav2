@@ -30,7 +30,7 @@ def projgen(args):
         ConfigDict = json.loads(ConfigFile.read())
         
     # Open framework project index
-    with open(ConfigDict["HibridaPath"] + "/projectIndex.json", "r") as ProjectIndexFile:
+    with open(ConfigDict["HibridaPath"] + "/data/projectIndex.json", "r") as ProjectIndexFile:
         ProjectIndexDict = json.loads(ProjectIndexFile.read())
     
     # Check if project name already exists
@@ -48,7 +48,12 @@ def projgen(args):
                 exit(0)
             
     # Updates framework project index with newly created project
-    with open(ConfigDict["HibridaPath"] + "/projectIndex.json", "w") as ProjectIndexFile:
+    with open(ConfigDict["HibridaPath"] + "/data/projectIndex.json", "w") as ProjectIndexFile:
+        ProjectIndexDict[args.ProjectName] = ProjectDir
+        ProjectIndexFile.write(json.dumps(ProjectIndexDict, sort_keys = False, indent = 4))
+
+    # Creates info JSON for newly created project
+    with open(ProjectDir + "/projectInfo.json", "w") as ProjectInfoFile:
         
         ProjectDict = dict()
         
@@ -59,7 +64,7 @@ def projgen(args):
         ProjectDict["TopologyFile"] = None
         ProjectDict["WorkloadFile"] = None
         
-        ProjectConfigFile.write(json.dumps(ProjectDict, sort_keys = False, indent = 4))
+        ProjectInfoFile.write(json.dumps(ProjectDict, sort_keys = False, indent = 4))
         
     # Updates framework config file with newly created project as MRU project
     with open(os.environ["HIBRIDA_CONFIG_FILE"], "w") as ConfigFile:

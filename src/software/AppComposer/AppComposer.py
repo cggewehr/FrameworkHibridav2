@@ -12,11 +12,6 @@ class Thread:
         # To be set when Application.addThread(self) is called
         self.ParentApplication = None
         self.ThreadID = None
-        
-        # To be set when Thread is allocated in parent Platform with setAllocationMap()
-        self.BaseNoCPos = None
-        self.PEPos = None
-        self.StructPos = None
 
         self.OutgoingFlows = []
         #self.OutgoingBandwidth = 0
@@ -47,8 +42,6 @@ class Thread:
 
     def addFlow(self, Flow, autoAddTargetThread = True, autoSetStartStop = False):
         
-        #print(Flow.SourceThread)
-        #print(Flow)
         if (isinstance(Flow.SourceThread, Thread) and Flow.SourceThread is self) or Flow.SourceThread is None or (isinstance(Flow.SourceThread, str) and self.ThreadName == Flow.SourceThread):
         #if (isinstance(Flow.SourceThread, Thread) and Flow.SourceThread is self) or Flow.SourceThread is None:
             

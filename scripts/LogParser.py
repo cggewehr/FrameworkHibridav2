@@ -271,15 +271,26 @@ class Log:
 
 def logparser(args):
 
-    # Gets framework & project info
-    ConfigFile = open(os.getenv("HIBRIDA_CONFIG_FILE"), "r+")
-    ConfigDict = json.loads(ConfigFile.read())
+    # Gets framework configs
+    with open(os.getenv("HIBRIDA_CONFIG_FILE"), "r") as ConfigFile:
+        ConfigDict = json.loads(ConfigFile.read())
+        
+    # Gets framework project index
+    with open(ConfigDict["HibridaPath"] + "/data/projectIndex.json", "r") as ProjectIndexFile:
+        ProjectIndexDict = json.loads(ProjectIndexFile.read())
     
+    # Sets default project as MRU project
     if args.ProjectName is None:
         print("Warning: No project passed as target, using <" + ConfigDict["MostRecentProject"] + "> as default")
         args.ProjectName = ConfigDict["MostRecentProject"]
         
-    ProjectDir = ConfigDict["Projects"][args.ProjectName]["ProjectDir"]
+    # Checks if project exists
+    if args.ProjectName not in ProjectIndexDict.keys():
+        print("Error: Project <" + args.ProjectName + "> doesnt exist")
+        exit(1)
+        
+    # Gets project dir
+    ProjectDir = ProjectIndexDict[args.ProjectName]
     
     LogDir = ProjectDir + "/log/"
     WorkloadFile = open(ProjectDir + "/src_json/Workload.json", "r")
@@ -531,10 +542,8 @@ def logparser(args):
                 
         # TODO: Latencies for DVFS messages
 
-    ConfigDict["MostRecentProject"] = args.ProjectName
-    ConfigFile.seek(0)
-    ConfigFile.truncate(0)
-    ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
-    ConfigFile.close()
+    with open(os.getenv("HIBRIDA_CONFIG_FILE"), "w") as ConfigFile:
+        ConfigDict["MostRecentProject"] = args.ProjectName
+        ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     
     print("\nlogparser executed successfully!")

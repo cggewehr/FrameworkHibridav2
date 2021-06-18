@@ -1,5 +1,7 @@
-import os
+
 import json
+import os
+import shutil
 
 def setConfig(args):
 
@@ -8,7 +10,7 @@ def setConfig(args):
         ConfigDict = json.loads(ConfigFile.read())
         
     # Gets framework project index
-    with open(ConfigDict["HibridaPath"] + "/projectIndex.json", "r") as ProjectIndexFile:
+    with open(ConfigDict["HibridaPath"] + "/data/projectIndex.json", "r") as ProjectIndexFile:
         ProjectIndexDict = json.loads(ProjectIndexFile.read())
     
     # Sets default project as MRU project
@@ -21,8 +23,12 @@ def setConfig(args):
         print("Error: Project <" + args.ProjectName + "> doesnt exist")
         exit(1)
         
-    # Gets project dir
+    # Gets project dir from framework project index
     ProjectDir = ProjectIndexDict[args.ProjectName]
+
+    # Gets project info from project-specific info file
+    with open(ProjectDir + "/projectInfo.json", "r") as ProjectInfoFile:
+        ProjectDict = json.loads(ProjectInfoFile.read())
     
     # Set project's Allocation Map file
     if args.AllocationMapFile:
@@ -108,7 +114,7 @@ def setConfig(args):
             exit(1)
 
         #ConfigDict["Projects"][args.ProjectName]["AllocationMapFile"] = AllocationMapFile
-        copy(AllocationMapFile, os.path.join(ProjectDir, "src_json", "AllocationMap.json"))
+        shutil.copy(AllocationMapFile, os.path.join(ProjectDir, "src_json", "AllocationMap.json"))
         ProjectDict["AllocationMapFile"] = AllocationMapFile
         print("Project <" + args.ProjectName + "> Allocation Map File set as <" + os.path.abspath(AllocationMapFile) + ">")
     
@@ -193,7 +199,7 @@ def setConfig(args):
             exit(1)
 
         #ConfigDict["Projects"][args.ProjectName]["ClusterClocksFile"] = ClusterClocksFile
-        copy(ClusterClocksFile, os.path.join(ProjectDir, "src_json", "AllocationMap.json"))
+        shutil.copy(ClusterClocksFile, os.path.join(ProjectDir, "src_json", "ClusterClocks.json"))
         ProjectDict["ClusterClocksFile"] = ClusterClocksFile
         print("Project <" + args.ProjectName + "> Cluster Clocks file set as <" + os.path.abspath(ClusterClocksFile) + ">")
     
@@ -281,7 +287,7 @@ def setConfig(args):
             exit(1)
         
         #ConfigDict["Projects"][args.ProjectName]["TopologyFile"] = TopologyFile
-        copy(TopologyFile, os.path.join(ProjectDir, "src_json", "Topology.json"))
+        shutil.copy(TopologyFile, os.path.join(ProjectDir, "src_json", "Topology.json"))
         ProjectDict["TopologyFile"] = TopologyFile
         print("Project <" + args.ProjectName + "> Topology file set as <" + TopologyFile + ">")
             
@@ -369,7 +375,7 @@ def setConfig(args):
             exit(1)
 
         #ConfigDict["Projects"][args.ProjectName]["WorkloadFile"] = WorkloadFile
-        copy(WorkloadFile, os.path.join(ProjectDir, "src_json", "Workload.json"))
+        shutil.copy(WorkloadFile, os.path.join(ProjectDir, "src_json", "Workload.json"))
         ProjectDict["WorkloadFile"] = WorkloadFile
         print("Project <" + args.ProjectName + "> Workload file set as <" + WorkloadFile + ">")
             
@@ -393,6 +399,9 @@ def setConfig(args):
         with open(os.getenv("HIBRIDA_CONFIG_FILE"), "w") as ConfigFile:
             ConfigDict["MostRecentProject"] = args.ProjectName
             ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
-        
+
+    if ProjectDict["AllocationMapFile"] is not None and ProjectDict["ClusterClocksFile"] is not None and ProjectDict["TopologyFile"] is not None and ProjectDict["WorkloadFile"] is not None:
+        print("Project <" + ProjectDict["ProjectName"] + "> is ready for flowgen")
+
     print("setConfig ran successfully!")
     

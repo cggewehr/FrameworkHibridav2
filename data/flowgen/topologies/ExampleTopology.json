@@ -1,16 +1,37 @@
 {
-    "IsStandaloneBus": false,
-    "AmountOfPEs": 25,
+    "CrossbarWrapperIDs": [
+        2
+    ],
+    "DVFSServiceID": "0000FFFF",
+    "LargestCrossbar": 7,
+    "DVFSAmountOfVoltageLevels": 2,
+    "SquareNoCBound": 5,
+    "IsStandaloneCrossbar": false,
+    "DataWidth": 32,
+    "CrossbarPEIDs": {
+        "Crossbar0": [
+            2,
+            23,
+            24,
+            19,
+            14,
+            9,
+            4
+        ]
+    },
+    "LargestBus": 6,
+    "AmountOfPEsInCrossbars": [
+        7
+    ],
     "AmountOfCrossbars": 1,
-    "BusWrapperIDs": [
+    "BusWrapperAddresses": [
         5,
         8
     ],
-    "AmountOfPEsInBuses": [
-        6,
-        6
+    "BaseNoCDimensions": [
+        3,
+        3
     ],
-    "IsStandaloneCrossbar": false,
     "WrapperAddresses": [
         0,
         1,
@@ -38,13 +59,20 @@
         2,
         2
     ],
-    "SquareNoCBound": 5,
-    "CrossbarWrapperAddresses": [
-        2
+    "DVFSCounterResolution": 15,
+    "BusWrapperIDs": [
+        5,
+        8
     ],
-    "DVFSEnable": false,
-    "MasterPEPos": 0,
+    "AmountOfBuses": 2,
     "BridgeBufferSize": 4,
+    "AmountOfPEsInBuses": [
+        6,
+        6
+    ],
+    "AmountOfWrappers": 3,
+    "AmountOfPEs": 25,
+    "MasterPEPos": 0,
     "BusPEIDs": {
         "Bus0": [
             7,
@@ -63,37 +91,9 @@
             22
         ]
     },
-    "DVFSServiceID": "0000FFFF",
-    "LargestBus": 6,
-    "DVFSAmountOfVoltageLevels": 2,
-    "AmountOfBuses": 2,
-    "CrossbarWrapperIDs": [
+    "CrossbarWrapperAddresses": [
         2
     ],
-    "DataWidth": 32,
-    "BusWrapperAddresses": [
-        5,
-        8
-    ],
-    "DVFSCounterResolution": 15,
-    "BaseNoCDimensions": [
-        3,
-        3
-    ],
-    "LargestCrossbar": 7,
-    "AmountOfWrappers": 3,
-    "CrossbarPEIDs": {
-        "Crossbar0": [
-            2,
-            23,
-            24,
-            19,
-            14,
-            9,
-            4
-        ]
-    },
-    "AmountOfPEsInCrossbars": [
-        7
-    ]
+    "IsStandaloneBus": false,
+    "DVFSEnable": false
 }

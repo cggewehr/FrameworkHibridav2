@@ -8,7 +8,7 @@ def run(args):
         ConfigDict = json.loads(ConfigFile.read())
         
     # Gets framework project index
-    with open(ConfigDict["HibridaPath"] + "/projectIndex.json", "r") as ProjectIndexFile:
+    with open(ConfigDict["HibridaPath"] + "/data/projectIndex.json", "r") as ProjectIndexFile:
         ProjectIndexDict = json.loads(ProjectIndexFile.read())
     
     # Sets default project as MRU project
@@ -30,6 +30,7 @@ def run(args):
         print("Error: ProjectDir <" + ProjectDir + "> does not exist")
         exit(1)
     
+    # Tool-specific behaviour
     if args.Tool == "cadence":
         
         # Check if makefile exists
@@ -53,11 +54,9 @@ def run(args):
         print("Error: Tool <" + args.Tool + "> is not recognized")
         exit(1)
     
-    ConfigDict["MostRecentProject"] = args.ProjectName
-    ConfigFile.seek(0)
-    ConfigFile.truncate(0)
-    ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
-    ConfigFile.close()
+    with open(os.getenv("HIBRIDA_CONFIG_FILE"), "w") as ConfigFile:
+        ConfigDict["MostRecentProject"] = args.ProjectName
+        ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
     
     print("run executed successfully!")
     
