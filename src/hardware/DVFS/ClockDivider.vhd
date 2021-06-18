@@ -34,30 +34,78 @@ end entity ClockDivider;
 
 architecture RTL of ClockDivider is
 
-	signal NReg, MReg, CounterReg: unsigned(CounterBitWidth - 1 downto 0);
+	signal NCounterReg, MCounterReg, DividerCounterReg: unsigned(CounterBitWidth - 1 downto 0);
 	signal ComparatorReg: std_logic;
+
+	signal NSyncReg, MSyncReg, SyncCounterReg: unsigned(CounterBitWidth - 1 downto 0);
+	signal SyncFlagReg: std_logic;
 
 begin
 
-	-- Propagates clock when N < M
-	GatedClock: ClockGated <= Clock when ComparatorReg = '1' else '0';
-
-	-- Control writing to N and M registers
-	process(Clock, Reset) begin
+	--
+	SyncRegs: process(Clock, Reset) begin
 
 		if Reset = '1' then
 
-			-- Defaults to fastest possible clock
-            NReg <= (others => '1');
-            --Nreg(0) <= '1';
-			MReg <= (others => '1');
+			NSyncReg <= (others => '1');
+			MSyncReg <= (others => '1');
 
 		elsif rising_edge(Clock) then
 
 			if WriteEnable = '1' then
 
-				NReg <= unsigned(N);
-				MReg <= unsigned(M);
+				NSyncReg <= unsigned(N);
+				MSyncReg <= unsigned(M);
+
+			end if;
+
+		end if;
+
+	end process;
+
+	--
+	SyncCounter: process(Clock, Reset) begin
+
+		if Reset = '1' then
+			SyncCounterReg <= (others => '0');
+
+		elsif rising_edge(Clock) then
+			SyncCounterReg <= to_unsigned(incr(to_integer(SyncCounterReg), (2**CounterBitWidth) - 1, 0), CounterBitWidth);
+
+		end if;
+
+	end process;
+
+	--
+	SyncComparator: process(Clock, Reset) begin
+
+		if Reset = '1' then
+			SyncFlagReg <= '0';
+
+		elsif rising_edge(Clock) then
+
+			if SyncCounterReg = 0 then
+				SyncFlagReg <= '1';
+			else
+				SyncFlagReg <= '0';
+			end if; 
+
+		end if;
+
+	end process;
+
+	-- Propagates clock when N < M
+	GatedClock: ClockGated <= Clock when ComparatorReg = '1' else '0';
+
+	-- Control writing to N and M registers
+	CounterRegs: process(Clock, Reset) begin
+
+		if rising_edge(Clock) then
+
+			if SyncFlagReg = '1' then
+
+				NCounterReg <= NSyncReg;
+				MCounterReg <= MSyncReg;
 
 			end if;
 
@@ -66,19 +114,19 @@ begin
 	end process;
 
 	-- Counts from 0 to M - 1 
-	Counter: process(Clock, Reset) begin
+	DividerCounter: process(Clock, Reset) begin
 
 		if Reset = '1' then
 
-			CounterReg <= (others => '0');
+			DividerCounterReg <= (others => '0');
 
 		elsif rising_edge(Clock) then
 
 			-- Counter++ mod M
             if WriteEnable = '1' then
-                CounterReg <= (others => '0');
+                DividerCounterReg <= (others => '0');
             else
-			    CounterReg <= to_unsigned(incr(to_integer(CounterReg), to_integer(MReg) - 1, 0), CounterBitWidth);
+			    DividerCounterReg <= to_unsigned(incr(to_integer(DividerCounterReg), to_integer(MCounterReg) - 1, 0), CounterBitWidth);
             end if;
 
 		end if;
@@ -86,7 +134,7 @@ begin
 	end process;
 
 	-- Compares CounterReg to N
-	Comparator: process(Clock, Reset) begin
+	DividerComparator: process(Clock, Reset) begin
 
 		if Reset = '1' then
 
@@ -94,7 +142,7 @@ begin
 
 		elsif rising_edge(Clock) then
 
-			if CounterReg < NReg then
+			if DividerCounterReg < NCounterReg then
 				ComparatorReg <= '1';
 			else
 				ComparatorReg <= '0';
