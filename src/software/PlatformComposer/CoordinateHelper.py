@@ -62,7 +62,7 @@ class CoordinateHelper:
             self.PEPosStack.append(self.XYToSequential(x = xSquare, y = ySquare, xMax = self.SquareNoCBound))
             
             # If computed PEPos values (for Bus/Crossbars) + base NoC PEs == 
-            if len(self.PEPosStack) + (self.BaseNoCDimensions[0] * self.BaseNoCDimensions[1]) == self.SquareNoCBound * self.SquareNoCBound:
+            if len(self.PEPosStack) + (self.BaseNoCDimensions[0] * self.BaseNoCDimensions[1]) >= self.SquareNoCBound * self.SquareNoCBound:
                 self.PEPosStack.reverse()
                 break
             

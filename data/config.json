@@ -1,20 +1,20 @@
 {
+    "DefaultProjDir": "/home/usr/cgewehr/Desktop/HibridaProjects",
     "TopologiesPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies"
     ],
-    "MostRecentProject": "projeto",
+    "HibridaPath": "/home/usr/cgewehr/Desktop/FrameworkHibrida",
     "ApplicationsPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/applications"
     ],
     "HibridaConfigFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/config.json",
-    "HibridaPath": "/home/usr/cgewehr/Desktop/FrameworkHibrida",
     "WorkloadsPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads"
     ],
+    "MostRecentProject": "DVFStest",
     "AllocationMapsPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps"
     ],
-    "DefaultProjDir": "/home/usr/cgewehr/Desktop/HibridaProjects",
     "HibridaName": "hibrida",
     "ClusterClocksPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks"

@@ -51,20 +51,6 @@ def projgen(args):
     with open(ConfigDict["HibridaPath"] + "/data/projectIndex.json", "w") as ProjectIndexFile:
         ProjectIndexDict[args.ProjectName] = ProjectDir
         ProjectIndexFile.write(json.dumps(ProjectIndexDict, sort_keys = False, indent = 4))
-
-    # Creates info JSON for newly created project
-    with open(ProjectDir + "/projectInfo.json", "w") as ProjectInfoFile:
-        
-        ProjectDict = dict()
-        
-        ProjectDict["ProjectName"] = args.ProjectName
-        ProjectDict["ProjectDir"] = ProjectDir
-        ProjectDict["AllocationMapFile"] = None
-        ProjectDict["ClusterClocksFile"] = None
-        ProjectDict["TopologyFile"] = None
-        ProjectDict["WorkloadFile"] = None
-        
-        ProjectInfoFile.write(json.dumps(ProjectDict, sort_keys = False, indent = 4))
         
     # Updates framework config file with newly created project as MRU project
     with open(os.environ["HIBRIDA_CONFIG_FILE"], "w") as ConfigFile:
@@ -79,6 +65,20 @@ def projgen(args):
     os.makedirs(ProjectDir + "/log", exist_ok = True)
     os.makedirs(ProjectDir + "/platform", exist_ok = True)
     os.makedirs(ProjectDir + "/src_json", exist_ok = True)
+
+    # Creates info JSON for newly created project
+    with open(ProjectDir + "/projectInfo.json", "w") as ProjectInfoFile:
+        
+        ProjectDict = dict()
+        
+        ProjectDict["ProjectName"] = args.ProjectName
+        ProjectDict["ProjectDir"] = ProjectDir
+        ProjectDict["AllocationMapFile"] = None
+        ProjectDict["ClusterClocksFile"] = None
+        ProjectDict["TopologyFile"] = None
+        ProjectDict["WorkloadFile"] = None
+
+        ProjectInfoFile.write(json.dumps(ProjectDict, sort_keys = False, indent = 4))
 
     # Tool-specific behaviour
     if args.Tool is not None:

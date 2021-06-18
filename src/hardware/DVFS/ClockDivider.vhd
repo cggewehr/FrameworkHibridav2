@@ -153,6 +153,6 @@ begin
 	end process;
 
     -- Ensures N <= M for every new write
-    assert not (NReg > MReg) report "New N value <" & integer'image(to_integer(NReg)) & "> greater then new M value <" & integer'image(to_integer(MReg)) & ">" severity error;
+    assert not (NCounterReg > MCounterReg) report "New N value <" & integer'image(to_integer(NCounterReg)) & "> greater then new M value <" & integer'image(to_integer(MCounterReg)) & ">" severity error;
 
 end architecture RTL;

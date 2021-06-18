@@ -143,7 +143,8 @@ begin
 			-- Waits for new packet at local port
 			if ControllerState = Sidle then
 
-				if LocalPortData(HalfDataWidth - 1 downto 0) = BaseNoCPos and LocalPortTX = '1' and LocalPortCreditI = '1' then
+				--if LocalPortData(HalfDataWidth - 1 downto 0) = BaseNoCPos and LocalPortTX = '1' and LocalPortCreditI = '1' then
+				if LocalPortTX = '1' and LocalPortCreditI = '1' then
 					ControllerState <= Ssize;
 				else
 					ControllerState <= Sidle;
@@ -181,10 +182,10 @@ begin
 			-- Waits for end of packet
 			elsif ControllerState = SwaitUntilMSGFinished then
 
-				if LocalPortTX = '0' then
-					ControllerState <= Sidle;
-				else
+				if LocalPortTX = '1' then
 					ControllerState <= SwaitUntilMSGFinished;
+				else
+					ControllerState <= Sidle;
 				end if;
 
 			end if;

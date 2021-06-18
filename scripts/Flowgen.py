@@ -127,8 +127,8 @@ def flowgen(args):
             for ThreadInSet in ThreadSet:
             
                 # Get Thread object from thread name in Allocation Map
-                ThreadName = ThreadInWorkload.ThreadName
-                ThreadInWorkload = self.Workload.getThread(ThreadName = ThreadName)
+                ThreadName = ThreadInSet.ParentApplication.AppName + "." + ThreadInSet.ThreadName
+                ThreadInWorkload = Workload.getThread(ThreadName = ThreadName)
                 
                 # Checks if Thread, as defined in Allocation Map, exists in Workload
                 if ThreadInWorkload is None:
