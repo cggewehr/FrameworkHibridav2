@@ -52,9 +52,15 @@ class Packet:
         
         # Make service-specific objects based on Service entry field
         if ServiceID == Packet.DVFSServiceID:
-            return DVFSPacket(ParentLog = ParentLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum)
+            if DVFSPacket.EnableParsing:
+                return DVFSPacket(ParentLog = ParentLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum)
+            else:
+                return None
         elif ServiceID == Packet.SyntheticTrafficServiceID:
-            return SyntheticTrafficPacket(ParentLog = ParentLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum)
+            if SyntheticTrafficPacket.EnableParsing:
+                return SyntheticTrafficPacket(ParentLog = ParentLog, TargetPEPos = TargetPEPos, Size = Size, Service = ServiceID, Data = Data, Timestamp = Timestamp, Checksum = Checksum)
+            else:
+                return None
         else:
             print("Error: ServiceID <" + str(ServiceID) + "> not recognized for entry <" + str(i) + ": " + line + "> in input log of PE <" + str(PEPos) + ">")
             exit(1)
@@ -91,34 +97,30 @@ class DVFSPacket(Packet):
 
     def __init__(self, ParentLog, TargetPEPos, Size, Service, Timestamp, Checksum, Data):
     
-        # Do nothing if parsing of DVFS service packets is not enabled through the command line
-        if not DVFSPacket.EnableParsing:
-            return None
-    
         super().__init__(ParentLog = ParentLog, TargetPEPos = TargetPEPos, Size = Size, Service = Packet.DVFSServiceID, Timestamp = Timestamp, Checksum = Checksum)
         
         # Parse ConfigFlit into DVFSController expected fields
         #ConfigFlit = str(Data[0])[::-1]  # Get string as VHDL slv (highest order bit at lowest index)
         ConfigFlit = str(Data[0])  # Get string as VHDL slv (highest order bit at lowest index)
-        print(ConfigFlit)
-        print(len(ConfigFlit))
+        #print(ConfigFlit)
+        #print(len(ConfigFlit))
         ConfigFlit = "".join(format(int(FlitHexChar, 16), "04b") for FlitHexChar in ConfigFlit)  # Converts Hex string, as saved in log txt, to binary string
         ConfigFlit = ConfigFlit[::-1]
-        print(ConfigFlit)
-        print(len(ConfigFlit))
+        #print(ConfigFlit)
+        #print(len(ConfigFlit))
         # TODO: Turn hex string into binary
         self.SupplySwitch = int(ConfigFlit[DVFSPacket.DataWidth - 1 : DVFSPacket.VoltageLevelFieldSize : -1], 2)
         #print(DVFSPacket.CounterResolution)
         self.IsNoC = ConfigFlit[DVFSPacket.VoltageLevelFieldSize]
-        print("N Bit Field: " + ConfigFlit[2*DVFSPacket.CounterResolution - 1: DVFSPacket.CounterResolution - 1: -1])
-        print("N Bit Field Length: " + str(len(ConfigFlit[2*DVFSPacket.CounterResolution - 1: DVFSPacket.CounterResolution - 1: -1])))
+        #print("N Bit Field: " + ConfigFlit[2*DVFSPacket.CounterResolution - 1: DVFSPacket.CounterResolution - 1: -1])
+        #print("N Bit Field Length: " + str(len(ConfigFlit[2*DVFSPacket.CounterResolution - 1: DVFSPacket.CounterResolution - 1: -1])))
         self.N = int(ConfigFlit[2*DVFSPacket.CounterResolution - 1: DVFSPacket.CounterResolution - 1: -1], 2)
-        print("N: " + str(self.N))
+        #print("N: " + str(self.N))
         #self.M = int(ConfigFlit[DVFSPacket.CounterResolution : -1 : -1], 2)
-        print("M Bit Field: " + ConfigFlit[DVFSPacket.CounterResolution - 1: : -1])
-        print("M length: " + str(len(ConfigFlit[DVFSPacket.CounterResolution - 1: : -1])))
+        #print("M Bit Field: " + ConfigFlit[DVFSPacket.CounterResolution - 1: : -1])
+        #print("M length: " + str(len(ConfigFlit[DVFSPacket.CounterResolution - 1: : -1])))
         self.M = int(ConfigFlit[DVFSPacket.CounterResolution - 1: : -1], 2)
-        print("M: " + str(self.M))
+        #print("M: " + str(self.M))
 
     @staticmethod
     def action(outEntry, matchingInEntry):
@@ -205,13 +207,9 @@ class SyntheticTrafficPacket(Packet):
     EnableParsing = False
         
     def __init__(self, ParentLog, TargetPEPos, Size, Service, Timestamp, Checksum, Data):
-    
-        # Do nothing if parsing of DVFS service packets is not enabled through the command line
-        if not SyntheticTrafficPacket.EnableParsing:
-            return None
             
         super().__init__(ParentLog = ParentLog, TargetPEPos = TargetPEPos, Size = Size, Service = Packet.SyntheticTrafficServiceID, Timestamp = Timestamp, Checksum = Checksum)
-        
+
         self.AppID = int(Data[0])
         self.TargetThreadID = int(Data[1])
         self.SourceThreadID = int(Data[2])
@@ -404,7 +402,7 @@ def logparser(args):
                 InEntry = Packet.makePacket(LogLine = line, ParentLog = InLogs[PEPos])
                 if InEntry is not None:
                     InLogs[PEPos].addEntry(InEntry)
-                    
+            print(len(InLogs[PEPos].Entries))
         with open(LogDir + "PE " + str(PEPos) + "/OutLog" + str(PEPos) + ".txt", "r") as OutLogFile:
         
             print("Parsing out log of PE " + str(PEPos))
@@ -414,6 +412,7 @@ def logparser(args):
                 if OutEntry is not None:
                     OutLogs[PEPos].addEntry(OutEntry)
     
+            print(len(OutLogs[PEPos].Entries))     
     print("Done parsing log files")
 
     # Tries to find an In log entry match for every Out log entry
@@ -424,6 +423,8 @@ def logparser(args):
         # Loop through all entries in current Out log
         for outEntryNumber, currentOutEntry in enumerate(currentOutLog.Entries):
                 
+            #print((currentOutLog))
+            #print(repr(currentOutEntry))
             # Check if current packet is being sent to a PE that exists (TargetPEPos < Topology.AmountOfPEs)
             try:
                 currentInLog = InLogs[currentOutEntry.TargetPEPos]
