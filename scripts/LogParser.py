@@ -91,6 +91,10 @@ class DVFSPacket(Packet):
 
     def __init__(self, ParentLog, TargetPEPos, Size, Service, Timestamp, Checksum, Data):
     
+        # Do nothing if parsing of DVFS service packets is not enabled through the command line
+        if not DVFSPacket.EnableParsing:
+            return None
+    
         super().__init__(ParentLog = ParentLog, TargetPEPos = TargetPEPos, Size = Size, Service = Packet.DVFSServiceID, Timestamp = Timestamp, Checksum = Checksum)
         
         # Parse ConfigFlit into DVFSController expected fields
@@ -119,10 +123,6 @@ class DVFSPacket(Packet):
     @staticmethod
     def action(outEntry, matchingInEntry):
 
-        # Do nothing if parsing of DVFS service packets is not enabled through the command line
-        if not DVFSPacket.EnableParsing:
-            return
-            
         # Check if current packet is within defined time bounds
         if outEntry.Timestamp < Packet.MinimumOutputTimestamp:
             return
@@ -206,23 +206,18 @@ class SyntheticTrafficPacket(Packet):
         
     def __init__(self, ParentLog, TargetPEPos, Size, Service, Timestamp, Checksum, Data):
     
+        # Do nothing if parsing of DVFS service packets is not enabled through the command line
+        if not SyntheticTrafficPacket.EnableParsing:
+            return None
+            
         super().__init__(ParentLog = ParentLog, TargetPEPos = TargetPEPos, Size = Size, Service = Packet.SyntheticTrafficServiceID, Timestamp = Timestamp, Checksum = Checksum)
+        
         self.AppID = int(Data[0])
         self.TargetThreadID = int(Data[1])
         self.SourceThreadID = int(Data[2])
         
     @staticmethod
     def action(outEntry, matchingInEntry):
-    
-        # Do nothing if parsing of SyntheticTraffic service packets is not enabled through the command line
-        if not SyntheticTrafficPacket.EnableParsing:
-            return
-        
-        # Check if current packet is within defined time bounds
-        if outEntry.Timestamp < Packet.MinimumOutputTimestamp:
-            return
-        elif Packet.MaximumOutputTimestamp is not None and outEntry.Timestamp > Packet.MaximumOutputTimestamp:
-            return
             
         if matchingInEntry is not None:
         
@@ -406,14 +401,18 @@ def logparser(args):
             print("Parsing in log of PE " + str(PEPos))
             
             for i, line in enumerate(InLogFile.read().splitlines()):
-                InLogs[PEPos].addEntry(Packet.makePacket(LogLine = line, ParentLog = InLogs[PEPos]))
+                InEntry = Packet.makePacket(LogLine = line, ParentLog = InLogs[PEPos])
+                if InEntry is not None:
+                    InLogs[PEPos].addEntry(InEntry)
                     
         with open(LogDir + "PE " + str(PEPos) + "/OutLog" + str(PEPos) + ".txt", "r") as OutLogFile:
         
             print("Parsing out log of PE " + str(PEPos))
 
             for i, line in enumerate(OutLogFile.read().splitlines()):
-                OutLogs[PEPos].addEntry(Packet.makePacket(LogLine = line, ParentLog = OutLogs[PEPos]))
+                OutEntry = Packet.makePacket(LogLine = line, ParentLog = OutLogs[PEPos])
+                if OutEntry is not None:
+                    OutLogs[PEPos].addEntry(OutEntry)
     
     print("Done parsing log files")
 
