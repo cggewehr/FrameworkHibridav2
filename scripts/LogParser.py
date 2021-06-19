@@ -11,6 +11,9 @@ class Packet:
 
     DVFSServiceID = "0000FFFF"
     SyntheticTrafficServiceID = "FFFF0000"
+    
+    MinimumOutputTimestamp = 0
+    MaximumOutputTimestamp = None
 
     def __init__(self, ParentLog, TargetPEPos, Size, Service, Timestamp, Checksum):
 
@@ -83,6 +86,8 @@ class DVFSPacket(Packet):
     DataWidth = None
     VoltageLevelFieldSize = None
     CounterResolution = None
+    
+    EnableParsing = False
 
     def __init__(self, ParentLog, TargetPEPos, Size, Service, Timestamp, Checksum, Data):
     
@@ -114,6 +119,16 @@ class DVFSPacket(Packet):
     @staticmethod
     def action(outEntry, matchingInEntry):
 
+        # Do nothing if parsing of DVFS service packets is not enabled through the command line
+        if not DVFSPacket.EnableParsing:
+            return
+            
+        # Check if current packet is within defined time bounds
+        if outEntry.Timestamp < Packet.MinimumOutputTimestamp:
+            return
+        elif Packet.MaximumOutputTimestamp is not None and outEntry.Timestamp > Packet.MaximumOutputTimestamp:
+            return
+            
         #PE = DVFSPacket.PEs[matchingInEntry.ParentLog.PEPos]
         PE = DVFSPacket.PEs[outEntry.ParentLog.PEPos]
         CommStruct = PE.CommStructure
@@ -186,6 +201,8 @@ class SyntheticTrafficPacket(Packet):
     HitCountByPE = None   
 
     DataWidth = None
+    
+    EnableParsing = False
         
     def __init__(self, ParentLog, TargetPEPos, Size, Service, Timestamp, Checksum, Data):
     
@@ -196,7 +213,17 @@ class SyntheticTrafficPacket(Packet):
         
     @staticmethod
     def action(outEntry, matchingInEntry):
+    
+        # Do nothing if parsing of SyntheticTraffic service packets is not enabled through the command line
+        if not SyntheticTrafficPacket.EnableParsing:
+            return
         
+        # Check if current packet is within defined time bounds
+        if outEntry.Timestamp < Packet.MinimumOutputTimestamp:
+            return
+        elif Packet.MaximumOutputTimestamp is not None and outEntry.Timestamp > Packet.MaximumOutputTimestamp:
+            return
+            
         if matchingInEntry is not None:
         
             latency = matchingInEntry.Timestamp - outEntry.Timestamp
@@ -308,17 +335,20 @@ def logparser(args):
     AmountOfBuses = Topology.AmountOfBuses
     AmountOfCrossbars = Topology.AmountOfCrossbars
     
+    # Get time bounds from command line
+    Packet.MinimumOutputTimestamp = args.MinimumOutputTimestamp
+    Packet.MaximumOutputTimestamp = args.MaximumOutputTimestamp
+    
     # TODO: Move these initializations into a service-specific class method
     # Inits class variables for DVFS service
     if args.DVFS:
+    
+        DVFSPacket.EnableParsing = True
         
         # Tuple = (Timestamp (in ns), Clock Frequency (in MHz))
         DVFSPacket.RouterFreq = [[(0, 1000/ClusterClocks[Router])] for Router in range(AmountOfRouters)]
         DVFSPacket.BusFreq = [[(0, 1000/ClusterClocks[Topology.Buses[Bus].BaseNoCPos])] for Bus in range(AmountOfBuses)]
         DVFSPacket.CrossbarFreq = [[(0, 1000/ClusterClocks[Topology.Crossbars[Crossbar].BaseNoCPos])] for Crossbar in range(AmountOfCrossbars)]
-        
-        #DVFSPacket.Latencies = [0 for PE in range(AmountOfPEs)]
-        #DVFSPacket.LatencyCounters = [0 for PE in range(AmountOfPEs)]
 
         DVFSPacket.RouterLatencies = [0 for Router in range(AmountOfRouters)]
         DVFSPacket.RouterLatencyCounters = [0 for Router in range(AmountOfRouters)]
@@ -339,6 +369,8 @@ def logparser(args):
     
     # Inits class variables for synthetic traffic service
     if args.PE or args.Thread:
+    
+        SyntheticTrafficPacket.EnableParsing = True
     
         SyntheticTrafficPacket.AvgLatenciesByThread = [[[0 for TargetThread in Application.Threads] for SourceThread in Application.Threads] for Application in Workload.Applications]
         #avgLatenciesCountersByFlow = [[[0 for OutgoingFlow in TargetThread.OutgoingFlows] for SourceThread in Application.Threads] for Application in Workload.Applications]
@@ -392,12 +424,6 @@ def logparser(args):
 
         # Loop through all entries in current Out log
         for outEntryNumber, currentOutEntry in enumerate(currentOutLog.Entries):
-            
-            # Check if current packet is within defined time bounds
-            if currentOutEntry.Timestamp < args.MinimumOutputTimestamp:
-                continue
-            elif args.MaximumOutputTimestamp is not None and currentOutEntry.Timestamp > args.MaximumOutputTimestamp:
-                break
                 
             # Check if current packet is being sent to a PE that exists (TargetPEPos < Topology.AmountOfPEs)
             try:

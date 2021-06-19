@@ -3,8 +3,6 @@ import AppComposer
 import PlatformComposer
 from fractions import Fraction
 
-# TODO: Extend supply voltage possibilities to > 2
-
 # This script generate DVFS AppComposer Applications for a given network topology and router-grained previously computed clock frequencies.
 def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFrequencies, CrossbarClockFrequencies, GenRouterGrained = True, GenStructGrained = True, GenGlobalGrained = True, GenStaticClocked = False,  GenNoDVFS = True, DataWidth = 32, InputClockFrequency = 250, QuantumTime = 1000000, SaveToFile = True, ReturnAsJSON = False):
         
@@ -75,13 +73,6 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                 print("Error: Amount of Crossbars <" + str(len(ClocksInQuantum)) + "> for Quantum <" + str(i) + "> differs from amount of Crossbars from Platform object <" + str(AmountOfCrossbars) + ">")
                 exit(1)
 
-    # Clock frequencies per router + per bus + per crossbar, per Workload
-    #ClockFrequenciesBB = [48, 32, 0, 45, 15, 16, 16, 30, 75, 30, 48, 24, 32, 45, 23.625, 48, 24, 48, 23.785, 12.215, 24, 24, 24, 48, 16] + [24, 17.75875]  # Workload BB, frequency in MHz
-    #ClockFrequenciesMM = [30, 51.4275, 0, 24.4275, 24.4275, 90, 150, 0, 90, 47.57, 22.82, 90, 0, 22.5, 22.82, 47.57, 90, 0, 150, 90, 24.4275, 24.4275, 0, 51.2475, 30] + [23.3025, 23.3025]  # Workload MM, frequency in MHz
-    #ClockFrequenciesAA = [197.5, 230.375, 62.5, 230.375, 197.5, 224.125, 115.375, 62.5, 84.125, 224.125, 63, 80, 12.25, 80, 71, 17.5, 102.75, 72.5, 98.25, 148.5, 90.5, 90.5, 93.25, 88.25, 200] + [36.5, 38.5]  # Workload AA, frequency in MHz
-    #ClockFrequenciesHH = [197.5, 230.375, 62.5, 90, 30, 224.125, 115.375, 60, 150, 60, 63, 80, 0, 30, 47.25, 48, 16, 16, 47.57, 23.6775, 32, 16, 16, 32, 16] + [36.5, 35.5175] # Workload HH, frequency in MHz
-    #ClockFrequencies = [ClockFrequenciesBB, ClockFrequenciesMM, ClockFrequenciesAA, ClockFrequenciesHH]
-
     if GenRouterGrained:
     
         # Make Application
@@ -112,7 +103,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                 if PE.CommStructure == "NoC":
                 
                     TargetFrequency = RouterClockFrequencies[Quantum][PE.BaseNoCPos]
-                    DivRatio = Fraction(TargetFrequency / InputClockFrequency).limit_denominator(2**DVFSCounterResolution)
+                    DivRatio = Fraction(TargetFrequency / InputClockFrequency).limit_denominator((2**DVFSCounterResolution) - 1)
                     
                 elif PE.CommStructure == "Bus":
                 
@@ -125,7 +116,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
  
                     try:
                         TargetFrequency = BusClockFrequencies[Quantum][BusID]
-                        DivRatio = Fraction(TargetFrequency / InputClockFrequency).limit_denominator(2**DVFSCounterResolution)
+                        DivRatio = Fraction(TargetFrequency / InputClockFrequency).limit_denominator((2**DVFSCounterResolution) - 1)
                     except TypeError:
                         print("Error: Cant find a BusID for PEPos <" + str(PEPos) + ">")
                         exit(1)
@@ -141,7 +132,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
 
                     try:
                         TargetFrequency = CrossbarClockFrequencies[Quantum][CrossbarID]
-                        DivRatio = Fraction(TargetFrequency / InputClockFrequency).limit_denominator(2**DVFSCounterResolution)
+                        DivRatio = Fraction(TargetFrequency / InputClockFrequency).limit_denominator((2**DVFSCounterResolution) - 1)
                     except TypeError:
                         print("Error: Cant find a CrossbarID for PEPos <" + str(PEPos) + ">")
                         exit(1)
@@ -154,6 +145,12 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                 if TargetFrequency > InputClockFrequency:
                     print("Error: Target frequency <" + str(TargetFrequency) + " MHz> greater than input frequency <" + str(InputClockFrequency) + " MHz> for PEPos <" + str(PEPos) + "> Quantum <" + str(Quantum) + ">")  
                     exit(1)              
+
+                # Sets to minimum frequency if computed frequency = 0
+                if DivRatio.Numerator == 0:
+                    print("Warning: Setting frequency of 0 MHz to <" str((1/(2**DVFSCounterResolution) - 1) * InputClockFrequency) + "> MHz for PE <" + str(PEPos) + ">, Quantum <" + str(Quantum) + ">")
+                    DivRatio.Numerator = 1
+                    DivRatio.Denominator = (2**DVFSCounterResolution) - 1
 
                 # Determines power switch enable signal on config flit
                 SupplySwitchBit = '1' if DivRatio > Fraction(1, 2) else '0' 
@@ -187,7 +184,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             AppDict["RouterGrained"] = DVFSApp
                     
         # Write Router-grained DVFS Application to a JSON file
-        DVFSApp.toJSON(SaveToFile = True, FileName = "DVFSAppRouterGrained" + str(PlatformName))
+        DVFSApp.toJSON(SaveToFile = True, FileName = "DVFSAppRouterGrained" + str(PlatformName) + "Resolution" + str(DVFSCounterResolution))
 
     # Generates Struct-grained DVFS App (Whole NoC + All Buses + All Crossbars). Skipped if standalone NoC (no Bus/Crossbars)    
     if GenStructGrained and (AmountOfCrossbars > 0 or AmountOfBuses > 0):
@@ -221,7 +218,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                 if PE.CommStructure == "NoC":
                 
                     # Max Router clock defines all other Routers'
-                    DivRatio = Fraction(max(RouterClockFrequencies[Quantum]) / InputClockFrequency).limit_denominator(2**DVFSCounterResolution)
+                    DivRatio = Fraction(max(RouterClockFrequencies[Quantum]) / InputClockFrequency).limit_denominator((2**DVFSCounterResolution) - 1)
                     
                 elif PE.CommStructure == "Bus":
                 
@@ -233,7 +230,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                             BusID = i
                             
                     try:
-                        DivRatio = Fraction(BusClockFrequencies[Quantum][BusID] / InputClockFrequency).limit_denominator(2**DVFSCounterResolution)
+                        DivRatio = Fraction(BusClockFrequencies[Quantum][BusID] / InputClockFrequency).limit_denominator((2**DVFSCounterResolution) - 1)
                     except TypeError:
                         print("Error: Cant find a BusID for PEPos <" + str(PEPos) + ">")
                         exit(1)
@@ -248,7 +245,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                             CrossbarID = i
                             
                     try:
-                        DivRatio = Fraction(CrossbarClockFrequencies[Quantum][CrossbarID] / InputClockFrequency).limit_denominator(2**DVFSCounterResolution)
+                        DivRatio = Fraction(CrossbarClockFrequencies[Quantum][CrossbarID] / InputClockFrequency).limit_denominator((2**DVFSCounterResolution) - 1)
                     except TypeError:
                         print("Error: Cant find a BusID for PEPos <" + str(PEPos) + ">")
                         exit(1)
@@ -256,6 +253,12 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                 else:
                     print("Error: Invalid CommStructure value <" + str(PE.CommStructure) + "> for PE <" + str(PEPos) + ">. Acceptable values are [NoC, Bus, Crossbar].")
                 
+                # Sets to minimum frequency if computed frequency = 0
+                if DivRatio.Numerator == 0:
+                    print("Warning: Setting frequency of 0 MHz to <" str((1/(2**DVFSCounterResolution) - 1) * InputClockFrequency) + "> MHz for PE <" + str(PEPos) + ">, Quantum <" + str(Quantum) + ">")
+                    DivRatio.Numerator = 1
+                    DivRatio.Denominator = (2**DVFSCounterResolution) - 1
+                    
                 # Determines power switch enable signal on config flit
                 SupplySwitchBit = '1' if DivRatio > Fraction(1, 2) else '0' 
                     
@@ -281,7 +284,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             
         # Write struct-grained DVFS Application to a JSON file
         if SaveToFile:
-            DVFSApp.toJSON(SaveToFile = True, FileName = "DVFSAppStructGrained" + str(PlatformName))
+            DVFSApp.toJSON(SaveToFile = True, FileName = "DVFSAppStructGrained" + str(PlatformName) + "Resolution" + str(DVFSCounterResolution))
         
     #   
     if GenGlobalGrained:
@@ -323,7 +326,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                     CrossbarMaxFreq = 0
                     
                 MaxClockFreq = max(NoCMaxFreq, BusMaxFreq, CrossbarMaxFreq)
-                DivRatio = Fraction(MaxClockFreq / InputClockFrequency).limit_denominator(2**DVFSCounterResolution)
+                DivRatio = Fraction(MaxClockFreq / InputClockFrequency).limit_denominator((2**DVFSCounterResolution) - 1)
                 
                 # Determines power switch enable signal on config flit
                 SupplySwitchBit = '1' if DivRatio > Fraction(1, 2) else '0' 
@@ -350,7 +353,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             
         # Write global-grained DVFS Application to a JSON file
         if SaveToFile:
-            DVFSApp.toJSON(SaveToFile = True, FileName = "DVFSAppGlobalGrained" + str(PlatformName))    
+            DVFSApp.toJSON(SaveToFile = True, FileName = "DVFSAppGlobalGrained" + str(PlatformName) + "Resolution" + str(DVFSCounterResolution))    
          
     if GenStaticClocked:
         
@@ -380,7 +383,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
 
                 # Determines N and M (numerator and denominator) on config flit
                 #DivRatio = Fraction(MaxFrequency).limit_denominator(Resolution)
-                DivRatio = Fraction(1, 1).limit_denominator(2**DVFSCounterResolution)
+                DivRatio = Fraction(1, 1).limit_denominator((2**DVFSCounterResolution) - 1)
                 
                 # Determines power switch enable signal on config flit
                 SupplySwitchBit = '1' if DivRatio > Fraction(1, 2) else '0' 
