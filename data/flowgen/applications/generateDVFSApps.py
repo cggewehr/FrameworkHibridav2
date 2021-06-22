@@ -4,7 +4,7 @@ import PlatformComposer
 from fractions import Fraction
 
 # This script generate DVFS AppComposer Applications for a given network topology and router-grained previously computed clock frequencies.
-def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFrequencies, CrossbarClockFrequencies, GenRouterGrained = True, GenStructGrained = True, GenGlobalGrained = True, GenStaticClocked = False,  GenNoDVFS = True, DataWidth = 32, InputClockFrequency = 250, QuantumTime = 1000000, SaveToFile = True, ReturnAsJSON = False):
+def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFrequencies, CrossbarClockFrequencies, GenRouterGrained = True, GenStructGrained = True, GenGlobalGrained = True, GenStaticClocked = False, GenNoDVFS = True, DataWidth = 32, InputClockFrequency = 250, QuantumTime = 1000000, SaveToFile = True, ReturnAsJSON = False):
         
     if not isinstance(Platform, PlatformComposer.Platform):
         print("Error: Object given as Platform parameter is not of PlatformComposer.Platform class")
@@ -74,6 +74,8 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                 exit(1)
 
     if GenRouterGrained:
+
+        print("\nMaking Router-grained DVFS Application")
     
         # Make Application
         DVFSApp = AppComposer.Application(AppName = "DVFSApp", StartTime = 0, StopTime = 0)
@@ -146,11 +148,16 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                     print("Error: Target frequency <" + str(TargetFrequency) + " MHz> greater than input frequency <" + str(InputClockFrequency) + " MHz> for PEPos <" + str(PEPos) + "> Quantum <" + str(Quantum) + ">")  
                     exit(1)              
 
+                # Ensures N/M fractional representation is rounded up
+                if DivRatio * InputClockFrequency < TargetFrequency and DivRatio.numerator != 0:
+                    print("Warning: Rounding computed N/M frequency of <" + str((DivRatio.numerator)/(DivRatio.denominator) * InputClockFrequency) + " MHz> up to <" + str((DivRatio.numerator + 1)/(DivRatio.denominator) * InputClockFrequency) + "MHz>. Original frequency: " + str(TargetFrequency) + " MHz")
+                    #DivRatio.numerator += 1  # Fraction.numerator is a @property method and cant be set directly
+                    DivRatio = Fraction(numerator = DivRatio.numerator + 1, denominator = DivRatio.denominator)
+
                 # Sets to minimum frequency if computed frequency = 0
-                if DivRatio.Numerator == 0:
-                    print("Warning: Setting frequency of 0 MHz to <" str((1/(2**DVFSCounterResolution) - 1) * InputClockFrequency) + "> MHz for PE <" + str(PEPos) + ">, Quantum <" + str(Quantum) + ">")
-                    DivRatio.Numerator = 1
-                    DivRatio.Denominator = (2**DVFSCounterResolution) - 1
+                if DivRatio.numerator == 0:
+                    print("Warning: Setting computed N/M frequency of 0 MHz to <" + str((1/((2**DVFSCounterResolution) - 1)) * InputClockFrequency) + " MHz> for PE <" + str(PEPos) + ">, Quantum <" + str(Quantum) + ">. Original frequency: " + str(TargetFrequency) + " MHz")
+                    DivRatio = Fraction(numerator = 1, denominator = (2**DVFSCounterResolution) - 1)
 
                 # Determines power switch enable signal on config flit
                 SupplySwitchBit = '1' if DivRatio > Fraction(1, 2) else '0' 
@@ -184,11 +191,13 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             AppDict["RouterGrained"] = DVFSApp
                     
         # Write Router-grained DVFS Application to a JSON file
-        DVFSApp.toJSON(SaveToFile = True, FileName = "DVFSAppRouterGrained" + str(PlatformName) + "Resolution" + str(DVFSCounterResolution))
+        DVFSApp.toJSON(SaveToFile = True, FileName = PlatformName + "/DVFSAppRouterGrained" + str(PlatformName) + "Resolution" + str(DVFSCounterResolution))
 
     # Generates Struct-grained DVFS App (Whole NoC + All Buses + All Crossbars). Skipped if standalone NoC (no Bus/Crossbars)    
     if GenStructGrained and (AmountOfCrossbars > 0 or AmountOfBuses > 0):
         
+        print("\nMaking Struct-grained DVFS Application")
+
         # Make Application
         if SaveToFile:
             DVFSApp = AppComposer.Application(AppName = "DVFSApp", StartTime = 0, StopTime = 0)
@@ -252,13 +261,23 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                         
                 else:
                     print("Error: Invalid CommStructure value <" + str(PE.CommStructure) + "> for PE <" + str(PEPos) + ">. Acceptable values are [NoC, Bus, Crossbar].")
-                
+
+                # Checks if TargetFrequency < Input Frequency
+                if TargetFrequency > InputClockFrequency:
+                    print("Error: Target frequency <" + str(TargetFrequency) + " MHz> greater than input frequency <" + str(InputClockFrequency) + " MHz> for PEPos <" + str(PEPos) + "> Quantum <" + str(Quantum) + ">")  
+                    exit(1)              
+
+                # Ensures N/M fractional representation is rounded up
+                if DivRatio * InputClockFrequency < TargetFrequency and DivRatio.numerator != 0:
+                    print("Warning: Rounding computed N/M frequency of <" + str((DivRatio.numerator)/(DivRatio.denominator) * InputClockFrequency) + " MHz> up to <" + str((DivRatio.numerator + 1)/(DivRatio.denominator) * InputClockFrequency) + "MHz>. Original frequency: " + str(TargetFrequency) + " MHz")
+                    #DivRatio.numerator += 1  # Fraction.numerator is a @property method and cant be set directlyy
+                    DivRatio = Fraction(numerator = DivRatio.numerator + 1, denominator = DivRatio.denominator)
+
                 # Sets to minimum frequency if computed frequency = 0
-                if DivRatio.Numerator == 0:
-                    print("Warning: Setting frequency of 0 MHz to <" str((1/(2**DVFSCounterResolution) - 1) * InputClockFrequency) + "> MHz for PE <" + str(PEPos) + ">, Quantum <" + str(Quantum) + ">")
-                    DivRatio.Numerator = 1
-                    DivRatio.Denominator = (2**DVFSCounterResolution) - 1
-                    
+                if DivRatio.numerator == 0:
+                    print("Warning: Setting computed N/M frequency of 0 MHz to <" + str((1/((2**DVFSCounterResolution) - 1)) * InputClockFrequency) + " MHz> for PE <" + str(PEPos) + ">, Quantum <" + str(Quantum) + ">. Original frequency: " + str(TargetFrequency) + " MHz")
+                    DivRatio = Fraction(numerator = 1, denominator = (2**DVFSCounterResolution) - 1)
+
                 # Determines power switch enable signal on config flit
                 SupplySwitchBit = '1' if DivRatio > Fraction(1, 2) else '0' 
                     
@@ -284,11 +303,13 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             
         # Write struct-grained DVFS Application to a JSON file
         if SaveToFile:
-            DVFSApp.toJSON(SaveToFile = True, FileName = "DVFSAppStructGrained" + str(PlatformName) + "Resolution" + str(DVFSCounterResolution))
+            DVFSApp.toJSON(SaveToFile = True, FileName = PlatformName + "/DVFSAppStructGrained" + str(PlatformName) + "Resolution" + str(DVFSCounterResolution))
         
     #   
     if GenGlobalGrained:
         
+        print("\nMaking Global-grained DVFS Application")
+
         # Make Application
         DVFSApp = AppComposer.Application(AppName = "DVFSApp", StartTime = 0, StopTime = 0)
 
@@ -327,7 +348,23 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                     
                 MaxClockFreq = max(NoCMaxFreq, BusMaxFreq, CrossbarMaxFreq)
                 DivRatio = Fraction(MaxClockFreq / InputClockFrequency).limit_denominator((2**DVFSCounterResolution) - 1)
-                
+
+                # Checks if TargetFrequency < Input Frequency
+                if TargetFrequency > InputClockFrequency:
+                    print("Error: Target frequency <" + str(TargetFrequency) + " MHz> greater than input frequency <" + str(InputClockFrequency) + " MHz> for PEPos <" + str(PEPos) + "> Quantum <" + str(Quantum) + ">")  
+                    exit(1)              
+
+                # Ensures N/M fractional representation is rounded up
+                if DivRatio * InputClockFrequency < TargetFrequency and DivRatio.numerator != 0:
+                    print("Warning: Rounding computed N/M frequency of <" + str((DivRatio.numerator)/(DivRatio.denominator) * InputClockFrequency) + " MHz> up to <" + str((DivRatio.numerator + 1)/(DivRatio.denominator) * InputClockFrequency) + "MHz>. Original frequency: " + str(TargetFrequency) + " MHz")
+                    #DivRatio.numerator += 1  # Fraction.numerator is a @property method and cant be set directly
+                    DivRatio = Fraction(numerator = DivRatio.numerator + 1, denominator = DivRatio.denominator)
+
+                # Sets to minimum frequency if computed frequency = 0
+                if DivRatio.numerator == 0:
+                    print("Warning: Setting computed N/M frequency of 0 MHz to <" + str((1/((2**DVFSCounterResolution) - 1)) * InputClockFrequency) + " MHz> for PE <" + str(PEPos) + ">, Quantum <" + str(Quantum) + ">. Original frequency: " + str(TargetFrequency) + " MHz")
+                    DivRatio = Fraction(numerator = 1, denominator = (2**DVFSCounterResolution) - 1)
+
                 # Determines power switch enable signal on config flit
                 SupplySwitchBit = '1' if DivRatio > Fraction(1, 2) else '0' 
                     
@@ -353,10 +390,12 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             
         # Write global-grained DVFS Application to a JSON file
         if SaveToFile:
-            DVFSApp.toJSON(SaveToFile = True, FileName = "DVFSAppGlobalGrained" + str(PlatformName) + "Resolution" + str(DVFSCounterResolution))    
+            DVFSApp.toJSON(SaveToFile = True, FileName = PlatformName + "/DVFSAppGlobalGrained" + str(PlatformName) + "Resolution" + str(DVFSCounterResolution))    
          
     if GenStaticClocked:
         
+        print("\nMaking static clocked DVFS Application")
+
         # Make Application
         DVFSApp = AppComposer.Application(AppName = "DVFSApp" + str(PlatformName), StartTime = 0, StopTime = 0)
 
@@ -385,6 +424,22 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
                 #DivRatio = Fraction(MaxFrequency).limit_denominator(Resolution)
                 DivRatio = Fraction(1, 1).limit_denominator((2**DVFSCounterResolution) - 1)
                 
+                # Checks if TargetFrequency < Input Frequency
+                if TargetFrequency > InputClockFrequency:
+                    print("Error: Target frequency <" + str(TargetFrequency) + " MHz> greater than input frequency <" + str(InputClockFrequency) + " MHz> for PEPos <" + str(PEPos) + "> Quantum <" + str(Quantum) + ">")  
+                    exit(1)              
+
+                # Ensures N/M fractional representation is rounded up
+                if DivRatio * InputClockFrequency < TargetFrequency and DivRatio.numerator != 0:
+                    print("Warning: Rounding computed N/M frequency of <" + str((DivRatio.numerator)/(DivRatio.denominator) * InputClockFrequency) + " MHz> up to <" + str((DivRatio.numerator + 1)/(DivRatio.denominator) * InputClockFrequency) + "MHz>. Original frequency: " + str(TargetFrequency) + " MHz")
+                    #DivRatio.numerator += 1  # Fraction.numerator is a @property method and cant be set directly
+                    DivRatio = Fraction(numerator = DivRatio.numerator + 1, denominator = DivRatio.denominator)
+
+                # Sets to minimum frequency if computed frequency = 0
+                if DivRatio.numerator == 0:
+                    print("Warning: Setting computed N/M frequency of 0 MHz to <" + str((1/((2**DVFSCounterResolution) - 1)) * InputClockFrequency) + " MHz> for PE <" + str(PEPos) + ">, Quantum <" + str(Quantum) + ">. Original frequency: " + str(TargetFrequency) + " MHz")
+                    DivRatio = Fraction(numerator = 1, denominator = (2**DVFSCounterResolution) - 1)
+
                 # Determines power switch enable signal on config flit
                 SupplySwitchBit = '1' if DivRatio > Fraction(1, 2) else '0' 
                     
@@ -409,10 +464,12 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
         
         # Write struct-grained DVFS Application to a JSON file
         if SaveToFile:
-            DVFSApp.toJSON(SaveToFile = True, FileName = "DVFSAppStaticClocked" + str(PlatformName)) 
+            DVFSApp.toJSON(SaveToFile = True, FileName = PlatformName + "/DVFSAppStaticClocked" + str(PlatformName)) 
     
-    # Makes dummy DVFS app
+    # Makes dummy DVFS app (Topology will keep maximum frequency value)
     if GenNoDVFS:
+
+        print("\nMaking No-DVFS DVFS Application")
 
         # Make Application
         DVFSApp = AppComposer.Application(AppName = "DVFSApp" + str(PlatformName), StartTime = 0, StopTime = 0)
@@ -434,7 +491,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
         
         # Write struct-grained DVFS Application to a JSON file
         if SaveToFile:
-            DVFSApp.toJSON(SaveToFile = True, FileName = "DVFSAppNoDVFS" + str(PlatformName)) 
+            DVFSApp.toJSON(SaveToFile = True, FileName = PlatformName + "/DVFSAppNoDVFS" + str(PlatformName)) 
         
     # Return Dict containing all apps     
     return AppDict    

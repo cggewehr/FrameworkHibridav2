@@ -26,5 +26,11 @@ with open("../topologies/SetupAB36.json", "r") as AB36File:
     SetupAB36 = PlatformComposer.Platform(BaseNoCDimensions = (1,1))
     SetupAB36.fromJSON(AB36File.read())
     
-    # Generate DVFS apps
-    generateDVFSApps(Platform = SetupAB36, PlatformName = "SetupAB36", RouterClockFrequencies = RouterClockFrequencies, BusClockFrequencies = BusClockFrequencies, CrossbarClockFrequencies = CrossbarClockFrequencies)
+    # Sets counter resolutions values
+    CounterResolutions = [32, 24, 16, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2]
+    
+    # Generate DVFS apps for each counter resolution (but same computed clock frequencies at minimum granularity)
+    for res in CounterResolutions:
+        print("Generating DVFS Application for Topology <" + "SetupAB36" + "> with counter resolution <" + str(res) + ">")
+        SetupAB36.DVFSCounterResolution = res
+        generateDVFSApps(Platform = SetupAB36, PlatformName = "SetupAB36", RouterClockFrequencies = RouterClockFrequencies, BusClockFrequencies = BusClockFrequencies, CrossbarClockFrequencies = CrossbarClockFrequencies)

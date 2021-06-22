@@ -11,12 +11,18 @@ BusClockFrequencies = None
 
 CrossbarClockFrequencies = None
 
-# Open Hermes36 JSON file
+# Open Hermes36 Topology JSON file
 with open("../topologies/Hermes36.json", "r") as Hermes36File:
     
     # Get Platform object from JSON 
     Hermes36 = PlatformComposer.Platform(BaseNoCDimensions = (1,1))
     Hermes36.fromJSON(Hermes36File.read())
+
+    # Sets counter resolutions values
+    CounterResolutions = [32, 24, 16, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2]
     
-    # Generate DVFS apps
-    generateDVFSApps(Platform = Hermes36, PlatformName = "Hermes36", RouterClockFrequencies = RouterClockFrequencies, BusClockFrequencies = BusClockFrequencies, CrossbarClockFrequencies = CrossbarClockFrequencies)
+    # Generate DVFS apps for each counter resolution (but same computed clock frequencies at minimum granularity)
+    for res in CounterResolutions:
+        print("Generating DVFS Application for Topology <" + "Hermes36" + "> with counter resolution <" + str(res) + ">")
+        Hermes36.DVFSCounterResolution = res
+        generateDVFSApps(Platform = Hermes36, PlatformName = "Hermes36", RouterClockFrequencies = RouterClockFrequencies, BusClockFrequencies = BusClockFrequencies, CrossbarClockFrequencies = CrossbarClockFrequencies)
