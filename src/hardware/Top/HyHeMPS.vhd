@@ -94,23 +94,6 @@ architecture RTL of HyHeMPS is
     signal BusInputInterfaces: BusOutputInterfaces_t(0 to AmountOfBuses - 1);
     signal BusOutputInterfaces: BusInputInterfaces_t(0 to AmountOfBuses - 1);
 
-    subtype BusPEAddresses_t is HalfDataWidth_vector(0 to SizeOfLargestBus);  -- PEs + wrapper
-    type BusPEAddresses_vector is array(natural range <>) of BusPEAddresses_t;
-    
-    function GetBusPEAddresses(PEInfo: PEInfo_vector) return BusPEAddresses_vector is
-        variable BusPEAddresses: BusPEAddresses_vector(0 to AmountOfBuses - 1);
-    begin
-    
-        for i in 0 to AmountOfBuses - 1 loop
-            BusPEAddresses(i) := GetPEAddresses(PlatCFG, PEInfo, "BUS", i);
-        end loop;
-        
-        return BusPEAddresses;
-    
-    end function GetBusPEAddresses;
-    
-    constant BusPEAddresses: BusPEAddresses_vector(0 to AmountOfBuses - 1) := GetBusPEAddresses(PEInfo);
-
     -- Crossbars Parameters (from JSON config)
     constant AmountOfCrossbars: integer := jsonGetInteger(PlatCFG, "AmountOfCrossbars");
     --constant AmountOfPEsInCrossbars: integer_vector(0 to AmountOfCrossbars - 1) := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInCrossbars");
@@ -130,26 +113,8 @@ architecture RTL of HyHeMPS is
     signal CrossbarInputInterfaces: CrossbarOutputInterfaces_t(0 to AmountOfCrossbars - 1);
     signal CrossbarOutputInterfaces: CrossbarInputInterfaces_t(0 to AmountOfCrossbars - 1);
 
-    subtype CrossbarPEAddresses_t is HalfDataWidth_vector(0 to SizeOfLargestCrossbar);  -- PEs + wrapper
-    type CrossbarPEAddresses_vector is array(natural range <>) of CrossbarPEAddresses_t;
-    
-    function GetCrossbarPEAddresses(PEInfo: PEInfo_vector) return CrossbarPEAddresses_vector is
-        variable CrossbarPEAddresses: CrossbarPEAddresses_vector(0 to AmountOfCrossbars - 1);
-    begin
-    
-        for i in 0 to AmountOfCrossbars - 1 loop
-            CrossbarPEAddresses(i) := GetPEAddresses(PlatCFG, PEInfo, "XBR", i);
-        end loop;
-        
-        return CrossbarPEAddresses;
-    
-    end function GetCrossbarPEAddresses;
-    
-    constant CrossbarPEAddresses: CrossbarPEAddresses_vector(0 to AmountOfCrossbars - 1) := GetCrossbarPEAddresses(PEInfo);
-
     -- DVFS parameters (from JSON config)
     constant DVFSEnable: boolean := jsonGetBoolean(PlatCFG, "DVFSEnable");
-    -- TODO: Convert from Hex string to slv
     constant DVFSServiceID: DataWidth_t := CONV_DATAWIDTH(jsonGetString(PlatCFG, "DVFSServiceID"));
     constant DVFSAmountOfVoltageLevels: integer := jsonGetInteger(PlatCFG, "DVFSAmountOfVoltageLevels");
     constant DVFSCounterResolution: integer := jsonGetInteger(PlatCFG, "DVFSCounterResolution");
@@ -219,7 +184,6 @@ begin
                 --Clocks => Clocks,
                 Clocks => RouterClocks,
                 Reset => Reset,
-                --LocalPortInterfaces => LocalPortInterfaces
                 PEInputs => LocalPortOutputs,
                 PEOutputs => LocalPortInputs
             );
@@ -229,8 +193,30 @@ begin
     
     -- Instantiate Buses, if any are to be instantiated
     BusesCond: if AmountOfBuses > 0 generate
+
+        -- Bus Parameters (from JSON config) 
+        --  (These parameters must be conditially obtained here, instead of unconditionally in top-level declarative region along with the other Bus parameters, 
+        -- because they are only exported to JSON in PlatformComposer if there is at least one Bus in the network topology, and so, must only be read from JSON if there is at least one Bus instantiated here in VHDL)
         constant AmountOfPEsInBuses: integer_vector(0 to AmountOfBuses - 1) := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInBuses");
         constant BusWrapperIDs: integer_vector(0 to AmountOfBuses - 1) := jsonGetIntegerArray(PlatCFG, "BusWrapperIDs");
+
+        subtype BusPEAddresses_t is HalfDataWidth_vector(0 to SizeOfLargestBus);  -- PEs + wrapper
+        type BusPEAddresses_vector is array(natural range <>) of BusPEAddresses_t;
+        
+        function GetBusPEAddresses(PEInfo: PEInfo_vector; AmountOfBuses: integer; AmountOfPEsInBuses: integer_vector) return BusPEAddresses_vector is
+            variable BusPEAddresses: BusPEAddresses_vector(0 to AmountOfBuses - 1);
+        begin
+
+            for i in 0 to AmountOfBuses - 1 loop
+                BusPEAddresses(i)(0 to AmountOfPEsInBuses(i)) := GetPEAddresses(PlatCFG, PEInfo, "BUS", i);
+            end loop;
+            
+            return BusPEAddresses;
+        
+        end function GetBusPEAddresses;
+        
+        constant BusPEAddresses: BusPEAddresses_vector(0 to AmountOfBuses - 1) := GetBusPEAddresses(PEInfo, AmountOfBuses, AmountOfPEsInBuses);
+
     begin
 
         -- Instantiates a DVFS controller for every Bus
@@ -286,7 +272,7 @@ begin
                     Arbiter          => "RR",
                     --AmountOfPEs           => (AmountOfPEsInBuses(i) + 1),  -- TODO: Not add +1 if standalone
                     AmountOfPEs      => (AmountOfPEsInBuses(i) + CONV_INTEGER(not IsStandaloneBus)),
-                    PEAddresses      => BusPEAddresses(i),
+                    PEAddresses      => BusPEAddresses(i)(0 to AmountOfPEsInBuses(i)),
                     BridgeBufferSize => BridgeBufferSize,
                     IsStandalone     => IsStandaloneBus
                 )
@@ -294,9 +280,8 @@ begin
                     --Clock     => Clocks(BusWrapperIDs(i)),  -- Clock of its wrapper
                     Clock     => BusClocks(i),
                     Reset     => Reset,  -- Global reset, from entity interface
-                    --PEInterfaces => BusInterfaces(i)
-                    PEInputs  => BusOutputInterfaces(i),
-                    PEOutputs => BusInputInterfaces(i)
+                    PEInputs  => BusOutputInterfaces(i)(0 to AmountOfPEsInBuses(i)),
+                    PEOutputs => BusInputInterfaces(i)(0 to AmountOfPEsInBuses(i))
                 );
 
             assert false report "Instantiated Bus <" & integer'image(i) & "> with <" & integer'image(AmountOfPEsInBuses(i) + CONV_INTEGER(not IsStandaloneBus)) & "> elements" severity note;
@@ -330,8 +315,30 @@ begin
 
     -- Instantiate crossbars, if any are to be instantiated
     CrossbarCond: if AmountOfCrossbars > 0 generate
+
+        -- Crossbar Parameters (from JSON config) 
+        --  (These parameters must be conditially obtained here, instead of unconditionally in top-level declarative region along with the other Crossbar parameters, 
+        -- because they are only exported to JSON in PlatformComposer if there is at least one Crossbar in the network topology, and so, must only be read from JSON if there is at least one Crossbar instantiated here in VHDL)
         constant AmountOfPEsInCrossbars: integer_vector(0 to AmountOfCrossbars - 1) := jsonGetIntegerArray(PlatCFG, "AmountOfPEsInCrossbars");
         constant CrossbarWrapperIDs: integer_vector(0 to AmountOfCrossbars - 1) := jsonGetIntegerArray(PlatCFG, "CrossbarWrapperIDs");
+
+        subtype CrossbarPEAddresses_t is HalfDataWidth_vector(0 to SizeOfLargestCrossbar);  -- PEs + wrapper
+        type CrossbarPEAddresses_vector is array(natural range <>) of CrossbarPEAddresses_t;
+        
+        function GetCrossbarPEAddresses(PEInfo: PEInfo_vector; AmountOfCrossbars: integer; AmountOfPEsInCrossbars: integer_vector) return CrossbarPEAddresses_vector is
+            variable CrossbarPEAddresses: CrossbarPEAddresses_vector(0 to AmountOfCrossbars - 1);
+        begin
+        
+            for i in 0 to AmountOfCrossbars - 1 loop
+                CrossbarPEAddresses(i)(0 to AmountOfPEsInCrossbars(i)) := GetPEAddresses(PlatCFG, PEInfo, "XBR", i);
+            end loop;
+            
+            return CrossbarPEAddresses;
+        
+        end function GetCrossbarPEAddresses;
+        
+        constant CrossbarPEAddresses: CrossbarPEAddresses_vector(0 to AmountOfCrossbars - 1) := GetCrossbarPEAddresses(PEInfo, AmountOfCrossbars, AmountOfPEsInCrossbars);
+
     begin
 
         DVFSCond: if DVFSEnable generate
@@ -386,7 +393,7 @@ begin
                     ArbiterType       => "RR",
                     --AmountOfPEs           => (AmountOfPEsInCrossbars(i) + 1),  -- TODO: Not add +1 if standalone
                     AmountOfPEs       => (AmountOfPEsInCrossbars(i) + CONV_INTEGER(not IsStandaloneCrossbar)),
-                    PEAddresses       => CrossbarPEAddresses(i),
+                    PEAddresses       => CrossbarPEAddresses(i)(0 to AmountOfPEsInCrossbars(i)),
                     BridgeBufferSize  => BridgeBufferSize,
                     IsStandalone      => IsStandaloneCrossbar
                 )
@@ -394,9 +401,8 @@ begin
                     --Clock     => Clocks(CrossbarWrapperIDs(i)),  -- Clock of its wrapper
                     Clock     => CrossbarClocks(i),
                     Reset     => Reset,  -- Global reset, from entity interface
-                    --PEInterfaces => CrossbarInterfaces(i)
-                    PEInputs  => CrossbarOutputInterfaces(i),
-                    PEOutputs => CrossbarInputInterfaces(i)
+                    PEInputs  => CrossbarOutputInterfaces(i)(0 to AmountOfPEsInCrossbars(i)),
+                    PEOutputs => CrossbarInputInterfaces(i)(0 to AmountOfPEsInCrossbars(i))
                 );
             
             assert false report "Instantiated Crossbar <" & integer'image(i) & "> with <" & integer'image(AmountOfPEsInCrossbars(i) + CONV_INTEGER(not IsStandaloneCrossbar)) & "> elements" severity note;

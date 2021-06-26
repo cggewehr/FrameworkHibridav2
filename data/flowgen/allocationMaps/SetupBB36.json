@@ -213,7 +213,7 @@
         "DVFSApp.Source31",
         "BB_PIP.InpMemB",
         "MM_H264_60_A.IQ",
-        "AA_MPEG4_B.ADSP",
+        "AA_MPEG4_A.ADSP",
         "HH_MPEG4.ADSP"
     ],
     [
@@ -239,7 +239,7 @@
     ],
     [
         "DVFSApp.Source35",
-        "BB_H264_30.DCT",
+        "BB_H264_30.Quantization",
         "MM_H264_60_B.Quantization",
         "AA_MPEG4_B.VU",
         "HH_H264_60.Quantization"

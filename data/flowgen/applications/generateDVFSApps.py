@@ -150,7 +150,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
 
                 # Ensures N/M fractional representation is rounded up
                 if DivRatio * InputClockFrequency < TargetFrequency and DivRatio.numerator != 0:
-                    print("Warning: Rounding computed N/M frequency of <" + str((DivRatio.numerator)/(DivRatio.denominator) * InputClockFrequency) + " MHz> up to <" + str((DivRatio.numerator + 1)/(DivRatio.denominator) * InputClockFrequency) + "MHz>. Original frequency: " + str(TargetFrequency) + " MHz")
+                    print("Warning: Rounding computed N/M frequency of <" + str((DivRatio.numerator)/(DivRatio.denominator) * InputClockFrequency) + " MHz> up to <" + str((DivRatio.numerator + 1)/(DivRatio.denominator) * InputClockFrequency) + "MHz> for PE <" + str(PEPos) + ">, Quantum <" + str(Quantum) + ">.  Original frequency: " + str(TargetFrequency) + " MHz")
                     #DivRatio.numerator += 1  # Fraction.numerator is a @property method and cant be set directly
                     DivRatio = Fraction(numerator = DivRatio.numerator + 1, denominator = DivRatio.denominator)
 
@@ -269,7 +269,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
 
                 # Ensures N/M fractional representation is rounded up
                 if DivRatio * InputClockFrequency < TargetFrequency and DivRatio.numerator != 0:
-                    print("Warning: Rounding computed N/M frequency of <" + str((DivRatio.numerator)/(DivRatio.denominator) * InputClockFrequency) + " MHz> up to <" + str((DivRatio.numerator + 1)/(DivRatio.denominator) * InputClockFrequency) + "MHz>. Original frequency: " + str(TargetFrequency) + " MHz")
+                    print("Warning: Rounding computed N/M frequency of <" + str((DivRatio.numerator)/(DivRatio.denominator) * InputClockFrequency) + " MHz> up to <" + str((DivRatio.numerator + 1)/(DivRatio.denominator) * InputClockFrequency) + "MHz> for PE <" + str(PEPos) + ">, Quantum <" + str(Quantum) + ">.  Original frequency: " + str(TargetFrequency) + " MHz")
                     #DivRatio.numerator += 1  # Fraction.numerator is a @property method and cant be set directlyy
                     DivRatio = Fraction(numerator = DivRatio.numerator + 1, denominator = DivRatio.denominator)
 
@@ -314,7 +314,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
         DVFSApp = AppComposer.Application(AppName = "DVFSApp", StartTime = 0, StopTime = 0)
 
         # Make Threads
-        DVFSSink = AppComposer.Thread(ThreadName = "Master")
+        DVFSSink = AppComposer.Thread(ThreadName = "Sink")
         DVFSSources = [AppComposer.Thread(ThreadName = "Source" + str(i)) for i in range(0, AmountOfPEs)]
 
         # Add Threads to DVFS Application
@@ -356,7 +356,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
 
                 # Ensures N/M fractional representation is rounded up
                 if DivRatio * InputClockFrequency < TargetFrequency and DivRatio.numerator != 0:
-                    print("Warning: Rounding computed N/M frequency of <" + str((DivRatio.numerator)/(DivRatio.denominator) * InputClockFrequency) + " MHz> up to <" + str((DivRatio.numerator + 1)/(DivRatio.denominator) * InputClockFrequency) + "MHz>. Original frequency: " + str(TargetFrequency) + " MHz")
+                    print("Warning: Rounding computed N/M frequency of <" + str((DivRatio.numerator)/(DivRatio.denominator) * InputClockFrequency) + " MHz> up to <" + str((DivRatio.numerator + 1)/(DivRatio.denominator) * InputClockFrequency) + "MHz> for PE <" + str(PEPos) + ">, Quantum <" + str(Quantum) + ">.  Original frequency: " + str(TargetFrequency) + " MHz")
                     #DivRatio.numerator += 1  # Fraction.numerator is a @property method and cant be set directly
                     DivRatio = Fraction(numerator = DivRatio.numerator + 1, denominator = DivRatio.denominator)
 
@@ -397,7 +397,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
         print("\nMaking static clocked DVFS Application")
 
         # Make Application
-        DVFSApp = AppComposer.Application(AppName = "DVFSApp" + str(PlatformName), StartTime = 0, StopTime = 0)
+        DVFSApp = AppComposer.Application(AppName = "DVFSApp", StartTime = 0, StopTime = 0)
 
         # Make Threads
         DVFSSink = AppComposer.Thread(ThreadName = "Sink")
@@ -431,7 +431,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
 
                 # Ensures N/M fractional representation is rounded up
                 if DivRatio * InputClockFrequency < TargetFrequency and DivRatio.numerator != 0:
-                    print("Warning: Rounding computed N/M frequency of <" + str((DivRatio.numerator)/(DivRatio.denominator) * InputClockFrequency) + " MHz> up to <" + str((DivRatio.numerator + 1)/(DivRatio.denominator) * InputClockFrequency) + "MHz>. Original frequency: " + str(TargetFrequency) + " MHz")
+                    print("Warning: Rounding computed N/M frequency of <" + str((DivRatio.numerator)/(DivRatio.denominator) * InputClockFrequency) + " MHz> up to <" + str((DivRatio.numerator + 1)/(DivRatio.denominator) * InputClockFrequency) + "MHz> for PE <" + str(PEPos) + ">, Quantum <" + str(Quantum) + ">. Original frequency: " + str(TargetFrequency) + " MHz")
                     #DivRatio.numerator += 1  # Fraction.numerator is a @property method and cant be set directly
                     DivRatio = Fraction(numerator = DivRatio.numerator + 1, denominator = DivRatio.denominator)
 
@@ -472,7 +472,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
         print("\nMaking No-DVFS DVFS Application")
 
         # Make Application
-        DVFSApp = AppComposer.Application(AppName = "DVFSApp" + str(PlatformName), StartTime = 0, StopTime = 0)
+        DVFSApp = AppComposer.Application(AppName = "DVFSApp", StartTime = 0, StopTime = 0)
 
         # Make Threads
         DVFSSink = AppComposer.Thread(ThreadName = "Sink")

@@ -159,7 +159,7 @@ begin
 
                     else
 
-                        report "Service ID <" & CONV_STRING(service) & "> unrecognized" severity warning; 
+                        report "Service ID <" & CONV_STRING(service) & "> unrecognized" severity error; 
 
                     end if;
 

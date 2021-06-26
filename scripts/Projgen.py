@@ -125,7 +125,7 @@ def projgen(args):
                 makefile.write("# $NCVHDL_CMD_OPTS, $NCELAB_CMD_OPTS and $NCSIM_CMD_OPTS should be defined from command line or calling script\n")
                 makefile.write("NCVHDL_BASE_OPTS=-smartlib -cdslib cds.lib -logfile log/cadence/ncvhdl.log -errormax 15 -update -v93 -linedebug -status\n")
                 makefile.write("NCVHDL_OPTS=$(NCVHDL_BASE_OPTS) $(NCVHDL_CMD_OPTS)\n")
-                makefile.write("NCELAB_BASE_OPTS=-work worklib -cdslib cds.lib -logfile log/cadence/ncelab.log -errormax 15 -update -status\n")
+                makefile.write("NCELAB_BASE_OPTS=-work worklib -cdslib cds.lib -logfile log/cadence/ncelab.log -errormax 15 -update -status -vhdl_seq_nba\n")
                 makefile.write("NCELAB_OPTS=$(NCELAB_BASE_OPTS) $(NCELAB_CMD_OPTS)\n")
                 makefile.write("NCSIM_BASE_OPTS=-cdslib cds.lib -logfile log/cadence/ncsim.log -errormax 15\n")
                 makefile.write("NCSIM_OPTS=$(NCSIM_BASE_OPTS) $(NCSIM_CMD_OPTS)\n")

@@ -19,7 +19,7 @@
     ],
     [
         "DVFSApp.Source3",
-        "BB_MWD.InpMemA",
+        "BB_PIP.InpMemA",
         "MM_H264_60_B.IDCT",
         "AA_VOPD.AcdcPred",
         "HH_PIP.InpMemA"
@@ -151,13 +151,13 @@
     [
         "DVFSApp.Source22",
         "BB_PIP.MEM",
-        "AA_VOPD.PAD",
+        "AA_VOPD.Pad",
         "HH_PIP.MEM"
     ],
     [
         "DVFSApp.Source23",
         "BB_H264_30.MVPadding",
-        "MM_H264_60_A.MVPadding",
+        "MM_H264_60_B.MVPadding",
         "AA_MPEG4_B.VU",
         "HH_MPEG4.VU"
     ],

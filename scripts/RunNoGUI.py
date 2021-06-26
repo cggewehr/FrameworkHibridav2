@@ -39,7 +39,7 @@ def runnogui(args):
             print("Did you run projgen for another tool? To compile/elab/sim with with Cadence tools you must run projgen with Tool set as \"cadence\".")
         
         # Runs makefile with "runnogui" rule
-        os.system("make -f " + os.path.join(ProjectDir, "makefile") + " runnogui " + "NCVHDL_CMD_OPTS=" + args.compopt + " NCELAB_CMD_OPTS=" + args.elabopt + " NCSIM_CMD_OPTS=" + args.simopt)
+        os.system("make -f " + os.path.join(ProjectDir, "makefile") + " runnogui " + "NCVHDL_CMD_OPTS=\"" + args.compopt + "\" NCELAB_CMD_OPTS=\"" + args.elabopt + "\" NCSIM_CMD_OPTS=\"" + args.simopt + "\"")
         
     elif args.Tool == "vivado":
         

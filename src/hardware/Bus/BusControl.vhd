@@ -61,9 +61,6 @@ architecture RTL of BusControl is
 	type state_t is (Sstandby, SwaitForACK);
 	signal currentState: state_t;
 
-	-- Contains index of current message target PE's address in PEAddresses generic
-	signal targetIndex: integer range 0 to AmountOfPEs - 1;
-
 	-- Returns index of a given element in a given array
 	function GetIndexOfAddr(Addresses: HalfDataWidth_vector; AddressOfInterest: HalfDataWidth_t) return integer is begin
 
@@ -76,7 +73,7 @@ architecture RTL of BusControl is
 
 		end loop;
 
-		return Addresses'high;  -- Return index of wrapper (always @ the greatest postition) if given ADDR was not found in bus
+		return Addresses'high;  -- Return index of wrapper (always @ the greatest posiition) if given ADDR was not found in bus
 		
 	end function GetIndexOfAddr;
 
@@ -91,12 +88,14 @@ begin
 		-- (targetAddr must be as wide as a flit, but not targetIndex) 
 		variable targetAddr: HalfDataWidth_t;
 
+	    -- Contains index of current message target PE's address in PEAddresses generic
+        variable targetIndex: integer range 0 to AmountOfPEs - 1;
+
 	begin
 
         -- Sets default values
         if Reset = '1' then
 
-            targetIndex <= 0;
 			RXEnable <= (others => '0');
 
 			currentState <= Sstandby;
@@ -114,8 +113,11 @@ begin
 
                         -- PE ID @ most significative bits of first flit
 					    targetAddr := BusData(DataWidth - 1 downto HalfDataWidth);
-					    --targetIndex <= GetIndexOfAddr(PEAddresses, targetAddr);
-					    RXEnable(GetIndexOfAddr(PEAddresses, targetAddr)) <= '1';
+					    targetIndex := GetIndexOfAddr(PEAddresses, targetAddr);
+					    report integer'image(targetIndex) severity note;
+					    report integer'image(RXEnable'high) severity warning;
+					    --RXEnable(GetIndexOfAddr(PEAddresses, targetAddr)) <= '1';
+					    RXEnable(targetIndex) <= '1';
 
 					    --currentState <= SsetControl;
 					    currentState <= SwaitForACK;

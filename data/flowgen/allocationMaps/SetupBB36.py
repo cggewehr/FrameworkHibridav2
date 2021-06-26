@@ -39,7 +39,7 @@ BBWorkload[31] = "BB_PIP.InpMemB"
 BBWorkload[32] = "BB_PIP.JUG2"
 BBWorkload[33] = "BB_PIP.MEM"
 BBWorkload[34] = "BB_PIP.OpDisp"
-BBWorkload[35] = "BB_H264_30.DCT"
+BBWorkload[35] = "BB_H264_30.Quantization"
 
 # MM workload, running from 1 ms to 2 ms
 MMWorkload = [None] * 36
@@ -113,7 +113,7 @@ AAWorkload[27] = "AA_VOPD.UpSamp"
 AAWorkload[28] = "AA_VOPD.VopRec"
 AAWorkload[29] = "AA_MPEG4_B.ADSP"
 AAWorkload[30] = "AA_MPEG4_A.VU"
-AAWorkload[31] = "AA_MPEG4_B.ADSP"
+AAWorkload[31] = "AA_MPEG4_A.ADSP"
 AAWorkload[32] = "AA_MPEG4_A.MedCPU"
 AAWorkload[33] = "AA_MPEG4_A.SRAM1"
 AAWorkload[34] = "AA_MPEG4_A.BAB"

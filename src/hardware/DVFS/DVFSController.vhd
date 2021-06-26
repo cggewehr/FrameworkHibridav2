@@ -66,7 +66,7 @@ architecture RTL of DVFSController is
 	-- |        Voltage Level        | IsNoC | ... |         N         |         M         |
 	--   log2(AmountOfVoltageLevels)     1           CounterResolution   CounterResolution
 	alias SupplyVoltageSwitchToTurnONAsync: std_logic_vector(Log2OfVoltageSwitchField - 1 downto 0) is LocalPortData(DataWidth - 1 downto DataWidth - Log2OfVoltageSwitchField);
-	alias IsNoCBit: std_logic is LocalPortData(Log2OfVoltageSwitchField - 1);
+	alias IsNoCBit: std_logic is LocalPortData(DataWidth - 1 - Log2OfVoltageSwitchField);
 	alias DividerNAsync: std_logic_vector(CounterBitWidth - 1 downto 0) is LocalPortData((2*CounterBitWidth) - 1 downto CounterBitWidth); 
 	alias DividerMAsync: std_logic_vector(CounterBitWidth - 1 downto 0) is LocalPortData(CounterBitWidth - 1 downto 0);
 

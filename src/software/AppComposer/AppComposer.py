@@ -692,7 +692,7 @@ class Workload:
             AppByName = self.ApplicationsByName.get(AppName)
             
             if AppByName is None:
-                print("Warning: AppName <" + str(ThreadName) + "> doesnt correspond to any Application in Workload <" + str(self.WorkloadName) + ">, returning None")
+                print("Warning: AppName <" + str(AppName) + "> doesnt correspond to any Application in Workload <" + str(self.WorkloadName) + ">, returning None")
             
             return AppByName
             
@@ -702,7 +702,7 @@ class Workload:
             AppByID = self.ApplicationsByID[AppID]
             
             if AppByID is None:
-                print("Warning: AppID <" + str(ThreadName) + "> doesnt correspond to any Application in Workload <" + str(self.WorkloadName) + ">, returning None")
+                print("Warning: AppID <" + str(AppID) + "> doesnt correspond to any Application in Workload <" + str(self.WorkloadName) + ">, returning None")
             
             return AppByID
             
@@ -712,7 +712,7 @@ class Workload:
             AppByID = self.ApplicationsByID[AppID]
             
             if AppByName is not AppByID:
-                print("Error: <AppID: " + str(ThreadID) + "> and <AppName: " + str(ThreadName) + "> correspond to different Applications")
+                print("Error: <AppID: " + str(AppID) + "> and <AppName: " + str(AppName) + "> correspond to different Applications")
                 exit(1)
             
             return AppByName

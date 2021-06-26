@@ -121,33 +121,28 @@ def flowgen(args):
         # Multiple Threads allocated to this PE    
         elif isinstance(AllocMapItem, list):
             
+            # Get Thread objects from thread name in Allocation Map
             ThreadSet = [Workload.getThread(ThreadName = ThreadName) for ThreadName in AllocMapItem]
             
-            #ThreadInWorkload.PEPos = PEPos
-            for ThreadInSet in ThreadSet:
-            
-                # Get Thread object from thread name in Allocation Map
-                ThreadName = ThreadInSet.ParentApplication.AppName + "." + ThreadInSet.ThreadName
-                ThreadInWorkload = Workload.getThread(ThreadName = ThreadName)
-                
+            for i, ThreadInSet in enumerate(ThreadSet):
+
                 # Checks if Thread, as defined in Allocation Map, exists in Workload
-                if ThreadInWorkload is None:
-                    print("Error: Thread <" + str(ThreadName) + "> doesn't exist in given Workload")
+                try:
+                    ThreadName = ThreadInSet.ParentApplication.AppName + "." + ThreadInSet.ThreadName
+                except AttributeError:  # Catches None.ParentApplication
+                    print("Error: Thread <" + str(AllocMap[PEPos][i]) + "> doesn't exist in given Workload")
                     exit(1)
-        
+
                 # Checks if Thread has already been allocated
                 if ThreadName in AllocDict.keys():
                     print("Error: Thread <" + str(ThreadName) + "> has already been allocated at PE <" + str(AllocDict[ThreadName]) + ">")
                     exit(1)
             
                 # Add Thread to ThreadRefAllocMap
-                ThreadRefAllocMap[PEPos].append(ThreadInWorkload)
+                ThreadRefAllocMap[PEPos].append(ThreadInSet)
                 AllocDict[ThreadName] = PEPos
-                
-                # TODO: Check if allocated Threads allocated to a same PE communicate between themselves, and if so, dont generate Injectors for those Flows
         
         elif AllocMapItem is None:
-
             print("Warning: PEPos <" + str(PEPos) + "> has no Thread allocated")
             
         else:
@@ -155,13 +150,15 @@ def flowgen(args):
             print("Error: <AllocMapItem>'s type is not a string, list or None")
             exit(1)
     
-    # Check if any Thread was left unallocated
+    # Check if any Threads were left unallocated
     for App in Workload.Applications:
         for Thread in App.Threads:
             if AllocDict.get(App.AppName + "." + Thread.ThreadName) is None:
                 print("Error: Thread <" + Thread.ParentApplication.AppName + "." + Thread.ThreadName + "> was not allocated, aborting flowgen")
                 exit(1)
     
+    # TODO: Check if allocated Threads allocated to a same PE communicate between themselves, and if so, dont generate Injectors for those Flows
+
     print("Done building Allocation Map\n")
     
     # Generates PE JSON config files at "flow/PE */PE *.json"

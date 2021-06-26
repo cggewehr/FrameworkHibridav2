@@ -333,8 +333,8 @@ package body HyHeMPS_PKG is
             
             end if;
         
-        end loop;
-        
+        end loop; 
+
         -- Set Wrapper address at the end of array being returned
         PEAddresses(AmountOfPEsInStruct) := RouterAddress(WrapperID, NoCSquareBound);
         

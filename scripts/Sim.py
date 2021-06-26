@@ -39,7 +39,7 @@ def sim(args):
             print("Did you run projgen for another tool? To compile/elab/sim with with Cadence tools you must run projgen with Tool set as \"cadence\".")
         
         # Runs makefile with sim rule
-        os.system("make -f " + os.path.join(ProjectDir, "makefile") + " -C " + ProjectDir + " sim " + "NCSIM_CMD_OPTS=" + args.opt)
+        os.system("make -f " + os.path.join(ProjectDir, "makefile") + " -C " + ProjectDir + " sim " + "NCSIM_CMD_OPTS=\"" + args.opt + "\"")
         
     elif args.Tool == "vivado":
         
