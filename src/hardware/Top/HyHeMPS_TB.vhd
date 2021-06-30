@@ -33,7 +33,7 @@ library HyHeMPS;
 entity HyHeMPS_TB is
 
     generic(
-        ProjectDir: string  -- Absolute path
+        ProjectDir: string := "C:/Users/c_ara/Desktop/HibridaProjects/test"  -- Absolute path
     );
     
 end entity HyHeMPS_TB;

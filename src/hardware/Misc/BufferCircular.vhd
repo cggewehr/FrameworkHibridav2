@@ -112,7 +112,8 @@ begin
 
     dataCount <= writePointer - readPointer when writePointer > readPointer else
                  (writePointer + BufferSize) - readPointer when writePointer < readPointer else
-                 BufferSize when writePointer = readPointer and setBufferToFullFlag = '1' and initialized = '1' else
+                 --BufferSize when writePointer = readPointer and setBufferToFullFlag = '1' and initialized = '1' else
+                 BufferSize when writePointer = readPointer and bufferFullFlagReg = '1' and initialized = '1' else
                  0;
 
     -- Update Data Count based on writePointer and readPointer values

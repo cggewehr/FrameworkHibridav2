@@ -29,33 +29,18 @@ def runnogui(args):
         
         print("Error: ProjectDir <" + ProjectDir + "> does not exist")
         exit(1)
+
+    # Check if makefile exists
+    if not os.path.isfile(os.path.join(ProjectDir, "makefile")):
     
-    if args.Tool == "cadence":
-        
-        # Check if makefile exists
-        if not os.path.isfile(os.path.join(ProjectDir, "makefile")):
-        
-            print("Error: Makefile does not exist for project <" + args.ProjectName + ">")
-            print("Did you run projgen for another tool? To compile/elab/sim with with Cadence tools you must run projgen with Tool set as \"cadence\".")
-        
-        # Runs makefile with "runnogui" rule
-        os.system("make -f " + os.path.join(ProjectDir, "makefile") + " runnogui " + "NCVHDL_CMD_OPTS=\"" + args.compopt + "\" NCELAB_CMD_OPTS=\"" + args.elabopt + "\" NCSIM_CMD_OPTS=\"" + args.simopt + "\"")
-        
-    elif args.Tool == "vivado":
-        
-        # Runs vivado with "runnogui" script
-        TCLScript = os.path.join(ConfigDict["HibridaPath"], "scripts", "vivado", "runnogui.tcl")
-        TCLArgs = args.ProjectName + " " + ProjectDir
-        os.system("vivado -mode batch -source " + TCLScript + " -tclargs " + TCLArgs)
-        
-    else:
+        print("Error: Makefile does not exist for project <" + args.ProjectName + ">")
+        print("Did you run projgen for another tool? To compile/elab/sim with with Cadence tools you must run projgen with Tool set as \"cadence\".")
     
-        print("Error: Tool <" + args.Tool + "> is not recognized")
-        exit(1)
+    # Runs makefile with "runnogui" rule
+    os.system("make -f " + os.path.join(ProjectDir, "makefile") + " runnogui " + "COMPILER_CMD_OPTS=\"" + args.compopt + "\" ELABORATOR_CMD_OPTS=\"" + args.elabopt + "\" SIMULATOR_CMD_OPTS=\"" + args.simopt + "\"")
     
     with open(os.getenv("HIBRIDA_CONFIG_FILE"), "w") as ConfigFile:
         ConfigDict["MostRecentProject"] = args.ProjectName
         ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
 
     print("runnogui executed successfully!")
-    

@@ -114,8 +114,6 @@ begin
                         -- PE ID @ most significative bits of first flit
 					    targetAddr := BusData(DataWidth - 1 downto HalfDataWidth);
 					    targetIndex := GetIndexOfAddr(PEAddresses, targetAddr);
-					    report integer'image(targetIndex) severity note;
-					    report integer'image(RXEnable'high) severity warning;
 					    --RXEnable(GetIndexOfAddr(PEAddresses, targetAddr)) <= '1';
 					    RXEnable(targetIndex) <= '1';
 

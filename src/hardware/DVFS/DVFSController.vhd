@@ -73,6 +73,10 @@ architecture RTL of DVFSController is
 	-- Divider control signals
 	signal DividerClockGated: std_logic; 
 	signal WriteEnable: std_logic; 
+	
+	-- Divider registers
+	signal DividerCounterReg, DividerNReg, DividerMReg: std_logic_vector(CounterBitWidth - 1 downto 0);
+	signal ClockEnable: std_logic;
 
 	-- Control FSM
 	type ControllerState_t is (Sidle, Ssize, Sservice, SvaluesOfInterest, SwaitUntilMSGFinished);
@@ -80,34 +84,69 @@ architecture RTL of DVFSController is
 
 begin
 
-	-- Instantiate N/M Clock Divider
-	ClockDivider: entity work.ClockDivider
+	-- Propagates clock when N < M
+	GatedClock: ClockToCommStruct <= Clock when ClockEnable = '1' else '0';
+	
+	-- Control writing to N and M registers
+	CounterRegs: process(Clock, Reset) begin
 
-		generic map(
-			CounterBitWidth => CounterBitWidth
-		)
+        if Reset = '1' then
+            
+            DividerNReg <= (others => '1');
+            DividerMReg <= (others => '1');
 
-		port map(
+		elsif rising_edge(Clock) then
 
-			Clock => Clock,
-			Reset => Reset,
+			if WriteEnable = '1' then
 
-			N => DividerNAsync,
-			M => DividerMAsync,
-			WriteEnable => WriteEnable,
+				DividerNReg <= DividerNAsync;
+				DividerMReg <= DividerMAsync;
 
-			ClockGated => DividerClockGated
+			end if;
 
-		);
+		end if;
 
-	--ClockGate: process(Clock) begin
+	end process;
 
-	--	if rising_edge(Clock) or falling_edge(Clock) then 
-	--		ClockToCommStruct <= DividerClockGated;
-	--	end if;
+	-- Counts from 0 to M - 1 
+	DividerCounter: process(Clock, Reset) begin
 
-	--end process ClockGate;
-	ClockToCommStruct <= DividerClockGated;
+		if Reset = '1' then
+
+			DividerCounterReg <= (others => '0');
+
+		elsif rising_edge(Clock) then
+
+			-- Counter++ mod M
+            if WriteEnable = '1' then
+                DividerCounterReg <= (others => '0');
+            else
+			    DividerCounterReg <= std_logic_vector(to_unsigned(incr(to_integer(unsigned(DividerCounterReg)), to_integer(unsigned(DividerMReg)) - 1, 0), CounterBitWidth));
+            end if;
+
+		end if;
+
+	end process;
+
+	-- Compares CounterReg to N
+	DividerComparator: process(Clock, Reset) begin
+
+		if Reset = '1' then
+
+			ClockEnable <= '0';
+
+		elsif falling_edge(Clock) then
+
+			if DividerCounterReg < DividerNReg then
+				ClockEnable <= '1';
+			else
+				ClockEnable <= '0';
+			end if; 
+
+		end if;
+
+	end process;
+
 
     -- Registers the decoded output of power switch enable signals
 	SupplySwitchEnableRegs: process(LocalPortClockTX, Reset) begin

@@ -403,5 +403,4 @@ def setConfig(args):
     if ProjectDict["AllocationMapFile"] is not None and ProjectDict["ClusterClocksFile"] is not None and ProjectDict["TopologyFile"] is not None and ProjectDict["WorkloadFile"] is not None:
         print("Project <" + ProjectDict["ProjectName"] + "> is ready for flowgen")
 
-    print("setConfig ran successfully!")
-    
+    print("setConfig executed successfully!")

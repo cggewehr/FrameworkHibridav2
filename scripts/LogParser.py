@@ -101,6 +101,7 @@ class DVFSPacket(Packet):
         
         # Parse ConfigFlit into DVFSController expected fields
         #ConfigFlit = str(Data[0])[::-1]  # Get string as VHDL slv (highest order bit at lowest index)
+        print(Data)
         ConfigFlit = str(Data[0])  # Get string as VHDL slv (highest order bit at lowest index)
         #print(ConfigFlit)
         #print(len(ConfigFlit))
@@ -133,6 +134,7 @@ class DVFSPacket(Packet):
             
         #PE = DVFSPacket.PEs[matchingInEntry.ParentLog.PEPos]
         PE = DVFSPacket.PEs[outEntry.ParentLog.PEPos]
+        #print(PE.PEPos)
         CommStruct = PE.CommStructure
         StructPos = PE.StructPos
         BaseNoCPos = PE.BaseNoCPos
@@ -145,8 +147,10 @@ class DVFSPacket(Packet):
         
             DVFSPacket.RouterFreq[BaseNoCPos].append((outEntry.Timestamp, Frequency))
             
-            DVFSPacket.RouterLatencyCounters[PE.PEPos] += 1
-            DVFSPacket.RouterLatencies[PE.PEPos] += (Latency - DVFSPacket.RouterLatencies[PE.PEPos]) / DVFSPacket.RouterLatencyCounters[PE.PEPos]
+            #DVFSPacket.RouterLatencyCounters[PE.PEPos] += 1
+            DVFSPacket.RouterLatencyCounters[BaseNoCPos] += 1
+            #DVFSPacket.RouterLatencies[PE.PEPos] += (Latency - DVFSPacket.RouterLatencies[PE.PEPos]) / DVFSPacket.RouterLatencyCounters[PE.PEPos]
+            DVFSPacket.RouterLatencies[BaseNoCPos] += (Latency - DVFSPacket.RouterLatencies[BaseNoCPos]) / DVFSPacket.RouterLatencyCounters[BaseNoCPos]
             
         elif CommStruct == "Bus" and outEntry.IsNoC == '0':
             
@@ -247,9 +251,6 @@ class SyntheticTrafficPacket(Packet):
             
             print("Warning: No matching in log entry found for out log entry <" + str(outEntry) + "> of PE <" + str(outEntry.ParentLog.PEPos) + ">")
             
-            print(str(outEntry.AppID))
-            print(str(outEntry.SourceThreadID))
-            print(str(outEntry.TargetThreadID))
             SyntheticTrafficPacket.MissCountByPE[outEntry.ParentLog.PEPos][outEntry.TargetPEPos] += 1
             SyntheticTrafficPacket.MissCountByThread[outEntry.AppID][outEntry.SourceThreadID][outEntry.TargetThreadID] += 1
   
@@ -402,7 +403,7 @@ def logparser(args):
                 InEntry = Packet.makePacket(LogLine = line, ParentLog = InLogs[PEPos])
                 if InEntry is not None:
                     InLogs[PEPos].addEntry(InEntry)
-            print(len(InLogs[PEPos].Entries))
+                    
         with open(LogDir + "PE " + str(PEPos) + "/OutLog" + str(PEPos) + ".txt", "r") as OutLogFile:
         
             print("Parsing out log of PE " + str(PEPos))
@@ -412,8 +413,7 @@ def logparser(args):
                 if OutEntry is not None:
                     OutLogs[PEPos].addEntry(OutEntry)
     
-            print(len(OutLogs[PEPos].Entries))     
-    print("Done parsing log files")
+    print("Done parsing log files\n")
 
     # Tries to find an In log entry match for every Out log entry
     for SourcePEPos, currentOutLog in enumerate(OutLogs):
@@ -423,8 +423,6 @@ def logparser(args):
         # Loop through all entries in current Out log
         for outEntryNumber, currentOutEntry in enumerate(currentOutLog.Entries):
                 
-            #print((currentOutLog))
-            #print(repr(currentOutEntry))
             # Check if current packet is being sent to a PE that exists (TargetPEPos < Topology.AmountOfPEs)
             try:
                 currentInLog = InLogs[currentOutEntry.TargetPEPos]
@@ -437,9 +435,6 @@ def logparser(args):
             for currentInEntry in currentInLog.Entries:
                 if currentOutEntry == currentInEntry:
                     matchingInEntry = currentInEntry
-                    #print("Found match for entry " + str(outEntryNumber))
-                    #print(str(currentOutEntry))
-                    #print(str(matchingInEntry))
                     currentInLog.Entries.remove(currentOutEntry)
                     break
             
@@ -449,9 +444,14 @@ def logparser(args):
         print("Done working on out log of PE " + str(SourcePEPos))
 
     # Checks if there are any unprocessed entries left on In logs
-    print("Checking for unprocessed In log entries")
+    print("\nChecking for unprocessed In log entries")
+    AmountOfUnprocessedEntries = 0
     for InLog in InLogs:
-        print("Found " + str(len(InLog.Entries)) + " unprocessed entries in In log of PE " + str(InLog.PEPos))
+        AmountOfUnprocessedEntries += len(InLog.Entries)
+        print("Found <" + str(len(InLog.Entries)) + "> unprocessed entries in In log of PE " + str(InLog.PEPos))
+        for UnprocessedEntry in InLog.Entries:
+            print(UnprocessedEntry)
+    print("Total amount of unprocessed in log entries: " + str(AmountOfUnprocessedEntries))
     print("Done checking for unprocessed In log entries")
         
     # Prints out amount of successfully delivered messages

@@ -210,6 +210,14 @@ def flowgen(args):
             
         ClusterClocksFile.write(json.dumps({"ClusterClockPeriods" : ClusterClocks}, indent = 4))
     
+    # Create log files
+    for PEPos in range(Topology.AmountOfPEs):
+        os.makedirs(ProjectDir + "/log/PE " + str(PEPos), exist_ok = True)
+        with open(ProjectDir + "/log/PE " + str(PEPos) + "/InLog" + str(PEPos) + ".txt", "w") as InLog:
+            pass
+        with open(ProjectDir + "/log/PE " + str(PEPos) + "/OutLog" + str(PEPos) + ".txt", "w") as OutLog:
+            pass
+            
     with open(os.getenv("HIBRIDA_CONFIG_FILE"), "w") as ConfigFile:
         ConfigDict["MostRecentProject"] = args.ProjectName
         ConfigFile.write(json.dumps(ConfigDict, sort_keys = False, indent = 4))
