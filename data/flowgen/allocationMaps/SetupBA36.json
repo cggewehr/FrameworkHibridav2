@@ -71,7 +71,7 @@
     ],
     [
         "DVFSApp.Source11",
-        "BB_H264_30.MotionEstimation",
+        "BB_H264_30.DCT",
         "MM_H264_60_B.DCT",
         "AA_MPEG4_B.IDCT",
         "HH_H264_60.DCT"
@@ -199,7 +199,7 @@
         "DVFSApp.Source29",
         "BB_H264_30.MotionCompensation",
         "MM_H264_60_B.MotionCompensation",
-        "AA_VOPD.ARM",
+        "AA_MPEG4_B.RAST",
         "HH_H264_60.MotionCompensation"
     ],
     [
