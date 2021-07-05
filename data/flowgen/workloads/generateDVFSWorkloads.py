@@ -79,29 +79,6 @@ def generateDVFSWorkloads(Workload, PlatformName, CounterResolutions):
         except (IOError, FileNotFoundError):
             print("Warning: Problem with file <../applications/" + PlatformName + "/DVFSAppGlobalGrained" + str(PlatformName) + "Resolution" + str(res) + ".json>. Ignoring it")
             
-        # Try to open Static-clocked DVFS Application file
-        try:
-        
-            # Open Static-clocked DVFS Application file
-            with open("../applications/" + PlatformName + "/DVFSAppStaticClocked" + str(PlatformName) + "Resolution" + str(res) + ".json", "r") as StaticClockedFile:
-                            
-                # Open new base Workload
-                BaseWorkload = AppComposer.Workload()
-                BaseWorkload.fromJSON(Workload)
-
-                # Reads Application from JSON
-                DVFSAppStaticClocked = AppComposer.Application()
-                DVFSAppStaticClocked.fromJSON(StaticClockedFile.read())
-                
-                # Add DVFSAppRouterGrained to BaseWorkload
-                BaseWorkload.addApplication(DVFSAppStaticClocked)
-                
-                # Export Workload to JSON
-                BaseWorkload.toJSON(SaveToFile = True, FileName = PlatformName + "/DVFSWorkloadStaticClocked" + str(PlatformName) + "Resolution" + str(res))
-                
-        except (IOError, FileNotFoundError):
-            print("Warning: Problem with file <../applications/" + PlatformName + "/DVFSAppStaticClocked" + str(PlatformName) + "Resolution" + str(res) + ".json>. Ignoring it")
-        
     # Try to open NoDVFS Application file
     try:
     

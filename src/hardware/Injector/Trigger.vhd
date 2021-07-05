@@ -80,8 +80,7 @@ architecture RTL of Trigger is
 begin
 
 	-- Certifies FlowType is "CBR" 
-    --assert FlowType = "CBR" report "Error: FlowType <" & FlowType & "> is not recognized, only \"CBR\" FlowType is currently supported" severity <ERROR>;
-
+    assert FlowType = "CBR" report "Error: FlowType <" & FlowType & "> is not recognized, only ""CBR"" FlowType is currently supported" severity error;
 
     -- Defines Injector Clock
 	InjectorClockGen: process begin
@@ -97,12 +96,10 @@ begin
 
 	end process InjectorClockGen;
 
-
 	-- Defines Injector enable based on FlowType
 	CBRGen: if FlowType = "CBR" generate
 
 		process
-			variable ResetFallingEdgeTime: time := 0 ns;
 			variable MessageCounter: integer := 0;
 		begin
 
@@ -111,38 +108,28 @@ begin
 		  		if Reset = '1' then
                     Enable <= '0';
 		  			wait until Reset = '0';
-		  			ResetFallingEdgeTime := now;
 		  		end if;
 
-		  		-- Enables associated injector
+		  		-- Enables associated Injector
 				wait for StartTime;
-				report "Starting Flow <" & AppName & "." & SourceThreadName & " -- " & real'image(Bandwidth) & " -> " & AppName & "." & TargetThreadName & ">" severity note;
+				report "Starting Flow <" & AppName & "." & SourceThreadName & " -- " & real'image(Bandwidth) & " MBps -> " & AppName & "." & TargetThreadName & "> @ " & time'image(NOW) severity note;
 				Enable <= '1';
 
-				-- Flow doesnt have a StopTime, 0 and -1 are default values
-				if StopTime /= -1 ns and StopTime /= 0 ns then
-                    report "Flow <" & AppName & "." & SourceThreadName & " -- " & real'image(Bandwidth) & " -> " & AppName & "." & TargetThreadName & "> waiting for " & time'image(StopTime + ResetFallingEdgeTime) severity note;
-					wait for StopTime + ResetFallingEdgeTime;
-					report "Stopping Flow <" & AppName & "." & SourceThreadName & " -- " & real'image(Bandwidth) & " -> " & AppName & "." & TargetThreadName & ">" severity note;
-					Enable <= '0';
-				end if;
-
-				-- Loops around if injector is periodic
-				--if not Periodic then
-				--	exit;
-				--else
-				--	ResetFallingEdgeTime := 0 ns;
-				--end if;
-
-                -- Wait until current message is finished being sent by the injector
+                -- Wait until current message is finished being sent by the Injector
                 wait until LastFlitFlag = '1';
+				MessageCounter := MessageCounter + 1;
 
 				-- Breaks loop if max amount of messages has been sent
-				if MessageCounter = MaxAmountOfMessages - 1 then
+				if MessageCounter = MaxAmountOfMessages then
+					report "Stopping Flow <" & AppName & "." & SourceThreadName & " -- " & real'image(Bandwidth) & " MBps -> " & AppName & "." & TargetThreadName & "> (MaxAmountOfMessages reached "  & time'image(NOW) & ")" severity note;
 					exit;
-				else
-					MessageCounter := MessageCounter + 1;
 				end if;
+
+				-- Breaks loop if StopTime has been reached
+                if NOW >= StopTime and StopTime /= 0 ns then
+					report "Stopping Flow <" & AppName & "." & SourceThreadName & " -- " & real'image(Bandwidth) & " MBps -> " & AppName & "." & TargetThreadName & "> (StopTime reached" & time'image(NOW) & ")" severity note;
+                    exit;
+                end if;
 				
 			end loop;
 

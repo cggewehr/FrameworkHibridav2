@@ -62,7 +62,7 @@ end BusBridge;
 architecture RTL of BusBridge is
 
     --type state_t is (Sstandby, SwaitForGrant, StransmitHeader, StransmitSize, StransmitPayload);
-    type state_t is (Sstandby, StransmitHeader, StransmitSize, StransmitPayload);
+    type state_t is (Sstandby, StransmitHeader, StransmitSize, StransmitPayload, SwaitForACK);
 	signal currentState: state_t;
 	
 	signal flitCounter: unsigned(DataWidth - 1 downto 0);
@@ -106,8 +106,8 @@ begin
 		);
 
 	-- Same as struct clock (clock domain crossing occurs at InjBuffer)
-	ClockTx <= ClockRx;
-	Tx <= bufferAVFlag;
+	ClockTx <= Clock;
+	Tx <= bufferAVFlag when currentState /= SwaitForACK else '0';
 	DataOut <= bufferDataOut;
     bufferReadConfirm <= CreditI when currentState = StransmitHeader or currentState = StransmitSize or currentState = StransmitPayload else '0';
 
@@ -187,12 +187,18 @@ begin
 					-- Determines if this is the last flit of msg, frees arbiter if so
 					if flitCounter = 1 and CreditI = '1' and bufferAVFlag = '1' then
 						ACK <= '1';
-						currentState <= Sstandby;
+						--currentState <= Sstandby;
+						currentState <= SwaitForACK;
 
 					else
 						currentState <= StransmitPayload;
 					end if;
 
+				-- Finishes packet transmission
+				when SwaitForACK => 
+				    currentState <= Sstandby;
+				    ACK <= '0';
+    
 			end case;
 
 		end if;

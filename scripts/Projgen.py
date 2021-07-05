@@ -83,14 +83,14 @@ def projgen(args):
     # Tool-specific behaviour
     if args.Tool is not None:
 		
-        if args.Tool == "cadence" or args.Tool == "Genus" or args.Tool == "RTLCompiler":
+        if args.Tool == "cadence" or args.Tool == "Cadence" or args.Tool == "Genus" or args.Tool == "RTLCompiler":
         
             # Set makefile vars
             makefileDict = dict()
             makefileDict["Compiler"] = "ncvhdl"
             makefileDict["CompilerBaseOptions"] = "-smartlib -cdslib cds.lib -logfile log/cadence/ncvhdl.log -errormax 15 -update -v93 -linedebug -status"
             makefileDict["Elaborator"] = "ncelab"
-            makefileDict["ElaboratorBaseOptions"] = "work worklib -cdslib cds.lib -logfile log/cadence/ncelab.log -errormax 15 -update -status -vhdl_seq_nba -generic \":ProjectDir => \\\"$(PROJECT_DIR)\\\"\""
+            makefileDict["ElaboratorBaseOptions"] = "-cdslib cds.lib -logfile log/cadence/ncelab.log -errormax 15 -update -status -vhdl_seq_nba -generic \":ProjectDir => \\\"$(PROJECT_DIR)\\\"\""
             makefileDict["Simulator"] = "ncsim"
             makefileDict["SimulatorBaseOptions"] = "-cdslib cds.lib -logfile log/cadence/ncsim.log -errormax 15"
 
@@ -162,7 +162,7 @@ def projgen(args):
                     copy(os.path.join(scriptsSourcePath, "run_crossbar_synthesis_MMMC.sh"), os.path.join(scriptsTargetPath, "run_crossbar_synthesis_MMMC.sh"))
                     copy(os.path.join(scriptsSourcePath, "run_noc_synthesis_MMMC.sh"), os.path.join(scriptsTargetPath, "run_noc_synthesis_MMMC.sh"))
                                 
-        elif args.Tool == "xilinx":
+        elif args.Tool == "xilinx" or args.Tool == "Xilinx" or args.Tool == "vivado" or args.Tool == "Vivado":
         
             #Make subdirs
             os.makedirs(ProjectDir + "/log/xilinx", exist_ok = True)

@@ -1,268 +1,268 @@
 {
+    "AppName": "DVFSApp",
+    "StartTime": 0,
+    "AppID": null,
+    "AmountOfThreads": 37,
     "Threads": [
         {
-            "ThreadName": "Sink",
             "ThreadID": 0,
+            "ThreadName": "Sink",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source0",
             "ThreadID": 1,
+            "ThreadName": "Source0",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source1",
             "ThreadID": 2,
+            "ThreadName": "Source1",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source2",
             "ThreadID": 3,
+            "ThreadName": "Source2",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source3",
             "ThreadID": 4,
+            "ThreadName": "Source3",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source4",
             "ThreadID": 5,
+            "ThreadName": "Source4",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source5",
             "ThreadID": 6,
+            "ThreadName": "Source5",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source6",
             "ThreadID": 7,
+            "ThreadName": "Source6",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source7",
             "ThreadID": 8,
+            "ThreadName": "Source7",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source8",
             "ThreadID": 9,
+            "ThreadName": "Source8",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source9",
             "ThreadID": 10,
+            "ThreadName": "Source9",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source10",
             "ThreadID": 11,
+            "ThreadName": "Source10",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source11",
             "ThreadID": 12,
+            "ThreadName": "Source11",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source12",
             "ThreadID": 13,
+            "ThreadName": "Source12",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source13",
             "ThreadID": 14,
+            "ThreadName": "Source13",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source14",
             "ThreadID": 15,
+            "ThreadName": "Source14",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source15",
             "ThreadID": 16,
+            "ThreadName": "Source15",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source16",
             "ThreadID": 17,
+            "ThreadName": "Source16",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source17",
             "ThreadID": 18,
+            "ThreadName": "Source17",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source18",
             "ThreadID": 19,
+            "ThreadName": "Source18",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source19",
             "ThreadID": 20,
+            "ThreadName": "Source19",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source20",
             "ThreadID": 21,
+            "ThreadName": "Source20",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source21",
             "ThreadID": 22,
+            "ThreadName": "Source21",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source22",
             "ThreadID": 23,
+            "ThreadName": "Source22",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source23",
             "ThreadID": 24,
+            "ThreadName": "Source23",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source24",
             "ThreadID": 25,
+            "ThreadName": "Source24",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source25",
             "ThreadID": 26,
+            "ThreadName": "Source25",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source26",
             "ThreadID": 27,
+            "ThreadName": "Source26",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source27",
             "ThreadID": 28,
+            "ThreadName": "Source27",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source28",
             "ThreadID": 29,
+            "ThreadName": "Source28",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source29",
             "ThreadID": 30,
+            "ThreadName": "Source29",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source30",
             "ThreadID": 31,
+            "ThreadName": "Source30",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source31",
             "ThreadID": 32,
+            "ThreadName": "Source31",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source32",
             "ThreadID": 33,
+            "ThreadName": "Source32",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source33",
             "ThreadID": 34,
+            "ThreadName": "Source33",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source34",
             "ThreadID": 35,
+            "ThreadName": "Source34",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source35",
             "ThreadID": 36,
+            "ThreadName": "Source35",
             "OutgoingFlows": [],
             "AmountOfIncomingFlows": 0,
             "AmountOfOutgoingFlows": 0
         }
     ],
-    "StopTime": 0,
-    "StartTime": 0,
-    "AppID": null,
-    "AmountOfThreads": 37,
-    "AppName": "DVFSApp"
+    "StopTime": 0
 }

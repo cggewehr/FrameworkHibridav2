@@ -201,10 +201,14 @@ begin
 			-- Compares first payload flit to established DVFS service ID (known at elab time)
 			elsif ControllerState = Sservice then
 
-				if LocalPortData = DVFSServiceCode and LocalPortTX = '1' and LocalPortCreditI = '1' then
-					ControllerState <= SvaluesOfInterest;
-				else
-					ControllerState <= SwaitUntilMSGFinished;
+				if LocalPortTX = '1' and LocalPortCreditI = '1' then
+
+                    if LocalPortData = DVFSServiceCode then
+					    ControllerState <= SvaluesOfInterest;
+				    else
+					    ControllerState <= SwaitUntilMSGFinished;
+                    end if;
+
 				end if;
 
 			-- Sets voltage switches and clock divider ratio, as defined by the 2nd flit of 

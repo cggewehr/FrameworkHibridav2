@@ -39,17 +39,23 @@ class Packet:
             
             lineList = LogLine.split()
 
-            TargetPEPos = lineList[0]
-            Size = lineList[1]
+            TargetPEPos = int(lineList[0])
+            Size = int(lineList[1])
             ServiceID = lineList[2]
             Data = lineList[3:len(lineList) - 2]
-            Timestamp = lineList[-2]
-            Checksum = lineList[-1]
+            Timestamp = int(lineList[-2])
+            Checksum = int(lineList[-1])
 
         except KeyError:
             print("Error: Incomplete message <" + line + "> in entry <" + str(i) + "> of input log of PE <" + str(PEPos) + ">")
             exit(1)
         
+        # Check if current packet is within defined time bounds
+        if Timestamp < Packet.MinimumOutputTimestamp:
+            return None
+        elif Packet.MaximumOutputTimestamp is not None and Timestamp > Packet.MaximumOutputTimestamp:
+            return None
+
         # Make service-specific objects based on Service entry field
         if ServiceID == Packet.DVFSServiceID:
             if DVFSPacket.EnableParsing:
@@ -100,37 +106,16 @@ class DVFSPacket(Packet):
         super().__init__(ParentLog = ParentLog, TargetPEPos = TargetPEPos, Size = Size, Service = Packet.DVFSServiceID, Timestamp = Timestamp, Checksum = Checksum)
         
         # Parse ConfigFlit into DVFSController expected fields
-        #ConfigFlit = str(Data[0])[::-1]  # Get string as VHDL slv (highest order bit at lowest index)
-        print(Data)
         ConfigFlit = str(Data[0])  # Get string as VHDL slv (highest order bit at lowest index)
-        #print(ConfigFlit)
-        #print(len(ConfigFlit))
         ConfigFlit = "".join(format(int(FlitHexChar, 16), "04b") for FlitHexChar in ConfigFlit)  # Converts Hex string, as saved in log txt, to binary string
         ConfigFlit = ConfigFlit[::-1]
-        #print(ConfigFlit)
-        #print(len(ConfigFlit))
-        # TODO: Turn hex string into binary
         self.SupplySwitch = int(ConfigFlit[DVFSPacket.DataWidth - 1 : DVFSPacket.VoltageLevelFieldSize : -1], 2)
-        #print(DVFSPacket.CounterResolution)
-        self.IsNoC = ConfigFlit[DVFSPacket.VoltageLevelFieldSize]
-        #print("N Bit Field: " + ConfigFlit[2*DVFSPacket.CounterResolution - 1: DVFSPacket.CounterResolution - 1: -1])
-        #print("N Bit Field Length: " + str(len(ConfigFlit[2*DVFSPacket.CounterResolution - 1: DVFSPacket.CounterResolution - 1: -1])))
+        self.IsNoC = ConfigFlit[DVFSPacket.DataWidth - DVFSPacket.VoltageLevelFieldSize - 1]
         self.N = int(ConfigFlit[2*DVFSPacket.CounterResolution - 1: DVFSPacket.CounterResolution - 1: -1], 2)
-        #print("N: " + str(self.N))
-        #self.M = int(ConfigFlit[DVFSPacket.CounterResolution : -1 : -1], 2)
-        #print("M Bit Field: " + ConfigFlit[DVFSPacket.CounterResolution - 1: : -1])
-        #print("M length: " + str(len(ConfigFlit[DVFSPacket.CounterResolution - 1: : -1])))
         self.M = int(ConfigFlit[DVFSPacket.CounterResolution - 1: : -1], 2)
-        #print("M: " + str(self.M))
 
     @staticmethod
     def action(outEntry, matchingInEntry):
-
-        # Check if current packet is within defined time bounds
-        if outEntry.Timestamp < Packet.MinimumOutputTimestamp:
-            return
-        elif Packet.MaximumOutputTimestamp is not None and outEntry.Timestamp > Packet.MaximumOutputTimestamp:
-            return
             
         #PE = DVFSPacket.PEs[matchingInEntry.ParentLog.PEPos]
         PE = DVFSPacket.PEs[outEntry.ParentLog.PEPos]
@@ -162,8 +147,10 @@ class DVFSPacket(Packet):
 
                     DVFSPacket.BusFreq[StructID].append((outEntry.Timestamp, Frequency))
                         
-                    DVFSPacket.BusLatencyCounters[PE.PEPos] += 1
-                    DVFSPacket.BusLatencies[PE.PEPos] += (Latency - DVFSPacket.BusLatencies[PE.PEPos]) / DVFSPacket.BusLatencyCounters[PE.PEPos]
+                    #DVFSPacket.BusLatencyCounters[PE.PEPos] += 1
+                    DVFSPacket.BusLatencyCounters[StructID] += 1
+                    #DVFSPacket.BusLatencies[PE.PEPos] += (Latency - DVFSPacket.BusLatencies[PE.PEPos]) / DVFSPacket.BusLatencyCounters[PE.PEPos]
+                    DVFSPacket.BusLatencies[StructID] += (Latency - DVFSPacket.BusLatencies[StructID]) / DVFSPacket.BusLatencyCounters[StructID]
 
                     break
 
@@ -184,6 +171,11 @@ class DVFSPacket(Packet):
                     
                     DVFSPacket.CrossbarLatencyCounters[PE.PEPos] += 1
                     DVFSPacket.CrossbarLatencies[PE.PEPos] += (Latency - DVFSPacket.CrossbarLatencies[PE.PEPos]) / DVFSPacket.CrossbarLatencyCounters[PE.PEPos]
+
+                    #DVFSPacket.CrossbarLatencyCounters[PE.PEPos] += 1
+                    DVFSPacket.CrossbarLatencyCounters[StructID] += 1
+                    #DVFSPacket.CrossbarLatencies[PE.PEPos] += (Latency - DVFSPacket.CrossbarLatencies[PE.PEPos]) / DVFSPacket.CrossbarLatencyCounters[PE.PEPos]
+                    DVFSPacket.CrossbarLatencies[StructID] += (Latency - DVFSPacket.CrossbarLatencies[StructID]) / DVFSPacket.CrossbarLatencyCounters[StructID]
 
                     break
                 
@@ -211,7 +203,7 @@ class SyntheticTrafficPacket(Packet):
     EnableParsing = False
         
     def __init__(self, ParentLog, TargetPEPos, Size, Service, Timestamp, Checksum, Data):
-            
+
         super().__init__(ParentLog = ParentLog, TargetPEPos = TargetPEPos, Size = Size, Service = Packet.SyntheticTrafficServiceID, Timestamp = Timestamp, Checksum = Checksum)
 
         self.AppID = int(Data[0])
@@ -224,6 +216,10 @@ class SyntheticTrafficPacket(Packet):
         if matchingInEntry is not None:
         
             latency = matchingInEntry.Timestamp - outEntry.Timestamp
+
+            # Checks if there is a phase mismatch in logs due to -min opt 
+            if latency < 0:
+                return
             #print("Latency: " + str(latency) + " = " + str(matchingInEntry.Timestamp) + " - " + str(outEntry.Timestamp))
     
             # Incrementally updates average latency value for PE (https://blog.demofox.org/2016/08/23/incremental-averaging/)
@@ -262,7 +258,7 @@ class Log:
         self.Entries = []
         self.PEPos = PEPos
         self.LogType = LogType  # "Input" or "Output"
-        self.TotalAmountOfData = 0  # in bytes, updated when SyntheticTrafficPacket.action() is called
+        self.TotalAmountOfData = 0  # in bytes, incremented when SyntheticTrafficPacket.action() is called
 
     # Adds a Packet object to Entries array
     def addEntry(self, Packet):
@@ -274,7 +270,10 @@ class Log:
     def Throughput(self):
         
         if len(self.Entries) != 0:
-            return 1000 * self.TotalAmountOfData / self.Entries[-1].Timestamp  # In MBps
+            if Packet.MaximumOutputTimestamp is not None:
+                return 1000 * self.TotalAmountOfData / (Packet.MaximumOutputTimestamp - Packet.MinimumOutputTimestamp)  # In MBps
+            else:
+                return 1000 * self.TotalAmountOfData / (self.Entries[-1].Timestamp - Packet.MinimumOutputTimestamp)  # In MBps
         else:
             return 0
 
