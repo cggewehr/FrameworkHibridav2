@@ -58,6 +58,7 @@ architecture RTL of HyBus is
     signal bridgeTx: std_logic_vector(0 to AmountOfPEs - 1);
     signal bridgeCreditI: std_logic_vector(0 to AmountOfPEs - 1);
     signal bridgeACK: std_logic_vector(0 to AmountOfPEs - 1);
+	signal bridgeRequest: std_logic_vector(0 to AmountOfPEs - 1);
 
 	-- Bus data link signals
 	signal busData: DataWidth_t;
@@ -66,6 +67,9 @@ architecture RTL of HyBus is
 
 	-- Control signals
 	signal RXEnable: std_logic_vector(0 to AmountOfPEs - 1);
+	signal TXEnable: std_logic_vector(0 to AmountOfPEs - 1);
+	signal requestFromNoC: std_logic;
+	signal interrupted: std_logic;
 
 begin
 
@@ -98,8 +102,10 @@ begin
 
 				-- Arbiter interface
 				Ack     => bridgeACK(i),
-				Request => arbiterRequest(i),
-				Grant   => arbiterGrant(i)
+				--Request => arbiterRequest(i),
+				Request => bridgeRequest(i),
+				--Grant   => arbiterGrant(i)
+				Grant   => TXEnable(i)
 
 			);
 
@@ -121,6 +127,10 @@ begin
 			-- Bus interface
 			BusData => busData,
 			BusTx => busTx,
+
+			-- NoC interrupt handler
+			RequestFromNoC => requestFromNoC,  -- Set to 0 if standalone
+			Interrupted => interrupted,  -- Unused if standalone
 
             -- Arbiter interface
             ACK => arbiterACK,
@@ -149,13 +159,65 @@ begin
 
 			);
 
+	StandaloneGen: if IsStandalone generate
+		RequestFromNoC <= '0';
+	end generate;
+
+
+	NoCGen: if not IsStandalone generate
+		RequestFromNoC <= arbiterRequest(AmountOfPEs - 1);
+	end generate;
+
+	-- 
+	RequestGen: for i in 0 to AmountOfPEs - 1 generate
+
+		StandaloneRequestGen: if IsStandalone generate
+			arbiterRequest(i) <= bridgeRequest(i);
+		end generate StandaloneRequestGen;
+
+		HybridRequestGen: if not IsStandalone generate
+
+			PERequestGen: if i /= AmountOfPEs - 1 generate
+				arbiterRequest(i) <= '1' when bridgeRequest(i) = '1' and arbiterRequest(AmountOfPEs - 1) = '0' else '0'; 
+			end generate PERequestGen;
+
+			NoCRequestGen: if i = AmountOfPEs - 1 generate
+				arbiterRequest(i) <= bridgeRequest(i);
+			end generate NoCRequestGen;
+
+		end generate HybridRequestGen;
+
+	end generate RequestGen;
+
+	--
+	EnableGen: for i in 0 to AmountOfPEs - 1 generate
+
+		StandaloneEnableGen: if IsStandalone generate
+			TXEnable(i) <= arbiterGrant(i);
+		end generate StandaloneEnableGen;
+
+		HybridEnableGen: if not IsStandalone generate
+
+			PEEnableGen: if i /= AmountOfPEs - 1 generate
+				TXEnable(i) <= '1' when arbiterGrant(i) = '1' and interrupted = '0' else '0';
+			end generate PEEnableGen;
+
+			NoCEnableGen: if i = AmountOfPEs - 1 generate
+				TXEnable(i) <= '1' when arbiterGrant(i) = '1' or interrupted = '1' else '0';
+			end generate NoCEnableGen;
+
+		end generate HybridEnableGen;
+
+	end generate EnableGen;
+
+
 	-- Connects PE input interfaces to bus 
 	LinkGen: for i in 0 to AmountOfPEs - 1 generate
 
-        busData <= bridgeDataOut(i) when arbiterGrant(i) = '1' else (others => 'Z'); 
-        busTx <= bridgeTx(i) when arbiterGrant(i) = '1' else 'Z';  
-        arbiterACK <= bridgeACK(i) when arbiterGrant(i) = '1' else 'Z';
-        bridgeCreditI(i) <= busCredit when arbiterGrant(i) = '1' else '0';
+        busData <= bridgeDataOut(i) when TXEnable(i) = '1' else (others => 'Z'); 
+        busTx <= bridgeTx(i) when TXEnable(i) = '1' else 'Z';  
+        arbiterACK <= bridgeACK(i) when TXEnable(i) = '1' else 'Z';
+        bridgeCreditI(i) <= busCredit when TXEnable(i) = '1' else '0';
 	
 		PEInputs(i).DataIn <= busData;
 		PEInputs(i).ClockRx <= Clock;
