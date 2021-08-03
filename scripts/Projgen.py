@@ -65,6 +65,7 @@ def projgen(args):
     os.makedirs(ProjectDir + "/log", exist_ok = True)
     os.makedirs(ProjectDir + "/platform", exist_ok = True)
     os.makedirs(ProjectDir + "/src_json", exist_ok = True)
+    os.makedirs(ProjectDir + "/deliverables", exist_ok = True)
 
     # Creates info JSON for newly created project
     with open(ProjectDir + "/projectInfo.json", "w") as ProjectInfoFile:

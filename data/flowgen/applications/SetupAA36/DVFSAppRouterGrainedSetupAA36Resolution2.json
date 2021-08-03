@@ -1,1579 +1,1579 @@
 {
+    "AmountOfThreads": 37,
     "AppID": null,
-    "StartTime": 0,
-    "AppName": "DVFSApp",
     "Threads": [
         {
-            "ThreadName": "Sink",
             "ThreadID": 0,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 72,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Sink",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source0",
             "ThreadID": 1,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source0",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source1",
             "ThreadID": 2,
-            "AmountOfOutgoingFlows": 4,
             "AmountOfIncomingFlows": 0,
             "OutgoingFlows": [
                 {
-                    "SourceThread": "Source1",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source1",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source1",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source1",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source1",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source1",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source1",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source1",
+                    "StartTime": 3000000
                 }
-            ]
+            ],
+            "ThreadName": "Source1",
+            "AmountOfOutgoingFlows": 4
         },
         {
-            "ThreadName": "Source2",
             "ThreadID": 3,
-            "AmountOfOutgoingFlows": 4,
             "AmountOfIncomingFlows": 0,
             "OutgoingFlows": [
                 {
-                    "SourceThread": "Source2",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source2",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source2",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source2",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source2",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "C000000B"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source2",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source2",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source2",
+                    "StartTime": 3000000
                 }
-            ]
+            ],
+            "ThreadName": "Source2",
+            "AmountOfOutgoingFlows": 4
         },
         {
-            "ThreadName": "Source3",
             "ThreadID": 4,
-            "AmountOfOutgoingFlows": 8,
             "AmountOfIncomingFlows": 0,
             "OutgoingFlows": [
                 {
-                    "SourceThread": "Source3",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "00000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source3",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source3",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source3",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source3",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "00000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source3",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source3",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source3",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source3",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "80000005"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source3",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source3",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "C0000005"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source3",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source3",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "00000007"
                     ],
-                    "MSGAmount": 1
-                },
-                {
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
                     "SourceThread": "Source3",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
+                    "StartTime": 3000000
+                },
+                {
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source3",
+                    "StartTime": 3000000
                 }
-            ]
+            ],
+            "ThreadName": "Source3",
+            "AmountOfOutgoingFlows": 8
         },
         {
-            "ThreadName": "Source4",
             "ThreadID": 5,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source4",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source5",
             "ThreadID": 6,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source5",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source6",
             "ThreadID": 7,
-            "AmountOfOutgoingFlows": 4,
             "AmountOfIncomingFlows": 0,
             "OutgoingFlows": [
                 {
-                    "SourceThread": "Source6",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source6",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source6",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source6",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source6",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source6",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source6",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source6",
+                    "StartTime": 3000000
                 }
-            ]
+            ],
+            "ThreadName": "Source6",
+            "AmountOfOutgoingFlows": 4
         },
         {
-            "ThreadName": "Source7",
             "ThreadID": 8,
-            "AmountOfOutgoingFlows": 4,
             "AmountOfIncomingFlows": 0,
             "OutgoingFlows": [
                 {
-                    "SourceThread": "Source7",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source7",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source7",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source7",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source7",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source7",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source7",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source7",
+                    "StartTime": 3000000
                 }
-            ]
+            ],
+            "ThreadName": "Source7",
+            "AmountOfOutgoingFlows": 4
         },
         {
-            "ThreadName": "Source8",
             "ThreadID": 9,
-            "AmountOfOutgoingFlows": 4,
             "AmountOfIncomingFlows": 0,
             "OutgoingFlows": [
                 {
-                    "SourceThread": "Source8",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source8",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source8",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source8",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source8",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "C000000B"
                     ],
-                    "MSGAmount": 1
-                },
-                {
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
                     "SourceThread": "Source8",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
+                    "StartTime": 2000000
+                },
+                {
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source8",
+                    "StartTime": 3000000
                 }
-            ]
+            ],
+            "ThreadName": "Source8",
+            "AmountOfOutgoingFlows": 4
         },
         {
-            "ThreadName": "Source9",
             "ThreadID": 10,
-            "AmountOfOutgoingFlows": 4,
             "AmountOfIncomingFlows": 0,
             "OutgoingFlows": [
                 {
-                    "SourceThread": "Source9",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source9",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source9",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source9",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source9",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source9",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source9",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source9",
+                    "StartTime": 3000000
                 }
-            ]
+            ],
+            "ThreadName": "Source9",
+            "AmountOfOutgoingFlows": 4
         },
         {
-            "ThreadName": "Source10",
             "ThreadID": 11,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source10",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source11",
             "ThreadID": 12,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source11",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source12",
             "ThreadID": 13,
-            "AmountOfOutgoingFlows": 4,
             "AmountOfIncomingFlows": 0,
             "OutgoingFlows": [
                 {
-                    "SourceThread": "Source12",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source12",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source12",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source12",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source12",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source12",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source12",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source12",
+                    "StartTime": 3000000
                 }
-            ]
+            ],
+            "ThreadName": "Source12",
+            "AmountOfOutgoingFlows": 4
         },
         {
-            "ThreadName": "Source13",
             "ThreadID": 14,
-            "AmountOfOutgoingFlows": 4,
             "AmountOfIncomingFlows": 0,
             "OutgoingFlows": [
                 {
-                    "SourceThread": "Source13",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source13",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source13",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source13",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source13",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source13",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source13",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source13",
+                    "StartTime": 3000000
                 }
-            ]
+            ],
+            "ThreadName": "Source13",
+            "AmountOfOutgoingFlows": 4
         },
         {
-            "ThreadName": "Source14",
             "ThreadID": 15,
-            "AmountOfOutgoingFlows": 4,
             "AmountOfIncomingFlows": 0,
             "OutgoingFlows": [
                 {
-                    "SourceThread": "Source14",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source14",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source14",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source14",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source14",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source14",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source14",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source14",
+                    "StartTime": 3000000
                 }
-            ]
+            ],
+            "ThreadName": "Source14",
+            "AmountOfOutgoingFlows": 4
         },
         {
-            "ThreadName": "Source15",
             "ThreadID": 16,
-            "AmountOfOutgoingFlows": 4,
             "AmountOfIncomingFlows": 0,
             "OutgoingFlows": [
                 {
-                    "SourceThread": "Source15",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source15",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source15",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source15",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source15",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source15",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source15",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source15",
+                    "StartTime": 3000000
                 }
-            ]
+            ],
+            "ThreadName": "Source15",
+            "AmountOfOutgoingFlows": 4
         },
         {
-            "ThreadName": "Source16",
             "ThreadID": 17,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source16",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source17",
             "ThreadID": 18,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source17",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source18",
             "ThreadID": 19,
-            "AmountOfOutgoingFlows": 8,
             "AmountOfIncomingFlows": 0,
             "OutgoingFlows": [
                 {
-                    "SourceThread": "Source18",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "00000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source18",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source18",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source18",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source18",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "8000000B"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source18",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source18",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source18",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source18",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "80000005"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source18",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source18",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source18",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source18",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "8000000B"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source18",
+                    "StartTime": 3000000
                 },
                 {
-                    "SourceThread": "Source18",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source18",
+                    "StartTime": 3000000
                 }
-            ]
+            ],
+            "ThreadName": "Source18",
+            "AmountOfOutgoingFlows": 8
         },
         {
-            "ThreadName": "Source19",
             "ThreadID": 20,
-            "AmountOfOutgoingFlows": 4,
             "AmountOfIncomingFlows": 0,
             "OutgoingFlows": [
                 {
-                    "SourceThread": "Source19",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source19",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source19",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source19",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source19",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source19",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source19",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source19",
+                    "StartTime": 3000000
                 }
-            ]
+            ],
+            "ThreadName": "Source19",
+            "AmountOfOutgoingFlows": 4
         },
         {
-            "ThreadName": "Source20",
             "ThreadID": 21,
-            "AmountOfOutgoingFlows": 4,
             "AmountOfIncomingFlows": 0,
             "OutgoingFlows": [
                 {
-                    "SourceThread": "Source20",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source20",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source20",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source20",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source20",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source20",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source20",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source20",
+                    "StartTime": 3000000
                 }
-            ]
+            ],
+            "ThreadName": "Source20",
+            "AmountOfOutgoingFlows": 4
         },
         {
-            "ThreadName": "Source21",
             "ThreadID": 22,
-            "AmountOfOutgoingFlows": 8,
             "AmountOfIncomingFlows": 0,
             "OutgoingFlows": [
                 {
-                    "SourceThread": "Source21",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "00000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source21",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source21",
-                    "StopTime": 0,
-                    "StartTime": 0,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source21",
+                    "StartTime": 0
                 },
                 {
-                    "SourceThread": "Source21",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "8000000B"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source21",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source21",
-                    "StopTime": 0,
-                    "StartTime": 1000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source21",
+                    "StartTime": 1000000
                 },
                 {
-                    "SourceThread": "Source21",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "80000005"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source21",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source21",
-                    "StopTime": 0,
-                    "StartTime": 2000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source21",
+                    "StartTime": 2000000
                 },
                 {
-                    "SourceThread": "Source21",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "80000005"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source21",
+                    "StartTime": 3000000
                 },
                 {
-                    "SourceThread": "Source21",
-                    "StopTime": 0,
-                    "StartTime": 3000000,
-                    "FlowType": "CBR",
-                    "TargetThread": "Sink",
-                    "Periodic": false,
                     "Header": [
                         "ADDR",
                         "SIZE"
                     ],
-                    "Bandwidth": 1000,
                     "Payload": [
                         "0000FFFF",
                         "40000007"
                     ],
-                    "MSGAmount": 1
+                    "Periodic": false,
+                    "TargetThread": "Sink",
+                    "FlowType": "CBR",
+                    "Bandwidth": 1000,
+                    "MSGAmount": 1,
+                    "StopTime": 0,
+                    "SourceThread": "Source21",
+                    "StartTime": 3000000
                 }
-            ]
+            ],
+            "ThreadName": "Source21",
+            "AmountOfOutgoingFlows": 8
         },
         {
-            "ThreadName": "Source22",
             "ThreadID": 23,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source22",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source23",
             "ThreadID": 24,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source23",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source24",
             "ThreadID": 25,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source24",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source25",
             "ThreadID": 26,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source25",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source26",
             "ThreadID": 27,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source26",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source27",
             "ThreadID": 28,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source27",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source28",
             "ThreadID": 29,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source28",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source29",
             "ThreadID": 30,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source29",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source30",
             "ThreadID": 31,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source30",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source31",
             "ThreadID": 32,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source31",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source32",
             "ThreadID": 33,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source32",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source33",
             "ThreadID": 34,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source33",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source34",
             "ThreadID": 35,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source34",
+            "AmountOfOutgoingFlows": 0
         },
         {
-            "ThreadName": "Source35",
             "ThreadID": 36,
-            "AmountOfOutgoingFlows": 0,
             "AmountOfIncomingFlows": 0,
-            "OutgoingFlows": []
+            "OutgoingFlows": [],
+            "ThreadName": "Source35",
+            "AmountOfOutgoingFlows": 0
         }
     ],
+    "StartTime": 0,
     "StopTime": 0,
-    "AmountOfThreads": 37
+    "AppName": "DVFSApp"
 }

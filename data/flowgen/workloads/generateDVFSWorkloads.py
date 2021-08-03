@@ -108,7 +108,7 @@ if __name__ == "__main__":
     
         SwitchingWorkloadAsJSON = SwitchingWorkloadFile.read()
 
-        CounterResolutions = [32, 24, 16, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2]
+        CounterResolutions = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2]
     
         generateDVFSWorkloads(SwitchingWorkloadAsJSON, "SetupBB36", CounterResolutions)
         generateDVFSWorkloads(SwitchingWorkloadAsJSON, "SetupBA36", CounterResolutions)

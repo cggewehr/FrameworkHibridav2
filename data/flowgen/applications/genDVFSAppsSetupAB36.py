@@ -27,7 +27,7 @@ with open("../topologies/SetupAB36.json", "r") as AB36File:
     SetupAB36.fromJSON(AB36File.read())
     
     # Sets counter resolutions values
-    CounterResolutions = [32, 24, 16, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2]
+    CounterResolutions = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2]
     
     # Generate DVFS apps for each counter resolution (but same computed clock frequencies at minimum granularity)
     for res in CounterResolutions:

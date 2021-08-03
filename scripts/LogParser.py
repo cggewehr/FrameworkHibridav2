@@ -168,9 +168,6 @@ class DVFSPacket(Packet):
                     StructID = i
             
                     DVFSPacket.CrossbarFreq[StructID].append((outEntry.Timestamp, Frequency))
-                    
-                    DVFSPacket.CrossbarLatencyCounters[PE.PEPos] += 1
-                    DVFSPacket.CrossbarLatencies[PE.PEPos] += (Latency - DVFSPacket.CrossbarLatencies[PE.PEPos]) / DVFSPacket.CrossbarLatencyCounters[PE.PEPos]
 
                     #DVFSPacket.CrossbarLatencyCounters[PE.PEPos] += 1
                     DVFSPacket.CrossbarLatencyCounters[StructID] += 1
@@ -524,12 +521,17 @@ def logparser(args):
     if args.PE:
 
         print("\n\tThroughput by PE:")
+        OutputThroughputs = [0] * AmountOfPEs
 
         for PEPos in range(AmountOfPEs):
             print("PE <" + str(PEPos) + "> output throughput: " + str(OutLogs[PEPos].Throughput) + " MBps")
+            OutputThroughputs[PEPos] = OutLogs[PEPos].Throughput
 
             # TODO: Input throughput 
             #print("PE <" + str(PEPos) + "> input throughput: " + str(InLogs[PEPos].Throughput) + " MBps")
+
+        with open(ProjectDir + "deliverables/PEOutputThroughputs" + str(args.MinimumOutputTimestamp) " - " + str(args.MaximumOutputTimestamp) + ".json", 'w') as OutputThroughputsFile:
+            OutputThroughputsFile.write(json.dumps(OutputThroughputs, sort_keys = False, indent = 4))
 
     # Prints out frequency info for Router/Bus/Crossbar from DVFS service packets
     if args.DVFS:
@@ -537,6 +539,8 @@ def logparser(args):
         print("\n\tRouter Clock Frequencies:")
 
         routerFreq = DVFSPacket.RouterFreq
+        busFreq = []
+        crossbarFreq = []
 
         for i, router in enumerate(routerFreq):
             print("\nRouter " + str(i) + ":")
@@ -566,6 +570,10 @@ def logparser(args):
                     print("Frequency set to <" + str(freqTuple[1]) + "> MHz @ <" + str(freqTuple[0]) + "> ns")
                 
         # TODO: Latencies for DVFS messages
+
+        with open(ProjectDir + "/deliverables/DVFS" + str(args.MinimumOutputTimestamp) " - " + str(args.MaximumOutputTimestamp) + ".json", 'w') as DVFSFile:
+            DVFSDict = {"Busses": busFreq, "Crossbars": crossbarFreq, "Routers": routerFreq}
+            DVFSFile.write(json.dumps(DVFSDict, sort_keys = False, indent = 4))
 
     with open(os.getenv("HIBRIDA_CONFIG_FILE"), "w") as ConfigFile:
         ConfigDict["MostRecentProject"] = args.ProjectName
