@@ -46,6 +46,7 @@ UpSamp.addFlow(AppComposer.CBRFlow(TargetThread = VopRec, Bandwidth = 300))
 VopRec.addFlow(AppComposer.CBRFlow(TargetThread = Pad, Bandwidth = 313))
 Pad.addFlow(AppComposer.CBRFlow(TargetThread = VopMem, Bandwidth = 313))
 VopMem.addFlow(AppComposer.CBRFlow(TargetThread = Pad, Bandwidth = 94))
+VopMem.addFlow(AppComposer.CBRFlow(TargetThread = VopRec, Bandwidth = 500))
 
 # Save App to JSON
 VOPD.toJSON(SaveToFile = True, FileName = "VOPD")

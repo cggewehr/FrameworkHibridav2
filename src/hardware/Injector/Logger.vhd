@@ -35,7 +35,13 @@ entity Logger is
 	generic(
 		InboundLogFilename : string;
 		OutboundLogFilename : string;
-		SquareNoCBound: integer
+    
+		SquareNoCBound: integer;
+
+        -- For Bus interruption detection
+        --CommStructure: string(1 to 3);
+        AmountOfPEs: integer := 36;
+        MaxMSGLength: integer := 128    
 	);
 
 	port (
@@ -78,6 +84,8 @@ begin
 
 	InputLogger: process(ClockRx, Reset)
 
+        variable PEPos: integer := 0;
+
         variable flitCounter: integer := 0;
         variable payloadSize: integer := 0;
         variable service: DataWidth_t := (others => '0');
@@ -88,36 +96,99 @@ begin
 
         variable inboundLogLine: line;
 
+        variable interrupted: boolean := False;
+        variable interruptedInboundLogLine: line;
+
+        variable interruptedInputTimestamp: integer := 0;
+        variable interruptedChecksum: unsigned(DataWidth - 1 downto 0) := (others =>'0');
+
+        variable interruptedFlitCounter: integer := 0;
+        variable interruptedPayloadSize: integer := 0;
+        variable interruptedService: DataWidth_t := (others => '0');
+        variable interruptedServiceGo: boolean := False;
+
+        -- 
+        --procedure lineHelper(data: string; interrupted: boolean) is begin
+        procedure lineHelper(data: string) is begin
+
+            if interrupted then
+                write(interruptedInboundLogLine, data & " ");
+            else
+                write(inboundLogLine, data & " ");
+            end if;
+
+        end procedure lineHelper;
+
     begin
 
         if Reset = '1' then
 
+            PEPos := 0;
+
             flitCounter := 0;
             payloadSize := 0;
+            service := (others => '0');
             serviceGo := False;
 
             inputTimestamp := 0;
             checksum := (others =>'0');
 
+            interrupted := False;
+
+            interruptedInputTimestamp := 0;
+            interruptedChecksum := (others =>'0');
+
+            interruptedflitCounter := 0;
+            interruptedPayloadSize := 0;
+            interruptedService := (others => '0');
+            interruptedServiceGo := False;
+
         elsif rising_edge(ClockRx) then
 
             if Rx = '1' and CreditO = '1' then
 
-                -- Write to log ADDR flit
+                -- Check if new flit is the first (ADDR) flit from an interrupt
+                --if PEPosFromXY(DataIn(DataWidth - 1 downto HalfDataWidth), SquareNoCBound) < AmountOfPEs and to_integer(unsigned(DataIn)) > MaxMSGLength and DataIn /= DVFSServiceID and not interrupted and CommStructure = "Bus" and flitCounter > 0 then
+                if PEPosFromXY(DataIn(DataWidth - 1 downto HalfDataWidth), SquareNoCBound) < AmountOfPEs and to_integer(unsigned(DataIn)) > MaxMSGLength and DataIn /= DVFSServiceID and not interrupted and flitCounter > 0 then
+                    
+                    --report "DataIn: " & CONV_STRING(DataIn) severity note;
+                    --assert not interrupted report "Logger interrupted while already interrupted" severity error;
+                    --assert to_integer(unsigned(DataIn)) /= 126 report "Interrupt triggered by SIZE flit" severity error;
+                    interrupted := True;
+
+                    interruptedFlitCounter := flitCounter;
+                    interruptedPayloadSize := payloadSize;
+                    interruptedServiceGo := serviceGo;
+                    interruptedChecksum := checksum;
+
+                    flitCounter := 0;
+                    payloadSize := 0;
+                    serviceGo := False;
+                    checksum := (others =>'0');
+                     
+                end if;
+
+                -- Write to log line ADDR flit
                 if flitCounter = 0 then
 
-                    write(inboundLogLine, integer'image(PEPosFromXY(DataIn(DataWidth - 1 downto HalfDataWidth), SquareNoCBound)) & " ");
+                    --write(inboundLogLine, integer'image(PEPosFromXY(DataIn(DataWidth - 1 downto HalfDataWidth), SquareNoCBound)) & " ");
+                    PEPos := PEPosFromXY(DataIn(DataWidth - 1 downto HalfDataWidth), SquareNoCBound);
+                    lineHelper(integer'image(PEPos));
 
-                -- Write to log SIZE flit
+                -- Write to log line SIZE flit
                 elsif flitCounter = 1 then
 
                     payloadSize := to_integer(unsigned(DataIn));
-                    write(inboundLogLine, integer'image(to_integer(unsigned(DataIn))) & " ");
 
-                -- Write to log ServiceID flit
+                    --write(inboundLogLine, integer'image(to_integer(unsigned(DataIn))) & " ");
+                    lineHelper(integer'image(payloadSize));
+
+                -- Write to log line ServiceID flit
                 elsif flitCounter = 2 then
 
-                    write(inboundLogLine, CONV_STRING(DataIn) & " ");
+                    --write(inboundLogLine, CONV_STRING(DataIn) & " ");
+                    lineHelper(CONV_STRING(DataIn));
+
                     service := DataIn;
                     serviceGo := True;
 
@@ -131,27 +202,30 @@ begin
                         if flitCounter = 3 then
 
                             -- Write DVFS config filt
-                            write(inboundLogLine, CONV_STRING(DataIn) & " ");
+                            --write(inboundLogLine, CONV_STRING(DataIn) & " ");
+                            lineHelper(CONV_STRING(DataIn));
 
                         end if;
 
                     elsif service = SyntheticTrafficServiceID then
 
-
                         if flitCounter = 3 then
 
                             -- Write App ID
-                            write(inboundLogLine, integer'image(to_integer(unsigned(DataIn))) & " ");
+                            --write(inboundLogLine, integer'image(to_integer(unsigned(DataIn))) & " ");
+                            lineHelper(integer'image(to_integer(unsigned(DataIn))));
 
                         elsif flitCounter = 4 then
 
                             -- Write Target Thread ID
-                            write(inboundLogLine, integer'image(to_integer(unsigned(DataIn))) & " ");
+                            --write(inboundLogLine, integer'image(to_integer(unsigned(DataIn))) & " ");
+                            lineHelper(integer'image(to_integer(unsigned(DataIn))));
 
                         elsif flitCounter = 5 then
 
                             -- Write Source Thread ID
-                            write(inboundLogLine, integer'image(to_integer(unsigned(DataIn))) & " ");
+                            --write(inboundLogLine, integer'image(to_integer(unsigned(DataIn))) & " ");
+                            lineHelper(integer'image(to_integer(unsigned(DataIn))));
 
                         end if;
 
@@ -178,16 +252,37 @@ begin
 
                     -- Write to log file (| Target PEPos | Payload Size | Service ID | <Service specific data> | Timestamp | Checksum |)
                     inputTimestamp := NOW / 1 ns;
-                    write(inboundLogLine, integer'image(inputTimestamp) & " ");
-                    write(inboundLogLine, integer'image(to_integer(checksum)));
-                    writeline(inboundLog, inboundLogLine);
+                    --write(inboundLogLine, integer'image(inputTimestamp) & " ");
+                    --write(inboundLogLine, integer'image(to_integer(checksum)));
+                    lineHelper(integer'image(inputTimestamp));
+                    lineHelper(integer'image(to_integer(checksum)));
+                    --writeline(inboundLog, inboundLogLine);
 
-                    -- Resets flags and counters
-                    flitCounter := 0;
-                    payloadSize := 0;
-                    serviceGo := False;
-                    checksum := (others =>'0');
-                    inputTimestamp := 0;
+                    -- Reset interrupted values
+                    if interrupted then
+
+                        writeline(inboundLog, interruptedInboundLogLine);
+                        interrupted := False;
+
+                        -- Reset interrupted values
+                        flitCounter := interruptedFlitCounter;
+                        payloadSize := interruptedPayloadSize;
+                        serviceGo := interruptedServiceGo;
+                        checksum := interruptedChecksum;
+                        --inputTimestamp := 0;
+
+                    else
+
+                        writeline(inboundLog, inboundLogLine);
+
+                        -- Resets flags and counters
+                        flitCounter := 0;
+                        payloadSize := 0;
+                        serviceGo := False;
+                        checksum := (others =>'0');
+                        --inputTimestamp := 0;
+
+                    end if;
 
                 end if;
 

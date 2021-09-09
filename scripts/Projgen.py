@@ -245,6 +245,7 @@ def projgen(args):
         makefile.write("	$(COMPILER) $(COMPILER_OPTS) -work worklib $(HIBRIDA_HARDWARE_PATH)/Injector/PEBus.vhd\n")
         makefile.write("	$(COMPILER) $(COMPILER_OPTS) -work worklib $(HIBRIDA_HARDWARE_PATH)/Injector/PE.vhd\n")
         makefile.write("	$(COMPILER) $(COMPILER_OPTS) -work worklib $(HIBRIDA_HARDWARE_PATH)/DVFS/ClockDivider.vhd\n")
+        makefile.write("	$(COMPILER) $(COMPILER_OPTS) -work worklib $(HIBRIDA_HARDWARE_PATH)/DVFS/ClockGatingCounter.vhd\n")
         makefile.write("	$(COMPILER) $(COMPILER_OPTS) -work worklib $(HIBRIDA_HARDWARE_PATH)/DVFS/DVFSController.vhd\n")
         makefile.write("	$(COMPILER) $(COMPILER_OPTS) -work worklib $(HIBRIDA_HARDWARE_PATH)/Top/HyHeMPS.vhd\n")
         makefile.write("	$(COMPILER) $(COMPILER_OPTS) -work worklib $(HIBRIDA_HARDWARE_PATH)/Top/HyHeMPS_TB.vhd\n")

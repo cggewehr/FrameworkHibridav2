@@ -1,10 +1,12 @@
+from fractions import Fraction
+import json
 import math
+
 import AppComposer
 import PlatformComposer
-from fractions import Fraction
 
-# This script generate DVFS AppComposer Applications for a given network topology and router-grained previously computed clock frequencies.
-def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFrequencies, CrossbarClockFrequencies, GenRouterGrained = True, GenStructGrained = True, GenGlobalGrained = True, GenNoDVFS = True, DataWidth = 32, InputClockFrequency = 250, QuantumTime = 1000000, SaveToFile = True, ReturnAsJSON = False):
+# This script generate DVFS AppComposer Applications for a given network topology and previously computed router-grained clock frequencies.
+def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFrequencies, CrossbarClockFrequencies, GenRouterGrained = True, GenStructGrained = True, GenGlobalGrained = True, GenNoDVFS = True, DataWidth = 32, InputClockFrequency = 250, SaveToFile = True, ReturnAsJSON = False):
             
     if not isinstance(Platform, PlatformComposer.Platform):
         print("Error: Object given as Platform parameter is not of PlatformComposer.Platform class")
@@ -33,27 +35,31 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
     ZeroPadding = "0" * (DataWidth - VoltageLevelFieldSize - 1 - 2*DVFSCounterResolution)
 
     if DVFSAmountOfVoltageLevels != 2:
-        print("Error: This scripts only supports a DVFS voltage level amount of 2, called with <" + str(DVFSAmountOfVoltageLevels) + ">")  
+        print("Error: This script only supports a DVFS voltage level amount of 2, called with <" + str(DVFSAmountOfVoltageLevels) + ">")  
         exit(1)
     
-    def makeConfigFlit(TargetFrequency, InputClockFrequency, PE, Quantum, IsNoC, Debug = False):
+    #def makeConfigFlit(TargetFrequency, InputClockFrequency, PE, Quantum, IsNoC, Debug = False):
+    def makeConfigFlit(TargetFrequency, InputClockFrequency, PE, IsNoC, Debug = False):
 
         DivRatio = Fraction(TargetFrequency / InputClockFrequency).limit_denominator((2**DVFSCounterResolution) - 1)
 
         # Checks if TargetFrequency < Input Frequency
         if TargetFrequency > InputClockFrequency:
-            print("Error: Target frequency <" + str(TargetFrequency) + " MHz> greater than input frequency <" + str(InputClockFrequency) + " MHz> for PEPos <" + str(PEPos) + "> Quantum <" + str(Quantum) + ">")  
+            #print("Error: Target frequency <" + str(TargetFrequency) + " MHz> greater than input frequency <" + str(InputClockFrequency) + " MHz> for PEPos <" + str(PEPos) + "> Quantum <" + str(Quantum) + ">")  
+            print("Error: Target frequency <" + str(TargetFrequency) + " MHz> greater than input frequency <" + str(InputClockFrequency) + " MHz> for PEPos <" + str(PEPos) + ">")  
             exit(1)              
 
         # Ensures N/M fractional representation is rounded up
         if DivRatio * InputClockFrequency < TargetFrequency and DivRatio.numerator != 0:
-            print("Warning: Rounding computed N/M frequency of <" + str((DivRatio.numerator)/(DivRatio.denominator) * InputClockFrequency) + " MHz> up to <" + str((DivRatio.numerator + 1)/(DivRatio.denominator) * InputClockFrequency) + "MHz> for PE <" + str(PE.PEPos) + ">, Quantum <" + str(Quantum) + ">.  Original frequency: " + str(TargetFrequency) + " MHz")
+            #print("Warning: Rounding computed N/M frequency of <" + str((DivRatio.numerator)/(DivRatio.denominator) * InputClockFrequency) + " MHz> up to <" + str((DivRatio.numerator + 1)/(DivRatio.denominator) * InputClockFrequency) + "MHz> for PE <" + str(PE.PEPos) + ">, Quantum <" + str(Quantum) + ">.  Original frequency: " + str(TargetFrequency) + " MHz")
+            print("Warning: Rounding computed N/M frequency of <" + str((DivRatio.numerator)/(DivRatio.denominator) * InputClockFrequency) + " MHz> up to <" + str((DivRatio.numerator + 1)/(DivRatio.denominator) * InputClockFrequency) + "MHz> for PE <" + str(PE.PEPos) + ">.  Original frequency: " + str(TargetFrequency) + " MHz")
             #DivRatio.numerator += 1  # Fraction.numerator is a @property method and cant be set directly
             DivRatio = Fraction(numerator = DivRatio.numerator + 1, denominator = DivRatio.denominator)
 
         # Sets to minimum frequency if computed frequency = 0
         if DivRatio.numerator == 0:
-            print("Warning: Setting computed N/M frequency of 0 MHz to <" + str((1/((2**DVFSCounterResolution) - 1)) * InputClockFrequency) + " MHz> for PE <" + str(PE.PEPos) + ">, Quantum <" + str(Quantum) + ">. Original frequency: " + str(TargetFrequency) + " MHz")
+            #print("Warning: Setting computed N/M frequency of 0 MHz to <" + str((1/((2**DVFSCounterResolution) - 1)) * InputClockFrequency) + " MHz> for PE <" + str(PE.PEPos) + ">, Quantum <" + str(Quantum) + ">. Original frequency: " + str(TargetFrequency) + " MHz")
+            print("Warning: Setting computed N/M frequency of 0 MHz to <" + str((1/((2**DVFSCounterResolution) - 1)) * InputClockFrequency) + " MHz> for PE <" + str(PE.PEPos) + ">. Original frequency: " + str(TargetFrequency) + " MHz")
             DivRatio = Fraction(numerator = 1, denominator = (2**DVFSCounterResolution) - 1)
 
         # Determines power switch enable signal on config flit
@@ -71,7 +77,8 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
 
         if Debug:
             
-            print("PEPos: " + str(PE.PEPos) + " Quantum: " + str(Quantum))
+            #print("PEPos: " + str(PE.PEPos) + " Quantum: " + str(Quantum))
+            print("PEPos: " + str(PE.PEPos))
             print("Ratio: " + str(DivRatio.numerator) + " by " + str(DivRatio.denominator))
             print("N as binary: " + format(DivRatio.numerator, "0" + str(DVFSCounterResolution) + "b"))
             print("M as binary: " + format(DivRatio.denominator, "0" + str(DVFSCounterResolution) + "b"))
@@ -79,43 +86,21 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             print("Target Frequency: " + str(TargetFrequency) + " Actual Frequency: " + str((DivRatio.numerator / DivRatio.denominator) * InputClockFrequency))  
 
         return ConfigFlit
-
-    # Check if amount of Quantums is coherent for each clock frequency list
-    if BusClockFrequencies is not None:
-
-        if len(RouterClockFrequencies) == len(BusClockFrequencies):
-            AmountOfQuantums = len(RouterClockFrequencies)
-        else:
-            print("Error: Incoherent amount of quantums: Per Router <" + str(len(RouterClockFrequencies)) + "> Per Bus <" + str(len(BusClockFrequencies))+ ">")
-            exit(1)
-
-    if CrossbarClockFrequencies is not None:
-
-        if len(RouterClockFrequencies) == len(CrossbarClockFrequencies):
-            AmountOfQuantums = len(RouterClockFrequencies)
-        else:
-            print("Error: Incoherent amount of quantums: Per Router <" + str(len(RouterClockFrequencies))+ "> Per Crossbar <" + str(len(CrossbarClockFrequencies)) + ">")
-            exit(1)
-    
-    AmountOfQuantums = len(RouterClockFrequencies)
         
     # Check if amount of routers or PEs in Bus/Crossbars are coherent with info from Platform object
-    for i, ClocksInQuantum in enumerate(RouterClockFrequencies):
-        if len(ClocksInQuantum) != AmountOfRouters:
-            print("Error: Amount of Routers <" + str(len(ClocksInQuantum)) + "> for Quantum <" + str(i) + "> differs from amount of Routers from Platform object <" + str(AmountOfRouters) + ">")
-            exit(1)
+    if len(RouterClockFrequencies) != AmountOfRouters:
+        print("Error: Amount of Routers <" + str(len(RouterClockFrequencies)) + "> differs from amount of Routers from Platform object <" + str(AmountOfRouters) + ">")
+        exit(1)
             
     if BusClockFrequencies is not None: 
-        for i, ClocksInQuantum in enumerate(BusClockFrequencies):
-            if len(ClocksInQuantum) != AmountOfBuses:
-                print("Error: Amount of Buses <" + str(len(ClocksInQuantum)) + "> for Quantum <" + str(i) + "> differs from amount of Buses from Platform object <" + str(AmountOfBuses) + ">")
-                exit(1)
+        if len(BusClockFrequencies) != AmountOfBuses:
+            print("Error: Amount of Buses <" + str(len(BusClockFrequencies)) + "> differs from amount of Buses from Platform object <" + str(AmountOfBuses) + ">")
+            exit(1)
 
     if CrossbarClockFrequencies is not None:            
-        for i, ClocksInQuantum in enumerate(CrossbarClockFrequencies):
-            if len(ClocksInQuantum) != AmountOfCrossbars:
-                print("Error: Amount of Crossbars <" + str(len(ClocksInQuantum)) + "> for Quantum <" + str(i) + "> differs from amount of Crossbars from Platform object <" + str(AmountOfCrossbars) + ">")
-                exit(1)
+        if len(CrossbarClockFrequencies) != AmountOfCrossbars:
+            print("Error: Amount of Crossbars <" + str(len(CrossbarClockFrequencies)) + "> differs from amount of Crossbars from Platform object <" + str(AmountOfCrossbars) + ">")
+            exit(1)
 
     if GenRouterGrained:
 
@@ -134,61 +119,69 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             DVFSApp.addThread(DVFSSource)
         
         # Determine VF-pair setup for each Router/Bus/Crossbar in each time window (quantum)
-        for Quantum in range(AmountOfQuantums):
-            for PEPos, PE in enumerate(Platform.PEs):
-            
-                # Only NoC and first-of-struct PEs are needed (no DVFS for PEs inside Bus/Crossbar)
-                if PE.CommStructure != "NoC" and PE.StructPos != 0:
-                    continue
+        #for Quantum in range(AmountOfQuantums):
+        for PEPos, PE in enumerate(Platform.PEs):
+        
+            # Only NoC and first-of-struct PEs are needed (no DVFS for PEs inside Bus/Crossbar)
+            if PE.CommStructure != "NoC" and PE.StructPos != 0:
+                continue
 
-                # Skip Master PE, since a PE cant send a message to itself
-                if PEPos == MasterPEPos:
-                    continue
+            # Skip Master PE, since a PE cant send a message to itself
+            if PEPos == MasterPEPos:
+                continue
 
-                # Sets N and M for Bus/Crossbar
-                if PE.CommStructure != "NoC":
+            # Sets N and M for Bus/Crossbar
+            if PE.CommStructure != "NoC":
 
-                    if PE.CommStructure == "Bus":
-                        # Finds which Bus this PE is in
-                        BusID = None
-                        for i, Bus in enumerate(Platform.Buses):
-                            if Bus.PEs[0].PEPos == PEPos:
-                                BusID = i
-                                break
-     
-                        try:
-                            TargetFrequency = BusClockFrequencies[Quantum][BusID]
-                        except TypeError:
-                            print("Error: Cant find a BusID for PEPos <" + str(PEPos) + ">")
-                            exit(1)
-                            
-                    elif PE.CommStructure == "Crossbar":
-                        
-                        # Finds which Crossbar this PE is in    
-                        CrossbarID = None    
-                        for i, Crossbar in enumerate(Platform.Crossbars):
-                            if Crossbar.PEs[0].PEPos == PEPos:
-                                CrossbarID = i
-                                break
+                if PE.CommStructure == "Bus":
 
-                        try:
-                            TargetFrequency = CrossbarClockFrequencies[Quantum][CrossbarID]
-                        except TypeError:
-                            print("Error: Cant find a CrossbarID for PEPos <" + str(PEPos) + ">")
-                            exit(1)   
-      
-                    else:
-                        print("Error: Invalid CommStructure value <" + str(PE.CommStructure) + "> for PE <" + str(PEPos) + ">. Acceptable values are [NoC, Bus, Crossbar].")
+                    # Finds which Bus this PE is in
+                    BusID = None
+                    for i, Bus in enumerate(Platform.Buses):
+                        if Bus.PEs[0].PEPos == PEPos:
+                            BusID = i
+                            break
+ 
+                    try:
+                        #TargetFrequency = BusClockFrequencies[Quantum][BusID]
+                        TargetFrequency = BusClockFrequencies[BusID]
+                    except TypeError:
+                        print("Error: Cant find a BusID for PEPos <" + str(PEPos) + ">")
                         exit(1)
+                        
+                elif PE.CommStructure == "Crossbar":
                     
-                    # Sets N and M for Bus/Crossbar
-                    ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, Quantum = Quantum, IsNoC = False)    
-                    DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
+                    # Finds which Crossbar this PE is in    
+                    CrossbarID = None    
+                    for i, Crossbar in enumerate(Platform.Crossbars):
+                        if Crossbar.PEs[0].PEPos == PEPos:
+                            CrossbarID = i
+                            break
 
-                # Sets N and M for NoC router
-                TargetFrequency = RouterClockFrequencies[Quantum][PE.BaseNoCPos]
-                ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, Quantum = Quantum, IsNoC = True)    
-                DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
+                    try:
+                        #TargetFrequency = CrossbarClockFrequencies[Quantum][CrossbarID]
+                        TargetFrequency = CrossbarClockFrequencies[CrossbarID]
+                    except TypeError:
+                        print("Error: Cant find a CrossbarID for PEPos <" + str(PEPos) + ">")
+                        exit(1)   
+  
+                else:
+                    print("Error: Invalid CommStructure value <" + str(PE.CommStructure) + "> for PE <" + str(PEPos) + ">. Acceptable values are [NoC, Bus, Crossbar].")
+                    exit(1)
+                
+                # Sets N and M for Bus/Crossbar
+                #ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, Quantum = Quantum, IsNoC = False)   
+                ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, IsNoC = False)     
+                #DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
+                DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = 0, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
+
+            # Sets N and M for NoC router
+            #TargetFrequency = RouterClockFrequencies[Quantum][PE.BaseNoCPos]
+            TargetFrequency = RouterClockFrequencies[PE.BaseNoCPos]
+            #ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, Quantum = Quantum, IsNoC = True)   
+            ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, IsNoC = True)  
+            #DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
+            DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = 0, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
 
         # Add DVFS to AppDict
         if ReturnAsJSON:
@@ -197,7 +190,8 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             AppDict["RouterGrained"] = DVFSApp
                     
         # Write Router-grained DVFS Application to a JSON file
-        DVFSApp.toJSON(SaveToFile = True, FileName = PlatformName + "/DVFSAppRouterGrained" + str(PlatformName) + "Resolution" + str(DVFSCounterResolution))
+        if SaveToFile:
+            DVFSApp.toJSON(SaveToFile = True, FileName = PlatformName + "/DVFSAppRouterGrained" + str(PlatformName) + "Resolution" + str(DVFSCounterResolution))
 
     # Generates Struct-grained DVFS App (Whole NoC + All Buses + All Crossbars). Skipped if standalone NoC (no Bus/Crossbars)    
     if GenStructGrained and (AmountOfCrossbars > 0 or AmountOfBuses > 0):
@@ -205,8 +199,7 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
         print("\nMaking Struct-grained DVFS Application")
 
         # Make Application
-        if SaveToFile:
-            DVFSApp = AppComposer.Application(AppName = "DVFSApp", StartTime = 0, StopTime = 0)
+        DVFSApp = AppComposer.Application(AppName = "DVFSApp", StartTime = 0, StopTime = 0)
 
         # Make Threads
         DVFSSink = AppComposer.Thread(ThreadName = "Sink")
@@ -218,64 +211,71 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             DVFSApp.addThread(DVFSSource)
         
         # Determine VF-pair setup for each Router/Bus/Crossbar in each time window (quantum)
-        for Quantum in range(AmountOfQuantums):
-            for PEPos, PE in enumerate(Platform.PEs):
+        #for Quantum in range(AmountOfQuantums):
+        for PEPos, PE in enumerate(Platform.PEs):
+        
+            # Only NoC and first-of-struct PEs are needed (no DVFS for PEs inside Bus/Crossbar)
+            if PE.CommStructure != "NoC" and PE.StructPos != 0:
+                continue
             
-                # Only NoC and first-of-struct PEs are needed (no DVFS for PEs inside Bus/Crossbar)
-                if PE.CommStructure != "NoC" and PE.StructPos != 0:
-                    continue
-                
-                # Skip Master PE, since a PE cant send a message to itself
-                if PEPos == MasterPEPos:
-                    continue
+            # Skip Master PE, since a PE cant send a message to itself
+            if PEPos == MasterPEPos:
+                continue
 
+            # Sets N and M for Bus/Crossbar
+            if PE.CommStructure != "NoC":
+
+                if PE.CommStructure == "Bus":
+                
+                    BusID = None
+                    
+                    # Finds which Bus this PE is in
+                    for i, Bus in enumerate(Platform.Buses):
+                        if Bus.PEs[0].PEPos == PEPos:
+                            BusID = i
+                            break
+                            
+                    try:
+                        #TargetFrequency = BusClockFrequencies[Quantum][BusID]
+                        TargetFrequency = BusClockFrequencies[BusID]
+                    except TypeError:
+                        print("Error: Cant find a BusID for PEPos <" + str(PEPos) + ">")
+                        exit(1)
+                        
+                elif PE.CommStructure == "Crossbar":
+                    
+                    CrossbarID = None
+                            
+                    # Finds which Crossbar this PE is in        
+                    for i, Crossbar in enumerate(Platform.Crossbars):
+                        if Crossbar.PEs[0].PEPos == PEPos:
+                            CrossbarID = i
+                            break
+                            
+                    try:
+                        #TargetFrequency = CrossbarClockFrequencies[Quantum][CrossbarID]
+                        TargetFrequency = CrossbarClockFrequencies[CrossbarID]
+                    except TypeError:
+                        print("Error: Cant find a CrossbarID for PEPos <" + str(PEPos) + ">")
+                        exit(1)
+                        
+                else:
+                    print("Error: Invalid CommStructure value <" + str(PE.CommStructure) + "> for PE <" + str(PEPos) + ">. Acceptable values are [NoC, Bus, Crossbar].")
+                
                 # Sets N and M for Bus/Crossbar
-                if PE.CommStructure != "NoC":
+                #ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, Quantum = Quantum, IsNoC = False)  
+                ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, IsNoC = False)   
+                #DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
+                DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = 0, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
 
-                    if PE.CommStructure == "Bus":
-                    
-                        BusID = None
-                        
-                        # Finds which Bus this PE is in
-                        for i, Bus in enumerate(Platform.Buses):
-                            if Bus.PEs[0].PEPos == PEPos:
-                                BusID = i
-                                break
-                                
-                        try:
-                            TargetFrequency = BusClockFrequencies[Quantum][BusID]
-                        except TypeError:
-                            print("Error: Cant find a BusID for PEPos <" + str(PEPos) + ">")
-                            exit(1)
-                            
-                    elif PE.CommStructure == "Crossbar":
-                        
-                        CrossbarID = None
-                                
-                        # Finds which Crossbar this PE is in        
-                        for i, Crossbar in enumerate(Platform.Crossbars):
-                            if Crossbar.PEs[0].PEPos == PEPos:
-                                CrossbarID = i
-                                break
-                                
-                        try:
-                            TargetFrequency = CrossbarClockFrequencies[Quantum][CrossbarID]
-                        except TypeError:
-                            print("Error: Cant find a CrossbarID for PEPos <" + str(PEPos) + ">")
-                            exit(1)
-                            
-                    else:
-                        print("Error: Invalid CommStructure value <" + str(PE.CommStructure) + "> for PE <" + str(PEPos) + ">. Acceptable values are [NoC, Bus, Crossbar].")
-                    
-                    # Sets N and M for Bus/Crossbar
-                    ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, Quantum = Quantum, IsNoC = False)    
-                    DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
-
-                # Sets N and M for NoC router
-                TargetFrequency = max(RouterClockFrequencies[Quantum])
-                ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, Quantum = Quantum, IsNoC = True)    
-                DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
-                
+            # Sets N and M for NoC router
+            #TargetFrequency = max(RouterClockFrequencies[Quantum])
+            TargetFrequency = max(RouterClockFrequencies)
+            #ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, Quantum = Quantum, IsNoC = True)   
+            ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, IsNoC = True)   
+            #DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
+            DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = 0, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
+            
         # Add DVFS to AppDict
         if ReturnAsJSON:
             AppDict["StructGrained"] = DVFSApp.toJSON() 
@@ -304,40 +304,47 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
             DVFSApp.addThread(DVFSSource)
         
         # Determine VF-pair setup for each Router/Bus/Crossbar in each time window (quantum)
-        for Quantum in range(AmountOfQuantums):
-            for PEPos, PE in enumerate(Platform.PEs):
+        #for Quantum in range(AmountOfQuantums):
+        for PEPos, PE in enumerate(Platform.PEs):
+        
+            # Only NoC and first-of-struct PEs are needed (no DVFS for PEs inside Bus/Crossbar)
+            if PE.CommStructure != "NoC" and PE.StructPos != 0:
+                continue
             
-                # Only NoC and first-of-struct PEs are needed (no DVFS for PEs inside Bus/Crossbar)
-                if PE.CommStructure != "NoC" and PE.StructPos != 0:
-                    continue
+            # Skip Master PE, since a PE cant send a message to itself
+            if PEPos == MasterPEPos:
+                continue
+
+            # Determines N and M (numerator and denominator) on config flit
+            #NoCMaxFreq = max(RouterClockFrequencies[Quantum])
+            NoCMaxFreq = max(RouterClockFrequencies)
+
+            try:
+                #BusMaxFreq = max(BusClockFrequencies[Quantum])
+                BusMaxFreq = max(BusClockFrequencies)
+            except (ValueError, TypeError):  # BusClockFrequencies is an empty list (ValueError) or None (TypeError)
+                BusMaxFreq = 0
+            
+            try:
+                #CrossbarMaxFreq = max(CrossbarClockFrequencies[Quantum])
+                CrossbarMaxFreq = max(CrossbarClockFrequencies)
+            except (ValueError, TypeError):  # CrossbarClockFrequencies is an empty list (ValueError) or None (TypeError)
+                CrossbarMaxFreq = 0
                 
-                # Skip Master PE, since a PE cant send a message to itself
-                if PEPos == MasterPEPos:
-                    continue
+            TargetFrequency = max(NoCMaxFreq, BusMaxFreq, CrossbarMaxFreq)
 
-                # Determines N and M (numerator and denominator) on config flit
-                NoCMaxFreq = max(RouterClockFrequencies[Quantum])
+            # Sets N and M for Bus/Crossbar
+            if PE.CommStructure != "NoC":
+                #ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, Quantum = Quantum, IsNoC = False)   
+                ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, IsNoC = False)  
+                #DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
+                DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = 0, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
 
-                try:
-                    BusMaxFreq = max(BusClockFrequencies[Quantum])
-                except (ValueError, TypeError):  # BusClockFrequencies is an empty list (ValueError) or None (TypeError)
-                    BusMaxFreq = 0
-                
-                try:
-                    CrossbarMaxFreq = max(CrossbarClockFrequencies[Quantum])
-                except (ValueError, TypeError):  # CrossbarClockFrequencies is an empty list (ValueError) or None (TypeError)
-                    CrossbarMaxFreq = 0
-                    
-                TargetFrequency = max(NoCMaxFreq, BusMaxFreq, CrossbarMaxFreq)
-
-                # Sets N and M for Bus/Crossbar
-                if PE.CommStructure != "NoC":
-                    ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, Quantum = Quantum, IsNoC = False)    
-                    DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
-
-                # Sets N and M for NoC router
-                ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, Quantum = Quantum, IsNoC = True)    
-                DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
+            # Sets N and M for NoC router
+            #ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, Quantum = Quantum, IsNoC = True)    
+            ConfigFlit = makeConfigFlit(TargetFrequency = TargetFrequency, InputClockFrequency = InputClockFrequency, PE = PE, IsNoC = True)    
+            #DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = Quantum * QuantumTime, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
+            DVFSSources[PEPos].addFlow(AppComposer.CBRFlow(TargetThread = DVFSSink, Bandwidth = 1000, StartTime = 0, MSGAmount = 1, Payload = [DVFSServiceID, ConfigFlit]))
 
         # Add DVFS to AppDict
         if ReturnAsJSON:
@@ -378,3 +385,145 @@ def generateDVFSApps(Platform, PlatformName, RouterClockFrequencies, BusClockFre
         
     # Return Dict containing all apps     
     return AppDict    
+
+
+if __name__ == "__main__":
+
+    Setups = ["SetupBB36", "SetupBA36", "SetupAB36", "SetupAA36", "Hermes36"]
+    CounterResolutions = [15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2]
+    #Granularities = ["GlobalGrained", "StructGrained", "RouterGrained"]  # Already varies granularities within generateDVFSApps() (+ NoDVFS)
+    Workloads = ["WorkloadBB", "WorkloadMM", "WorkloadAA", "WorkloadHH"]
+
+    # Previously computer router-grained frequencies
+    RouterFrequencies = {Setup: {Workload: None for Workload in Workloads} for Setup in Setups}
+    BusFrequencies = {Setup: {Workload: None for Workload in Workloads} for Setup in Setups}
+    CrossbarFrequencies = {Setup: {Workload: None for Workload in Workloads} for Setup in Setups}
+
+    # Previously computer router-grained Router frequencies for SetupBB36
+    RouterFrequencies["SetupBB36"]["WorkloadBB"] = [48,48,0,45,75,112,16,75,75,75,112,24,48,75,81.1075,112,24,48,45,81.1075,24,24,24,40,40]  # Workload BB, frequency in MHz
+    #RouterFrequencies["SetupBB36"]["WorkloadMM"] = [150,150,0,24.4275,24.4275,150,150,0,150,90,90,90,0,90,90,90,150,0,150,150,24.4275,24.4275,0,150,150]  # Workload MM, frequency in MHz
+    RouterFrequencies["SetupBB36"]["WorkloadMM"] = [0,150,90,0,0,150,150,150,54.7475,179.78,116.9575,150,0,150,179.78,116.9575,116.9575,150,150,150,0,29.7475,90,150,0]  # Workload MM, frequency in MHz
+    RouterFrequencies["SetupBB36"]["WorkloadAA"] = [230.375,230.375,230.375,230.375,230.375,224.125,230.375,230.375,230.375,224.125,224.125,224.125,102.75,224.125,224.125,17.5,102.75,72.5,148.5,148.5,90.5,90.5,93.25,88.25,200]  # Workload AA, frequency in MHz
+    RouterFrequencies["SetupBB36"]["WorkloadHH"] = [230.375,230.375,230.375,150,90,224.125,230.375,150,150,150,224.125,224.125,0,150,179.78,48,48,32,54.7475,179.78,48,16,32,32,16]  # Workload HH, frequency in MHz
+
+    #BusFrequencies["SetupBB36"]["WorkloadBB"] = [112, 81.1075]  # Workload BB, frequency in MHz
+    #BusFrequencies["SetupBB36"]["WorkloadMM"] = [116.9575, 179.78]  # Workload MM, frequency in MHz
+    #BusFrequencies["SetupBB36"]["WorkloadAA"] = [224.125, 224.125]  # Workload AA, frequency in MHz
+    #BusFrequencies["SetupBB36"]["WorkloadHH"] = [224.125, 179.78] # Workload HH, frequency in MHz
+    BusFrequencies["SetupBB36"]["WorkloadBB"] = [112,81.1075]  # Workload BB, frequency in MHz
+    BusFrequencies["SetupBB36"]["WorkloadMM"] = [116.9575, 179.78]  # Workload MM, frequency in MHz
+    BusFrequencies["SetupBB36"]["WorkloadAA"] = [224.125, 224.125]  # Workload AA, frequency in MHz
+    BusFrequencies["SetupBB36"]["WorkloadHH"] = [224.125, 179.78] # Workload HH, frequency in MHz
+
+    # Previously computer router-grained Router frequencies for SetupAB36
+    #RouterFrequencies["SetupAB36"]["WorkloadBB"] = [48,24,48,40,48,16,48,48,24,48,16,24.4275,24.4275,75,48,45,45,75,75,0]  # Workload BB, frequency in MHz
+    #RouterFrequencies["SetupAB36"]["WorkloadMM"] = [0,150,150,90,90,0,150,24.4275,24.4275,0,0,24.4275,24.4275,150,0,90,90,150,150,0]  # Workload MM, frequency in MHz
+    #RouterFrequencies["SetupAB36"]["WorkloadAA"] = [17.5,230.375,230.375,230.375,224.125,90.5,102.75,90.75,200,200,90.5,102.75,102.75,105.75,200,224.125,230.375,230.375,230.375,90.75]  # Workload AA, frequency in MHz
+    #RouterFrequencies["SetupAB36"]["WorkloadHH"]= [48,150,150,90,90,48,150,24.4275,24.4275,16,48,16,32,32,32,224.125,230.375,230.375,230.375,0]  # Workload HH, frequency in MHz
+    #RouterFrequencies["SetupBB36"]["WorkloadBB"] = [48, 48, 0, 75, 45, 112, 16, 75, 75, 75, 112, 24, 48, 75, 81.1075, 112, 24, 48, 45, 81.1075, 24, 24, 24, 40, 40]  # Workload BB, frequency in MHz
+    RouterFrequencies["SetupAB36"]["WorkloadBB"] = [48,48,48,40,112,16,48,48,24,112,16,24.4275,24.4275,75,48,75,75,75,75,0]  # Workload BB, frequency in MHz
+    RouterFrequencies["SetupAB36"]["WorkloadMM"] = [0,150,150,90,90,0,150,48.855,48.855,0,0,48.855,48.855,150,0,90,90,150,150,0]  # Workload MM, frequency in MHz
+    RouterFrequencies["SetupAB36"]["WorkloadAA"] = [17.5,230.375,230.375,230.375,224.125,90.5,102.75,90.75,200,200,90.5,102.75,102.75,105.75,200,224.125,230.375,230.375,230.375,90.75]  # Workload AA, frequency in MHz
+    RouterFrequencies["SetupAB36"]["WorkloadHH"] = [48,150,150,90,90,48,150,24.4275,24.4275,16,48,16,32,32,32,224.125,230.375,230.375,230.375,0]  # Workload HH, frequency in MHz
+
+    BusFrequencies["SetupAB36"]["WorkloadBB"] = [112,75]  # Workload BB, frequency in MHz
+    BusFrequencies["SetupAB36"]["WorkloadMM"] = [150,150]  # Workload MM, frequency in MHz
+    BusFrequencies["SetupAB36"]["WorkloadAA"] = [224.125,224.125]  # Workload AA, frequency in MHz
+    BusFrequencies["SetupAB36"]["WorkloadHH"] = [150,224.125] # Workload HH, frequency in MHz
+
+    #CrossbarFrequencies["SetupAB36"]["WorkloadBB"] = [48, 75]  # Workload BB, frequency in MHz
+    #CrossbarFrequencies["SetupAB36"]["WorkloadMM"] = [150, 150]  # Workload MM, frequency in MHz
+    #CrossbarFrequencies["SetupAB36"]["WorkloadAA"] = [230.375, 230.375]  # Workload AA, frequency in MHz
+    #CrossbarFrequencies["SetupAB36"]["WorkloadHH"] = [150, 230.375] # Workload HH, frequency in MHz
+    CrossbarFrequencies["SetupAB36"]["WorkloadBB"] = [48,75]  # Workload BB, frequency in MHz
+    CrossbarFrequencies["SetupAB36"]["WorkloadMM"] = [150,150]  # Workload MM, frequency in MHz
+    CrossbarFrequencies["SetupAB36"]["WorkloadAA"] = [230.375,230.375]  # Workload AA, frequency in MHz
+    CrossbarFrequencies["SetupAB36"]["WorkloadHH"] = [150,230.375] # Workload HH, frequency in MHz
+
+    # Previously computer router-grained Router frequencies for SetupBA36
+    #RouterFrequencies["SetupBA36"]["WorkloadBB"] = [48,48,16,0,80,32,32,13.015,48,40,45,45,48,40,45,45]  # Workload BB, frequency in MHz
+    RouterFrequencies["SetupBA36"]["WorkloadBB"] = [96,48,48,0,96,96,48,13.015,96,40,23.785,23.785,40,40,23.785,23.785]  # Workload BB, frequency in MHz
+    #RouterFrequencies["SetupBA36"]["WorkloadMM"] = [0,0,0,0,26.03,0,0,26.03,22.5,46.1775,46.1775,22.5,46.1775,46.1775,46.1775,46.1775]  # Workload MM, frequency in MHz
+    RouterFrequencies["SetupBA36"]["WorkloadMM"] = [0,0,0,0,47.57,0,0,47.57,47.57,46.1775,46.1775,47.57,46.1775,46.1775,46.1775,46.1775]  # Workload MM, frequency in MHz
+    RouterFrequencies["SetupBA36"]["WorkloadAA"] = [90.5,90.5,102.75,97.25,224.0625,95.75,97.25,224.0625,224.0625,200,200,224.0625,224.0625,105.75,200,224.0625]  # Workload AA, frequency in MHz
+    #RouterFrequencies["SetupBA36"]["WorkloadHH"] = [32,32,32,0,224.0625,224.0625,16,26.03,224.0625,224.0625,46.1775,22.5,224.0625,224.0625,46.1775,46.1775]  # Workload HH, frequency in MHz
+    RouterFrequencies["SetupBA36"]["WorkloadHH"] = [48,32,32,16,224.0625,224.0625,32,47.57,224.0625,0,46.1775,47.57,224.0625,224.0625,46.1775,46.1775]  # Workload HH, frequency in MHz
+
+    BusFrequencies["SetupBA36"]["WorkloadBB"] = [80, 13.015]  # Workload BB, frequency in MHz
+    BusFrequencies["SetupBA36"]["WorkloadMM"] = [26.03, 26.03]  # Workload MM, frequency in MHz
+    BusFrequencies["SetupBA36"]["WorkloadAA"] = [224.0625, 224.0625]  # Workload AA, frequency in MHz
+    BusFrequencies["SetupBA36"]["WorkloadHH"] = [224.0625, 47.57] # Workload HH, frequency in MHz
+
+    CrossbarFrequencies["SetupBA36"]["WorkloadBB"] = [48, 75]  # Workload BB, frequency in MHz
+    CrossbarFrequencies["SetupBA36"]["WorkloadMM"] = [150, 150]  # Workload MM, frequency in MHz
+    CrossbarFrequencies["SetupBA36"]["WorkloadAA"] = [230.375, 230.375]  # Workload AA, frequency in MHz
+    CrossbarFrequencies["SetupBA36"]["WorkloadHH"] = [230.375, 150] # Workload HH, frequency in MHz
+
+    # Previously computer router-grained Router frequencies for SetupAA36
+    #RouterFrequencies["SetupAA36"]["WorkloadBB"] = [24,0,16,16,24,16,23.785,3.535,16,3.215,3.695,23.09,40,12.215,23.09,23.09]  # Workload BB, frequency in MHz
+    #RouterFrequencies["SetupAA36"]["WorkloadMM"] = [0,0,0,11.57,24.4275,6.43,0,47.2475,24.4275,46.9275,2.57,47.2475,46.9275,46.9275,7.07,46.9275]  # Workload MM, frequency in MHz
+    #RouterFrequencies["SetupAA36"]["WorkloadAA"] = [105.75,105.75,200,200,230.375,17.5,93.25,88.25,230.375,230.375,230.375,230.375,230.375,160,160,230.375]  # Workload AA, frequency in MHz
+    #RouterFrequencies["SetupAA36"]["WorkloadHH"] = [7.07,2.57,16,16,22.5,14.14,0,230.375,24.4275,6.43,230.375,230.375,46.9275,24.4275,160,230.375]  # Workload HH, frequency in MHz
+    RouterFrequencies["SetupAA36"]["WorkloadBB"] = [24,0,16,16,40,16,23.785,23.785,40,3.215,7.07,23.785,40,23.09,23.09,23.785]  # Workload BB, frequency in MHz
+    RouterFrequencies["SetupAA36"]["WorkloadMM"] = [0,0,0,47.57,46.13,6.4325,0,47.57,47.57,47.57,47.57,47.57,47.57,47.57,14.14,47.57]  # Workload MM, frequency in MHz
+    RouterFrequencies["SetupAA36"]["WorkloadAA"] = [102.75,102.75,114.75,114.75,230.375,102.75,114.75,230.375,230.375,230.375,230.375,230.375,230.375,160,160,230.375]  # Workload AA, frequency in MHz
+    RouterFrequencies["SetupAA36"]["WorkloadHH"] = [47.57,47.57,16,16,47.57,14.14,0,230.375,47.57,6.43,230.375,230.375,47.57,24.4275,160,230.375]  # Workload HH, frequency in MHz
+
+    #CrossbarFrequencies["SetupAA36"]["WorkloadBB"] = [48, 48, 75]  # Workload BB, frequency in MHz
+    #CrossbarFrequencies["SetupAA36"]["WorkloadMM"] = [11.57, 150, 150]  # Workload MM, frequency in MHz
+    #CrossbarFrequencies["SetupAA36"]["WorkloadAA"] = [200, 230.375, 230.375]  # Workload AA, frequency in MHz
+    #CrossbarFrequencies["SetupAA36"]["WorkloadHH"] = [48, 150, 230.375] # Workload HH, frequency in MHz
+    CrossbarFrequencies["SetupAA36"]["WorkloadBB"] = [48, 48, 75]  # Workload BB, frequency in MHz
+    CrossbarFrequencies["SetupAA36"]["WorkloadMM"] = [47.57, 150, 150]  # Workload MM, frequency in MHz
+    CrossbarFrequencies["SetupAA36"]["WorkloadAA"] = [200, 230.375, 230.375]  # Workload AA, frequency in MHz
+    CrossbarFrequencies["SetupAA36"]["WorkloadHH"] = [48, 150, 230.375] # Workload HH, frequency in MHz
+
+    # Previously computer router-grained Router frequencies for Hermes36
+    #RouterFrequencies["Hermes36"]["WorkloadBB"] = [7.23,3.215,32,16,48,48,7.07,23.785,23.785,32,32,48,11.25,12.215,23.785,40,48,40,45,75,45,24,48,48,75,75,75,48,48,24,75,45,0,16,16,48]  # Workload BB, frequency in MHz
+    RouterFrequencies["Hermes36"]["WorkloadBB"] = [7.23,3.215,16,16,48,48,7.07,23.785,32,32,32,48,7.23,45,12.165,40,48,40,45,75,34.875,24,48,48,75,75,75,48,48,24,45,75,0,16,48,48]  # Workload BB, frequency in MHz
+    #RouterFrequencies["Hermes36"]["WorkloadMM"] = [14.46,6.43,0,0,6.43,14.14,14.14,47.57,23.785,23.785,47.57,14.14,22.5,24.43,47.57,47.57,24.43,22.5,90,180,90,90,180,90,150,150,150,150,150,150,150,90,0,0,90,150]  # Workload MM, frequency in MHz
+    RouterFrequencies["Hermes36"]["WorkloadMM"] = [14.46,6.43,0,0,6.43,14.46,14.46,47.57,0,0,47.57,14.46,14.46,90,24.425,24.425,90,14.46,90,180,69.75,69.75,180,90,150,150,150,150,150,150,90,150,0,0,150,90]  # Workload MM, frequency in MHz
+    #RouterFrequencies["Hermes36"]["WorkloadAA"] = [224.0625,230.375,230.375,224.0625,230.375,230.375,224.0625,230.375,230.375,224.0625,230.375,230.375,224.0625,224.0625,230.375,224.0625,224.0625,230.375,224.0625,224.0625,224.0625,224.0625,224.0625,224.0625,93.25,200,200,102.75,90.5,90.5,105.75,200,93.25,102.75,102.75,17.5]  # Workload AA, frequency in MHz
+    RouterFrequencies["Hermes36"]["WorkloadAA"] = [224.0625,230.375,230.375,224.0625,230.375,230.375,224.0625,230.375,230.375,224.0625,230.375,230.375,224.0625,224.0625,230.375,224.0625,224.0625,230.375,224.0625,224.0625,224.0625,224.0625,224.0625,224.0625,148.5,200,200,102.75,90.5,90.5,148.5,200,93.25,102.75,102.75,17.5]  # Workload AA, frequency in MHz
+    #RouterFrequencies["Hermes36"]["WorkloadHH"] = [14.14,6.43,32,16,48,48,14.14,47.57,23.785,32,32,48,22.5,24.43,24.43,224.0625,230.375,230.375,90,180,90,224.0625,230.375,230.375,150,150,150,224.0625,224.0625,230.375,150,90,0,224.0625,224.0625,224.0625]  # Workload HH, frequency in MHz
+    RouterFrequencies["Hermes36"]["WorkloadHH"] = [14.46,6.43,16,16,48,48,14.46,47.57,32,32,32,48,22.5,90,24.425,224.0625,230.375,230.375,90,180,69.75,224.0625,230.375,230.375,150,150,150,224.0625,224.0625,230.375,90,150,0,224.0625,224.0625,224.0625]  # Workload HH, frequency in MHz
+
+    for Setup in Setups:
+
+        # Get Platform object from JSON 
+        with open("../topologies/" + Setup + ".json", "r") as SetupFile:
+            PlatformObject = PlatformComposer.Platform().fromJSON(SetupFile.read())
+
+        for i, Resolution in enumerate(CounterResolutions):
+
+            for Workload in Workloads:
+
+                # Set adequate counter resolution in Platform object
+                PlatformObject.DVFSCounterResolution = Resolution
+
+                # Set args for generateDVFSApps()
+                RouterClockFrequencies = RouterFrequencies[Setup][Workload]
+                BusClockFrequencies = BusFrequencies[Setup][Workload]
+                CrossbarClockFrequencies = CrossbarFrequencies[Setup][Workload]
+
+                # Get DVFS Apps from generateDVFSApps()
+                print("Making DVFS for Setup " + Setup + "Workload " + Workload)
+                AppDict = generateDVFSApps(Platform = PlatformObject, PlatformName = Setup, RouterClockFrequencies = RouterClockFrequencies, BusClockFrequencies = BusClockFrequencies, CrossbarClockFrequencies = CrossbarClockFrequencies, SaveToFile = False, ReturnAsJSON = True)
+
+                # Save DVFS Apps in AppDict to individual files
+                with open(Workload + "/" + Setup + "_" + str(Resolution) + "_" + "RouterGrained" + "_" + Workload + ".json", 'w') as RouterGrainedFile:
+                    RouterGrainedFile.write(AppDict["RouterGrained"])
+
+                # Skip StructGrained if NoC (no Bus or Crossbars)
+                if Setup != "Hermes36":
+                    with open(Workload + "/" + Setup + "_" + str(Resolution) + "_" + "StructGrained" + "_" + Workload + ".json", 'w') as StructGrainedFile:
+                        StructGrainedFile.write(AppDict["StructGrained"])
+
+                with open(Workload + "/" + Setup + "_" + str(Resolution) + "_" + "GlobalGrained" + "_" + Workload + ".json", 'w') as GlobalGrainedFile:
+                    GlobalGrainedFile.write(AppDict["GlobalGrained"])
+
+                # Skip NoDVFS App if not first Resolution (generates only one NoDVFS App)
+                if i == 0:
+                    with open(Workload + "/" + Setup + "_" + "NoDVFS" + "_" + Workload + ".json", 'w') as RouterGrainedFile:
+                        RouterGrainedFile.write(AppDict["NoDVFS"])
+

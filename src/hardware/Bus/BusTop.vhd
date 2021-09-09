@@ -49,6 +49,7 @@ end entity HyBus;
 architecture RTL of HyBus is
 
 	-- Arbiter interface signals
+    signal busACK: std_logic;
 	signal arbiterACK: std_logic;
 	signal arbiterGrant: std_logic_vector(0 to AmountOfPEs - 1);
 	signal arbiterRequest: std_logic_vector(0 to AmountOfPEs - 1);
@@ -59,6 +60,7 @@ architecture RTL of HyBus is
     signal bridgeCreditI: std_logic_vector(0 to AmountOfPEs - 1);
     signal bridgeACK: std_logic_vector(0 to AmountOfPEs - 1);
 	signal bridgeRequest: std_logic_vector(0 to AmountOfPEs - 1);
+    signal bridgeDisableInterrupt: std_logic_vector(0 to AmountOfPEs - 1);
 
 	-- Bus data link signals
 	signal busData: DataWidth_t;
@@ -68,8 +70,9 @@ architecture RTL of HyBus is
 	-- Control signals
 	signal RXEnable: std_logic_vector(0 to AmountOfPEs - 1);
 	signal TXEnable: std_logic_vector(0 to AmountOfPEs - 1);
-	signal requestFromNoC: std_logic;
+	signal txFromNoC: std_logic;
 	signal interrupted: std_logic;
+    signal controlDisableInterrupt: std_logic;
 
 begin
 
@@ -105,7 +108,10 @@ begin
 				--Request => arbiterRequest(i),
 				Request => bridgeRequest(i),
 				--Grant   => arbiterGrant(i)
-				Grant   => TXEnable(i)
+				Grant   => TXEnable(i),
+
+                -- Control interface
+                DisableInterrupt => bridgeDisableInterrupt(i)
 
 			);
 
@@ -129,11 +135,13 @@ begin
 			BusTx => busTx,
 
 			-- NoC interrupt handler
-			RequestFromNoC => requestFromNoC,  -- Set to 0 if standalone
+			TxFromNoC => txFromNoC,  -- Set to 0 if standalone
 			Interrupted => interrupted,  -- Unused if standalone
+            DisableInterrupt => controlDisableInterrupt,  -- Unused if standalone
 
             -- Arbiter interface
-            ACK => arbiterACK,
+            --ACK => arbiterACK,
+            ACK => busACK,
 
 			-- PE interface
             RXEnable => RXEnable
@@ -160,36 +168,40 @@ begin
 			);
 
 	StandaloneGen: if IsStandalone generate
-		RequestFromNoC <= '0';
+		txFromNoC <= '0';
+        arbiterACK <= busACK;
 	end generate;
-
 
 	NoCGen: if not IsStandalone generate
-		RequestFromNoC <= arbiterRequest(AmountOfPEs - 1);
+		txFromNoC <= bridgeTx(AmountOfPEs - 1);
+        arbiterACK <= busACK when interrupted = '0' else '0';
 	end generate;
 
-	-- 
+	-- Defines arbiter interface, depending on support for interruptions on packets coming from NoC
 	RequestGen: for i in 0 to AmountOfPEs - 1 generate
 
 		StandaloneRequestGen: if IsStandalone generate
 			arbiterRequest(i) <= bridgeRequest(i);
+            arbiterACK <= bridgeACK(i) when TXEnable(i) = '1' else 'Z';
 		end generate StandaloneRequestGen;
 
 		HybridRequestGen: if not IsStandalone generate
 
 			PERequestGen: if i /= AmountOfPEs - 1 generate
 				arbiterRequest(i) <= '1' when bridgeRequest(i) = '1' and arbiterRequest(AmountOfPEs - 1) = '0' else '0'; 
+                arbiterACK <= bridgeACK(i) when TXEnable(i) = '1' and interrupted = '0' else 'Z';
 			end generate PERequestGen;
 
 			NoCRequestGen: if i = AmountOfPEs - 1 generate
 				arbiterRequest(i) <= bridgeRequest(i);
+                arbiterACK <= bridgeACK(i) when TXEnable(i) = '1' and interrupted = '0' else 'Z';
 			end generate NoCRequestGen;
 
 		end generate HybridRequestGen;
 
 	end generate RequestGen;
 
-	--
+	-- Defines bridge control interface, depending on support for interruptions on packets coming from NoC
 	EnableGen: for i in 0 to AmountOfPEs - 1 generate
 
 		StandaloneEnableGen: if IsStandalone generate
@@ -210,14 +222,15 @@ begin
 
 	end generate EnableGen;
 
-
 	-- Connects PE input interfaces to bus 
 	LinkGen: for i in 0 to AmountOfPEs - 1 generate
 
         busData <= bridgeDataOut(i) when TXEnable(i) = '1' else (others => 'Z'); 
         busTx <= bridgeTx(i) when TXEnable(i) = '1' else 'Z';  
-        arbiterACK <= bridgeACK(i) when TXEnable(i) = '1' else 'Z';
+        --arbiterACK <= bridgeACK(i) when TXEnable(i) = '1' else 'Z';
+        busACK <= bridgeACK(i) when TXEnable(i) = '1' else 'Z';
         bridgeCreditI(i) <= busCredit when TXEnable(i) = '1' else '0';
+        controlDisableInterrupt <= bridgeDisableInterrupt(i) when TXEnable(i) = '1' else 'Z';
 	
 		PEInputs(i).DataIn <= busData;
 		PEInputs(i).ClockRx <= Clock;

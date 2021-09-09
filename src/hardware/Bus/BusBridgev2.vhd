@@ -52,7 +52,10 @@ entity BusBridge is
 		-- Arbiter Interface
 		ACK      : out std_logic;
 		Request  : out std_logic;
-		Grant    : in std_logic
+		Grant    : in std_logic;
+
+        -- Control Interface
+        DisableInterrupt: out std_logic
 
 	);
 
@@ -110,6 +113,10 @@ begin
 	Tx <= bufferAVFlag when currentState /= SwaitForACK else '0';
 	DataOut <= bufferDataOut;
     bufferReadConfirm <= CreditI when currentState = StransmitHeader or currentState = StransmitSize or currentState = StransmitPayload else '0';
+
+    -- Only allows Bus to be interrupted when sending Payload flits, except for the last Flit
+    --DisableInterrupt <= '1' when flitCounter = 1 else '0';
+    DisableInterrupt <= '0' when currentState = StransmitPayload and flitCounter /= 1 else '1';
 
 	ControlFSM: process(Clock, Reset) begin
 

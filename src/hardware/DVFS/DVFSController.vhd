@@ -31,11 +31,11 @@ library HyHeMPS;
 entity DVFSController is
 
 	generic(
-		DVFSServiceCode: DataWidth_t;
-		AmountOfVoltageLevels: integer;
-		CounterBitWidth: integer;
-		BaseNoCPos: HalfDataWidth_t;
-		IsNoC: boolean
+		DVFSServiceCode: DataWidth_t := x"0000FFFF";
+		AmountOfVoltageLevels: integer := 2;
+		CounterBitWidth: integer := 5;
+		BaseNoCPos: HalfDataWidth_t := x"0F0F";
+		IsNoC: boolean := True
 	);
 
 	port(
@@ -70,97 +70,108 @@ architecture RTL of DVFSController is
 	alias DividerNAsync: std_logic_vector(CounterBitWidth - 1 downto 0) is LocalPortData((2*CounterBitWidth) - 1 downto CounterBitWidth); 
 	alias DividerMAsync: std_logic_vector(CounterBitWidth - 1 downto 0) is LocalPortData(CounterBitWidth - 1 downto 0);
 
-	-- Divider control signals
-	signal DividerClockGated: std_logic; 
-	signal WriteEnable: std_logic; 
+	-- Clock Divider pulses (1, 1/2, 1/4, ...)
+	--signal dividedClocks: std_logic_vector(Log2OfVoltageSwitchField - 1 downto 0); 
+	signal dividedClocks: std_logic_vector(AmountOfVoltageLevels - 1 downto 0); 
 	
-	-- Divider registers
-	signal DividerCounterReg, DividerNReg, DividerMReg: std_logic_vector(CounterBitWidth - 1 downto 0);
-	signal ClockEnable: std_logic;
+	-- Clock Gating interface registers
+	--signal DividerCounterReg, DividerNReg, DividerMReg: std_logic_vector(CounterBitWidth - 1 downto 0);
+    signal dividerNShifted: std_logic_vector(CounterBitWidth - 1 downto 0);
+	signal clockEnable: std_logic;
 
-	-- Control FSM
+    -- Supply switch enables
+    signal supplySwitchReg: std_logic_vector(AmountOfVoltageLevels - 1 downto 0);
+    signal supplySwitchSyncReg: std_logic_vector(AmountOfVoltageLevels - 1 downto 0);
+
+	-- Control signals
 	type ControllerState_t is (Sidle, Ssize, Sservice, SvaluesOfInterest, SwaitUntilMSGFinished);
 	signal ControllerState: ControllerState_t;
+    signal syncGoAhead: std_logic;
+    signal writeEnable: std_logic;
+
+    signal ClockTristate: std_logic;
 
 begin
 
 	-- Propagates clock when N < M
-	GatedClock: ClockToCommStruct <= Clock when ClockEnable = '1' else '0';
-	
-	-- Control writing to N and M registers
-	CounterRegs: process(Clock, Reset) begin
+	GatedClock: ClockToCommStruct <= ClockTristate when clockEnable = '1' else '0';
 
-        if Reset = '1' then
-            
-            DividerNReg <= (others => '1');
-            DividerMReg <= (others => '1');
+	ClockTristateGen: for i in AmountOfVoltageLevels - 1 downto 0 generate
+        ClockTristate <= dividedClocks(i) when supplySwitchReg(i) = '1' else 'Z';
+    end generate ClockTristateGen;
+    
+    -- Generates Clock pulses
+    ClockDivider: entity work.ClockDivider
 
-		elsif rising_edge(Clock) then
+        generic map(
+            --DividerDepth => Log2OfVoltageSwitchField
+            DividerDepth => AmountOfVoltageLevels
+        )
+        port map(
+            MainClock => Clock,
+            Reset => Reset,
+            DividedClocks => dividedClocks
+        );
 
-			if WriteEnable = '1' then
+    -- Generates Clock gating enable signal
+    --dividerNShifted <= std_logic_vector(shift_left(unsigned(DividerNAsync), to_integer(unsigned(SupplyVoltageSwitchToTurnONAsync))));
+    dividerNShifted <= std_logic_vector(shift_left(unsigned(DividerNAsync), 1)) when SupplyVoltageSwitchToTurnONAsync = "0" else DividerNAsync;
+    ClockGatingCounter: entity work.ClockGatingCounter
 
-				DividerNReg <= DividerNAsync;
-				DividerMReg <= DividerMAsync;
+        generic map(
+            CounterBitWidth => CounterBitWidth
+        )
+        port map(
 
-			end if;
+            Clock => Clock,
+            Reset => Reset,
 
-		end if;
+            N => dividerNShifted,
+            M => DividerMAsync,
+            WriteEnable => writeEnable,
 
-	end process;
+            SyncGoAhead => syncGoAhead,
 
-	-- Counts from 0 to M - 1 
-	DividerCounter: process(Clock, Reset) begin
-
-		if Reset = '1' then
-
-			DividerCounterReg <= (others => '0');
-
-		elsif rising_edge(Clock) then
-
-			-- Counter++ mod M
-            if WriteEnable = '1' then
-                DividerCounterReg <= (others => '0');
-            else
-			    DividerCounterReg <= std_logic_vector(to_unsigned(incr(to_integer(unsigned(DividerCounterReg)), to_integer(unsigned(DividerMReg)) - 1, 0), CounterBitWidth));
-            end if;
-
-		end if;
-
-	end process;
-
-	-- Compares CounterReg to N
-	DividerComparator: process(Clock, Reset) begin
-
-		if Reset = '1' then
-
-			ClockEnable <= '0';
-
-		elsif falling_edge(Clock) then
-
-			if DividerCounterReg < DividerNReg then
-				ClockEnable <= '1';
-			else
-				ClockEnable <= '0';
-			end if; 
-
-		end if;
-
-	end process;
-
+            ClockEnable => clockEnable
+        );
 
     -- Registers the decoded output of power switch enable signals
-	SupplySwitchEnableRegs: process(LocalPortClockTX, Reset) begin
+    SupplySwitchesEnable <= supplySwitchReg;
+
+    SupplySwitchSync: process(Clock, Reset) begin
 
         if Reset = '1' then
 
             -- Defaults to highest voltage
-            SupplySwitchesEnable <= (others => '0');
-            SupplySwitchesEnable(AmountOfVoltageLevels - 1) <= '1';
+            supplySwitchReg <= (others => '0');
+            supplySwitchReg(AmountOfVoltageLevels - 1) <= '1';
 
+        --elsif rising_edge(Clock) then
         elsif rising_edge(Clock) then
 
+            if SyncGoAhead = '1' then
+                supplySwitchReg <= supplySwitchSyncReg;
+            end if;
+
+        end if;
+
+    end process SupplySwitchSync;
+
+    -- Syncs switch enable regs with N by M ratio
+	SupplySwitchEnableRegs: process(LocalPortClockTX, Reset) begin
+
+        --if rising_edge(Clock) then
+        if rising_edge(LocalPortClockTX) then
+
             if WriteEnable = '1' then
-                SupplySwitchesEnable <= decode(SupplyVoltageSwitchToTurnONAsync);
+
+                --supplySwitchSyncReg <= decode(SupplyVoltageSwitchToTurnONAsync);
+                if SupplyVoltageSwitchToTurnONAsync = "1" then
+                     supplySwitchSyncReg <= "10";
+                else
+                     supplySwitchSyncReg <= "01";
+                end if;
+
             end if;
 
         end if;
@@ -238,7 +249,7 @@ begin
 	end process;
 
     -- Combinationally determines the write enable signals for supply switch and divider regs (<= info from 2nd payload flit)
-    WriteEnable <= '1' when ControllerState = SvaluesOfInterest and ((IsNoC and IsNoCBit = '1') or ((not IsNoc) and IsNoCBit = '0')) else '0';
+    writeEnable <= '1' when ControllerState = SvaluesOfInterest and ((IsNoC and IsNoCBit = '1') or ((not IsNoc) and IsNoCBit = '0')) else '0';
 
 	-- Certifies field widths are coherent with DataWidth (only involves constants, should only run at 0 simulation time)
 	assert not ((2 * CounterBitWidth) + Log2OfVoltageSwitchField + 1 > DataWidth) report "Amount of Voltage Levels and Counter Values exceed platform bit width: 2*" & integer'image(CounterBitWidth) & " + " & integer'image(Log2OfVoltageSwitchField) & " + 1 > " & integer'image(DataWidth) severity failure;

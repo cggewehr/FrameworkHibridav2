@@ -44,8 +44,9 @@ entity BusControl is
 		BusData        : in DataWidth_t;
 
 		-- NoC interrupt handler
-		RequestFromNoC : in std_logic;
+		TxFromNoC      : in std_logic;
 		Interrupted    : out std_logic;
+        DisableInterrupt : in std_logic;
 
         -- Arbiter interface
         ACK            : in std_logic;
@@ -61,7 +62,7 @@ end entity BusControl;
 architecture RTL of BusControl is
 
 	-- FSM states
-	type state_t is (Sstandby, SwaitForInterrupt, SwaitForACKFromInterrupt, SwaitForACK);
+	type state_t is (Sstandby, SwaitForInterrupt, SgetInterruptTarget, SwaitForACKFromInterrupt, SwaitForACK);
 	signal currentState: state_t;
 
     -- Contains index of current message target PE's address in PEAddresses generic
@@ -69,10 +70,12 @@ architecture RTL of BusControl is
     signal targetIndexInterrupt: integer range 0 to AmountOfPEs - 1;
     signal interruptedLocal: std_logic;
 
+    signal initialized: std_logic;
+
 	-- Returns index of a given element in a given array
 	function GetIndexOfAddr(Addresses: HalfDataWidth_vector; AddressOfInterest: HalfDataWidth_t) return integer is begin
 
-		for i in 0 to Addresses'high - 1 loop  -- Ignores wrapper (Last element of Addresses[])
+		for i in 0 to Addresses'high - 1 loop  -- Ignores bridge to NoC (Last element of Addresses[])
 
 			if Addresses(i) = AddressOfInterest then
 				return i;
@@ -81,7 +84,7 @@ architecture RTL of BusControl is
 
 		end loop;
 
-		return Addresses'high;  -- Return index of wrapper (always @ the greatest posiition) if given ADDR was not found in bus
+		return Addresses'high;  -- Return index of bridge to NoC (always @ the greatest posiition) if given ADDR was not found in bus
 		
 	end function GetIndexOfAddr;
 
@@ -109,6 +112,8 @@ begin
 			targetIndexInterrupt <= 0;
 			interruptedLocal <= '0';
 
+            initialized <= '0';
+
 			currentState <= Sstandby;
 		
         elsif rising_edge(Clock) then
@@ -129,8 +134,9 @@ begin
 					    targetIndex <= GetIndexOfAddr(PEAddresses, targetAddr);
 					    --RXEnable(GetIndexOfAddr(PEAddresses, targetAddr)) <= '1';
 					    --RXEnable(targetIndex) <= '1';
+                        initialized <= '1';
 
-					    if RequestFromNoC = '1' then
+					    if TxFromNoC = '1' then
 					    	currentState <= SwaitForACK;
 					   	else
 					    	currentState <= SwaitForInterrupt;
@@ -140,33 +146,38 @@ begin
 					    currentState <= Sstandby;
 				    end if;
 
-				-- Interrupts intra-bus communication if there is a new packet coming from the NoC
+				-- Interrupts intra-bus communication if there is a new packet coming from the NoC, else, transmits normally
 				when SwaitForInterrupt => 
 
                     if ACK = '1' then
+                        initialized <= '0';
                         currentState <= Sstandby;
-                    else
-                        currentState <= SwaitForInterrupt;
-                    end if;
+                    elsif ACK = '0' and TxFromNoC = '1' and DisableInterrupt = '0' then
 
-					if RequestFromNoC = '1' then
-
-					    targetAddr := BusData(DataWidth - 1 downto HalfDataWidth);
-					    targetIndexInterrupt <= GetIndexOfAddr(PEAddresses, targetAddr);
 					    interruptedLocal <= '1';
+                        initialized <= '0';  -- This disables the Bus Credit line until targetIndexInterrupt is determined and set Data line to data from bridge from NoC
 
-					    currentState <= SwaitForACKFromInterrupt;
+                        currentState <= SgetInterruptTarget;
 
 					else
 					    currentState <= SwaitForInterrupt;
 					end if;
+
+                -- Determine packet from NoC's target
+                when SgetInterruptTarget =>
+
+                    targetAddr := BusData(DataWidth - 1 downto HalfDataWidth);
+				    targetIndexInterrupt <= GetIndexOfAddr(PEAddresses, targetAddr);
+				    initialized <= '1';
+
+				    currentState <= SwaitForACKFromInterrupt;
 
                 -- Wait for packet from NoC to be fully transmited through the Bus. Resume sending previous packet
                 when SwaitForACKFromInterrupt =>
 
                 	if ACK = '1' then
                 		interruptedLocal <= '0';
-                        currentState <= SwaitForACK;
+                        currentState <= SwaitForInterrupt;
                     else
                         currentState <= SwaitForACKFromInterrupt;
                     end if;
@@ -175,6 +186,7 @@ begin
                 when SwaitForACK =>
 
                     if ACK = '1' then
+                        initialized <= '0';
                         currentState <= Sstandby;
                     else
                         currentState <= SwaitForACK;
@@ -188,16 +200,20 @@ begin
 
 	Interrupted <= interruptedLocal;
 
-	-- Enables bus Tx line on receiver side
-	process(interruptedLocal, targetIndex, targetIndexInterrupt) begin
+	-- Enables bus Credit line and Tx line on receiver side
+	process(interruptedLocal, targetIndex, targetIndexInterrupt, initialized) begin
 
 		RXEnable <= (others => '0');
+    
+        if initialized = '1' then
 
-		if interruptedLocal = '1' then
-			RXEnable(targetIndexInterrupt) <= '1';
-		else
-			RXEnable(targetIndex) <= '1';
-		end if;
+		    if interruptedLocal = '1' then
+			    RXEnable(targetIndexInterrupt) <= '1';
+		    else
+			    RXEnable(targetIndex) <= '1';
+		    end if;
+
+        end if;
 
 	end process;
 

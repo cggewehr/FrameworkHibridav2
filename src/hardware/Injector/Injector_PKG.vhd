@@ -203,7 +203,9 @@ package body Injector_PKG is
             elsif PayloadFlitString(1 to 5) = "RANDO" then
 
                 -- Randomizes each bit of current flit
-                for i in 0 to DataWidth - 1 loop
+                --for i in 0 to DataWidth - 1 loop
+                Payload(flit)(DataWidth - 1) := '1';
+                for i in 0 to DataWidth - 2 loop
 
                     -- RandomNumber <= (0.0 < RNG < 1.0)
                     Uniform(RNGSeed1, RNGSeed2, RandomNumber);

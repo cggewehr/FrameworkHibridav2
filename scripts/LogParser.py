@@ -38,6 +38,7 @@ class Packet:
         try:
             
             lineList = LogLine.split()
+            #print(LogLine)
 
             TargetPEPos = int(lineList[0])
             Size = int(lineList[1])
@@ -126,6 +127,8 @@ class DVFSPacket(Packet):
         baseFreq = 1000 / DVFSPacket.ClusterClocks[BaseNoCPos]
         Frequency = (outEntry.N / outEntry.M) * baseFreq
         #print("Frequency: " + str(Frequency))
+        #print("matchingInEntry.Timestamp: " + str(matchingInEntry.Timestamp))
+        #print("outEntry.Timestamp: " + str(outEntry.Timestamp))
         Latency = matchingInEntry.Timestamp - outEntry.Timestamp
             
         if CommStruct == "NoC" or outEntry.IsNoC == '1':
@@ -464,7 +467,10 @@ def logparser(args):
                 if hitCountByPE[source][target] + missCountByPE[source][target] > 0:
                     print("Messages successfully delivered from PE <" + str(source) + "> to PE <" + str(target) + ">: " +
                           str(hitCountByPE[source][target]) + "/" + str(hitCountByPE[source][target] + missCountByPE[source][target]))
-                          
+         
+        with open(ProjectDir + "/deliverables/PEPacketsDelivered" + str(args.MinimumOutputTimestamp) + " - " + str(args.MaximumOutputTimestamp) + ".json", 'w') as PacketsDeliveredFile:
+            PacketsDeliveredFile.write(json.dumps(hitCountByPE, sort_keys = False, indent = 4))
+                 
     if args.Thread:
     
         hitCountByThread = SyntheticTrafficPacket.HitCountByThread
@@ -483,6 +489,9 @@ def logparser(args):
                     if hitCountByThread[AppID][SourceThreadID][TargetThreadID] + missCountByThread[AppID][SourceThreadID][TargetThreadID] > 0:
                         print("Messages successfully delivered from Thread <" + AppName + "." + str(SourceThreadName) + "> to Thread <" + AppName + "." + str(TargetThreadName) + ">: " +
                               str(hitCountByThread[AppID][SourceThreadID][TargetThreadID]) + "/" + str(hitCountByThread[AppID][SourceThreadID][TargetThreadID] + missCountByThread[AppID][SourceThreadID][TargetThreadID]))
+        
+        with open(ProjectDir + "/deliverables/ThreadPacketsDelivered" + str(args.MinimumOutputTimestamp) + " - " + str(args.MaximumOutputTimestamp) + ".json", 'w') as PacketsDeliveredFile:
+            PacketsDeliveredFile.write(json.dumps(hitCountByThread, sort_keys = True, indent = 4))
 
     # Prints out average latency values
     if args.PE or args.Thread:
@@ -497,6 +506,9 @@ def logparser(args):
                 if avgLatenciesByPE[source][target] != 0:
                     print("Average network latency from PE <" + str(source) + "> to PE <" + str(target) + ">: " + str(avgLatenciesByPE[source][target]) + " ns")
          
+        with open(ProjectDir + "/deliverables/PEPacketLatencies" + str(args.MinimumOutputTimestamp) + " - " + str(args.MaximumOutputTimestamp) + ".json", 'w') as LatenciesFile:
+            LatenciesFile.write(json.dumps(avgLatenciesByPE, sort_keys = False, indent = 4))
+
     if args.Thread:
     
         avgLatenciesByThread = SyntheticTrafficPacket.AvgLatenciesByThread
@@ -516,6 +528,9 @@ def logparser(args):
                     if avgLatenciesByThread[AppID][SourceThreadID][TargetThreadID] != 0:
                             print("Average network latency from Thread <" + AppName + "." + SourceThreadName + "> to Thread <" + AppName + "." + str(TargetThreadName) + ">: " +
                                   str(avgLatenciesByThread[AppID][SourceThreadID][TargetThreadID]) + " ns")
+        
+        with open(ProjectDir + "/deliverables/ThreadPacketLatencies" + str(args.MinimumOutputTimestamp) + " - " + str(args.MaximumOutputTimestamp) + ".json", 'w') as LatenciesFile:
+            LatenciesFile.write(json.dumps(avgLatenciesByThread, sort_keys = True, indent = 4))
 
     # Prints out throughput. TODO: Throughput by Thread
     if args.PE:
@@ -530,7 +545,7 @@ def logparser(args):
             # TODO: Input throughput 
             #print("PE <" + str(PEPos) + "> input throughput: " + str(InLogs[PEPos].Throughput) + " MBps")
 
-        with open(ProjectDir + "deliverables/PEOutputThroughputs" + str(args.MinimumOutputTimestamp) " - " + str(args.MaximumOutputTimestamp) + ".json", 'w') as OutputThroughputsFile:
+        with open(ProjectDir + "/deliverables/PEOutputThroughputs" + str(args.MinimumOutputTimestamp) + " - " + str(args.MaximumOutputTimestamp) + ".json", 'w') as OutputThroughputsFile:
             OutputThroughputsFile.write(json.dumps(OutputThroughputs, sort_keys = False, indent = 4))
 
     # Prints out frequency info for Router/Bus/Crossbar from DVFS service packets
@@ -571,7 +586,7 @@ def logparser(args):
                 
         # TODO: Latencies for DVFS messages
 
-        with open(ProjectDir + "/deliverables/DVFS" + str(args.MinimumOutputTimestamp) " - " + str(args.MaximumOutputTimestamp) + ".json", 'w') as DVFSFile:
+        with open(ProjectDir + "/deliverables/DVFS" + str(args.MinimumOutputTimestamp) + " - " + str(args.MaximumOutputTimestamp) + ".json", 'w') as DVFSFile:
             DVFSDict = {"Busses": busFreq, "Crossbars": crossbarFreq, "Routers": routerFreq}
             DVFSFile.write(json.dumps(DVFSDict, sort_keys = False, indent = 4))
 
