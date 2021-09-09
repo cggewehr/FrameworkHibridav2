@@ -149,7 +149,7 @@ begin
 
                 -- Check if new flit is the first (ADDR) flit from an interrupt
                 --if PEPosFromXY(DataIn(DataWidth - 1 downto HalfDataWidth), SquareNoCBound) < AmountOfPEs and to_integer(unsigned(DataIn)) > MaxMSGLength and DataIn /= DVFSServiceID and not interrupted and CommStructure = "Bus" and flitCounter > 0 then
-                if PEPosFromXY(DataIn(DataWidth - 1 downto HalfDataWidth), SquareNoCBound) < AmountOfPEs and to_integer(unsigned(DataIn)) > MaxMSGLength and DataIn /= DVFSServiceID and not interrupted and flitCounter > 0 then
+                if PEPosFromXY(DataIn(DataWidth - 1 downto HalfDataWidth), SquareNoCBound) < AmountOfPEs and to_integer(unsigned(DataIn)) > MaxMSGLength and DataIn /= DVFSServiceID and service = SyntheticTrafficServiceID and not interrupted and flitCounter > 0 then
                     
                     --report "DataIn: " & CONV_STRING(DataIn) severity note;
                     --assert not interrupted report "Logger interrupted while already interrupted" severity error;
