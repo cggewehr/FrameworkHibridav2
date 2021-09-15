@@ -30,7 +30,7 @@ class Structure:
         return returnString
 
     def __eq__(self, other):
-        if self.StructureType == other.StructureType and self.BaseNoCPos == other.BaseNoCPos and self.AmountOfPEs == other.AmountOfPEs and reduce(lambda s,o: True if s.PEPos == o.PEPos else False, zip(self.PÈs, other.PEs)):
+        if self.StructureType == other.StructureType and self.BaseNoCPos == other.BaseNoCPos and self.AmountOfPEs == other.AmountOfPEs and reduce(lambda s,o: True if s.PEPos == o.PEPos else False, zip(self.PEs, other.PEs)):
             return True
         else:
             return False

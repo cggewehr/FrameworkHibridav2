@@ -1,22 +1,22 @@
 {
-    "ClusterClocksPaths": [
-        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks"
-    ],
     "HibridaConfigFile": "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/config.json",
-    "MostRecentProject": "SetupBB36_5_GlobalGrained_WorkloadBB",
-    "HibridaPath": "/home/usr/cgewehr/Desktop/FrameworkHibrida",
+    "AllocationMapsPaths": [
+        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps"
+    ],
+    "TopologiesPaths": [
+        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies"
+    ],
     "WorkloadsPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/workloads"
     ],
     "HibridaName": "hibrida",
-    "TopologiesPaths": [
-        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/topologies"
-    ],
-    "DefaultProjDir": "/home/usr/cgewehr/Desktop/HibridaProjects",
     "ApplicationsPaths": [
         "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/applications"
     ],
-    "AllocationMapsPaths": [
-        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/allocationMaps"
+    "HibridaPath": "/home/usr/cgewehr/Desktop/FrameworkHibrida",
+    "MostRecentProject": "Hermes36_14_RouterGrained_WorkloadHH",
+    "DefaultProjDir": "/home/usr/cgewehr/Desktop/HibridaProjects",
+    "ClusterClocksPaths": [
+        "/home/usr/cgewehr/Desktop/FrameworkHibrida/data/flowgen/clusterClocks"
     ]
 }
